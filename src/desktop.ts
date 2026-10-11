@@ -26,6 +26,8 @@ export interface Desktop {
   setClickThrough(on: boolean): Promise<void>;
   /** Cursor en píxeles CSS relativos a la ventana. Funciona aunque la ventana ignore el ratón. */
   cursor(): Promise<Point>;
+  /** Cursor en píxeles físicos de escritorio. */
+  cursorOnScreen(): Promise<Point>;
   /** Posición de la ventana en píxeles físicos de escritorio. */
   windowPosition(): Promise<Point>;
   moveWindow(position: Point): Promise<void>;
@@ -65,6 +67,11 @@ class TauriDesktop implements Desktop {
       x: (cursor.x - origin.x) / window.devicePixelRatio,
       y: (cursor.y - origin.y) / window.devicePixelRatio,
     };
+  }
+
+  async cursorOnScreen(): Promise<Point> {
+    const cursor = await cursorPosition();
+    return { x: cursor.x, y: cursor.y };
   }
 
   async windowPosition(): Promise<Point> {
@@ -126,12 +133,14 @@ class TauriDesktop implements Desktop {
 class BrowserDesktop implements Desktop {
   readonly native = false;
   private pointer: Point = { x: -1, y: -1 };
+  private screenPointer: Point = { x: 0, y: 0 };
   private position: Point = { x: 0, y: 0 };
 
   constructor() {
     document.body.classList.add('browser');
     window.addEventListener('pointermove', (event) => {
       this.pointer = { x: event.clientX, y: event.clientY };
+      this.screenPointer = { x: event.screenX, y: event.screenY };
     });
     document.addEventListener('pointerleave', () => {
       this.pointer = { x: -1, y: -1 };
@@ -146,6 +155,10 @@ class BrowserDesktop implements Desktop {
 
   async cursor(): Promise<Point> {
     return this.pointer;
+  }
+
+  async cursorOnScreen(): Promise<Point> {
+    return this.screenPointer;
   }
 
   async windowPosition(): Promise<Point> {

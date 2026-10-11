@@ -36,3 +36,143 @@ body {
 body.browser {
   background: linear-gradient(90deg, #f2efe9 0 50%, #1d2330 50% 100%);
 }
+
+/* --- Interfaz sobre el canvas --- */
+
+.panel {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  translate: -50% 0;
+  width: 168px;
+  padding: 10px 12px 12px;
+  border-radius: 12px;
+  background: rgba(24, 26, 34, 0.94);
+  color: #f4f2ee;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+}
+
+.panel[hidden],
+.bubble[hidden],
+.toast[hidden] {
+  display: none;
+}
+
+.mood {
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.track {
+  flex: 1;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.fill.fullness {
+  background: #f0a04b;
+}
+
+.fill.happiness {
+  background: #f06a8c;
+}
+
+.fill.energy {
+  background: #6cc4f5;
+}
+
+.fill.low {
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.45;
+  }
+}
+
+.panel button {
+  width: 100%;
+  margin-top: 4px;
+  padding: 6px 0;
+  border: 0;
+  border-radius: 8px;
+  background: #e2322f;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.panel button:hover:not(:disabled) {
+  background: #f04a45;
+}
+
+.panel button:disabled {
+  background: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: default;
+}
+
+.bubble {
+  position: absolute;
+  padding: 5px 8px;
+  border-radius: 14px 14px 14px 3px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.toast {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  translate: -50% 0;
+  padding: 5px 12px;
+  border-radius: 12px;
+  background: rgba(24, 26, 34, 0.94);
+  color: #f4f2ee;
+  white-space: nowrap;
+}
+
+.emote {
+  position: absolute;
+  font-size: 20px;
+  line-height: 1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  animation: float-up 1.3s ease-out forwards;
+}
+
+@keyframes float-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.6);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-58px) scale(1);
+  }
+}

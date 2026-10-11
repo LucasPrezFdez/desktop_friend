@@ -21,8 +21,10 @@ export class Stage {
   constructor(readonly canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     this.renderer.setClearColor(0x000000, 0);
-    this.camera.position.set(0, 0.95, 5);
-    this.camera.lookAt(0, 0.55, 0);
+    // Encuadre: el suelo queda casi en el borde inferior, para que el perro pise la barra de tareas,
+    // y sobra sitio arriba para el panel y los corazones.
+    this.camera.position.set(0, 1.5, 5.4);
+    this.camera.lookAt(0, 1.2, 0);
     this.resize();
     window.addEventListener('resize', () => this.resize());
   }

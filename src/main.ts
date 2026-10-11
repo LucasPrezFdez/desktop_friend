@@ -1,42 +1,109 @@
-import * as THREE from 'three';
+import { Behavior } from './behavior';
+import { createLights } from './blackFur';
 import { ClickThrough } from './clickThrough';
 import { createDesktop } from './desktop';
+import { Dog } from './dog';
+import { Interaction } from './interaction';
+import { canEat, catchUp, decay, initialState, mood, parseState, type PetState } from './needs';
+import { Bowl, createShadow } from './props';
 import { Stage } from './scene';
+import { Hud } from './ui';
 
-// Prototipo del hito 2: una esfera en lugar del perro, para validar la ventana
-// transparente y los clics que atraviesan antes de construir el resto.
+const STATE_KEY = 'pet';
+const WINDOW_KEY = 'windowX';
+const SAVE_EVERY_MS = 20_000;
+// Por encima de esta opacidad el píxel bajo el cursor es perro (o cuenco), no sombra ni borde.
+const SOLID_ALPHA = 128;
+
 async function main(): Promise<void> {
   const desktop = createDesktop();
   const stage = new Stage(document.querySelector<HTMLCanvasElement>('#stage')!);
+  stage.scene.add(createLights(), createShadow());
 
-  stage.scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 2.5));
-  const ball = new THREE.Mesh(
-    new THREE.SphereGeometry(0.5, 32, 16),
-    new THREE.MeshStandardMaterial({ color: 0x2a2a33 }),
+  const dog = await Dog.load();
+  const bowl = new Bowl();
+  stage.scene.add(dog.root, bowl.group);
+
+  // Lo primero es ponerse al día con el tiempo que la app ha estado cerrada.
+  const saved = parseState(await desktop.loadState<unknown>(STATE_KEY));
+  const start = saved ? catchUp(saved, Date.now()) : initialState(Date.now());
+
+  const hud = new Hud(document.querySelector<HTMLElement>('#ui')!, () => {
+    if (behavior.feed()) void save();
+  });
+  const behavior = new Behavior(dog, desktop, stage, bowl, hud, start.needs);
+  await behavior.init(await desktop.loadState<number>(WINDOW_KEY));
+
+  const save = async (): Promise<void> => {
+    const state: PetState = { version: 1, needs: behavior.needs, lastSeen: Date.now() };
+    await desktop.saveState(STATE_KEY, state);
+    await desktop.saveState(WINDOW_KEY, behavior.windowX);
+  };
+
+  const clickThrough = new ClickThrough(desktop, stage, (point) => hud.isUiAt(point));
+  new Interaction(
+    stage.canvas,
+    desktop,
+    clickThrough,
+    {
+      onStroke: (pixels, point) => behavior.stroke(pixels, point),
+      onClick: () => hud.togglePanel(),
+      onGrab: () => behavior.grab(),
+      onDrag: (position) => behavior.drag(position),
+      onDrop: () => void behavior.drop().then(save),
+    },
+    () => stage.alphaUnderProbe > SOLID_ALPHA,
   );
-  ball.position.y = 0.55;
-  stage.scene.add(ball);
 
-  const clickThrough = new ClickThrough(desktop, stage, () => false);
-  let clicks = 0;
-  stage.canvas.addEventListener('pointerdown', () => {
-    clicks += 1;
-    ball.material.color.setHSL((clicks * 0.17) % 1, 0.7, 0.5);
-    document.title = `DesktopFriend clics=${clicks}`;
+  desktop.onCommand((command) => {
+    if (command === 'feed') {
+      if (behavior.feed()) void save();
+    } else if (command === 'come') {
+      void behavior.come().then(save);
+    } else {
+      void save().finally(() => desktop.quit());
+    }
   });
 
+  // Las necesidades avanzan según el reloj, no según los fotogramas dibujados.
+  let lastTick = Date.now();
+  const tick = (): void => {
+    const now = Date.now();
+    behavior.needs = decay(behavior.needs, now - lastTick, behavior.asleep);
+    lastTick = now;
+    hud.setNeeds(behavior.needs, mood(behavior.needs), canEat(behavior.needs));
+  };
+  tick();
+  window.setInterval(tick, 1000);
+  window.setInterval(() => void save(), SAVE_EVERY_MS);
+
   stage.onUpdate = (delta) => {
-    ball.rotation.y += delta;
+    behavior.update(delta);
+    dog.update(delta);
+    bowl.update(delta);
   };
   stage.start();
 
-  // La ventana nace oculta y se muestra tras el primer frame: evita el destello blanco.
+  // La ventana nace oculta y se muestra tras los primeros fotogramas: evita el destello blanco.
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       void desktop.show();
       void clickThrough.start();
     });
   });
+
+  if (import.meta.env.DEV) {
+    // Acceso desde las herramientas de verificación (tools/verify/cdp.mjs).
+    Object.assign(window, { pet: { behavior, dog, hud, stage, save } });
+  }
 }
 
-void main();
+main().catch((error: unknown) => {
+  console.error(error);
+  if (import.meta.env.DEV) {
+    const message = document.createElement('pre');
+    message.style.cssText = 'position:fixed;inset:0;margin:0;padding:8px;background:#400;color:#fff;font-size:11px;white-space:pre-wrap';
+    message.textContent = String(error instanceof Error ? (error.stack ?? error.message) : error);
+    document.body.append(message);
+  }
+});

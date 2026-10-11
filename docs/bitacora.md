@@ -4,6 +4,18 @@ Registro cronológico de todo lo que se hace en el proyecto. Cada fila indica la
 
 ## 2026-10-11
 
+Las filas siguen el orden en que se hicieron las cosas. No llevan hora porque no se registró una por acción; estas son las horas comprobadas en las salidas de las herramientas y en git:
+
+| Hora | Hecho |
+|---|---|
+| 14:52 | Se crea el repositorio y empieza la ejecución del plan |
+| 14:57 | Descargados los dos modelos de Quaternius |
+| 14:59 | Terminan las instalaciones de Blender, Rust y Build Tools |
+| 15:04 | Termina la primera compilación de Rust |
+| 15:14 | Primer GLB del perro negro generado |
+| 15:19 | Commit del hito 3 |
+| 15:27 | Tipos correctos y 24 pruebas en verde con la app completa |
+
 ### Investigación y planificación (sin cambios en el equipo)
 
 | Nº | Acción | Cómo | Resultado | Referencia |
@@ -19,64 +31,94 @@ Registro cronológico de todo lo que se hace en el proyecto. Cada fila indica la
 
 ### Hito 0: documentación inicial y repositorio
 
-| Nº | Hora | Acción | Cómo | Resultado | Referencia |
-|---|---|---|---|---|---|
-| 9 | 14:52 | Crear el repositorio | `git init -b main` | Repositorio vacío en `main` | Decisión 0006 |
-| 10 | 14:52 | Confirmar identificadores de winget | `winget search` | `Rustlang.Rustup` 1.29.1, `Microsoft.VisualStudio.2022.BuildTools` 17.14.41 (también existe la 2026, 18.10.2), `BlenderFoundation.Blender` 5.2.2 | Decisión 0007 |
-| 11 | 14:55 | Escribir `.gitignore` y `CLAUDE.md` | Ficheros nuevos | `CLAUDE.md` fija la regla de documentación y las convenciones | Decisión 0006 |
-| 12 | 15:00 | Escribir el informe de investigación | `docs/investigacion.md` | Dos partes, con tablas, fiabilidad de cada dato y fuentes | |
-| 13 | 15:05 | Registrar las decisiones 0001 a 0007 | `docs/decisiones/` | Siete decisiones | |
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 9 | Crear el repositorio | `git init -b main` | Repositorio vacío en `main` | Decisión 0006 |
+| 10 | Confirmar identificadores de winget | `winget search` | `Rustlang.Rustup` 1.29.1, `Microsoft.VisualStudio.2022.BuildTools` 17.14.41 (también existe la 2026, 18.10.2), `BlenderFoundation.Blender` 5.2.2 | Decisión 0007 |
+| 11 | Escribir `.gitignore` y `CLAUDE.md` | Ficheros nuevos | `CLAUDE.md` fija la regla de documentación y las convenciones | Decisión 0006 |
+| 12 | Escribir el informe de investigación | `docs/investigacion.md` | Dos partes, con tablas, fiabilidad de cada dato y fuentes | |
+| 13 | Registrar las decisiones 0001 a 0007 | `docs/decisiones/` | Siete decisiones | |
 
 ### Hito 1: herramientas
 
-| Nº | Hora | Acción | Cómo | Resultado | Referencia |
-|---|---|---|---|---|---|
-| 14 | 14:54 | Instalar Blender, Rust y Build Tools 2022 | `winget install` en segundo plano, en ese orden; las Build Tools con `--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended` | Las tres instaladas a las 14:59 con código de salida 0 | Decisión 0007 |
-| 15 | 15:00 | Verificar las herramientas | `blender --version`, `rustc --version`, `cargo --version`, `vswhere` | Blender 5.2.2 LTS, rustc 1.99.0, cargo 1.99.0, cadena `stable-x86_64-pc-windows-msvc`, Build Tools en `C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools` | |
-| 16 | 15:01 | Commit inicial y rama de trabajo | `git commit` en `main`, `git checkout -b desarrollo` | Commit `4ad3c1e` | Decisión 0006 |
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 14 | Instalar Blender, Rust y Build Tools 2022 | `winget install` en segundo plano, en ese orden; las Build Tools con `--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended` | Las tres instaladas a las 14:59 con código de salida 0 | Decisión 0007 |
+| 15 | Verificar las herramientas | `blender --version`, `rustc --version`, `cargo --version`, `vswhere` | Blender 5.2.2 LTS, rustc 1.99.0, cargo 1.99.0, cadena `stable-x86_64-pc-windows-msvc`, Build Tools en `C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools` | |
+| 16 | Commit inicial y rama de trabajo | `git commit` en `main`, `git checkout -b desarrollo` | Commit `4ad3c1e` | Decisión 0006 |
 
 ### Hito 3 (adelantado): obtención e inspección del modelo base
 
 Se hizo mientras compilaba Rust, porque no dependía de ello.
 
-| Nº | Hora | Acción | Cómo | Resultado | Referencia |
-|---|---|---|---|---|---|
-| 17 | 14:57 | Localizar las descargas | Lectura del HTML de las páginas de Poly Pizza | URL directas de los GLB de Husky y Shiba Inu; licencia mostrada CC0 1.0 | `assets/source/quaternius/PROCEDENCIA.md` |
-| 18 | 14:57 | Descargar los dos modelos | `curl` a `assets/source/quaternius/` | `Husky.glb` (927 536 bytes) y `ShibaInu.glb` (851 196 bytes); no hizo falta intervención del usuario | Decisión 0009 |
-| 19 | 15:02 | Escribir un inspector de GLB | `tools/model/inspect.mjs` | Lista clips, materiales, mallas y huesos | |
-| 20 | 15:03 | Inspeccionar ambos modelos | `node tools/model/inspect.mjs` | Materiales de color plano, 12 clips útiles incluidos `Walk` y `Eating`, 49 y 46 huesos | Decisión 0009 |
-| 21 | 15:06 | Escribir el render de previsualización | `tools/model/preview.py` (Blender sin interfaz) | Hoja de contactos PNG; EEVEE funciona sin interfaz en este equipo, no hizo falta Cycles | |
-| 22 | 15:08 | Renderizar y comparar los dos modelos | `blender -b -P tools/model/preview.py` | Elegido el Husky por su cola recta | Decisión 0009 |
-| 23 | 15:20 | Medir el esqueleto del Husky | Script temporal de Blender | Las patas dependen de huesos de control sueltos: hará falta resolver cinemática inversa en el script | Decisión 0009 |
-
-### Hito 3: modelo 3D del perro negro
-
-| Nº | Hora | Acción | Cómo | Resultado | Referencia |
-|---|---|---|---|---|---|
-| 38 | 15:45 | Escribir el script del modelo | `tools/model/build_dog.py` | Limpieza, recoloreado, collar, chapa, lengua y siete clips nuevos | Decisión 0010 |
-| 39 | 15:50 | Primera generación | `blender -b -P tools/model/build_dog.py` | GLB con 13 clips y 8 materiales a la primera; chapa en la nuca, lengua flotando y patas traseras mal plegadas | Decisión 0010 |
-| 40 | 15:55 | Añadir encuadre manual al render | Opción `--frame` en `preview.py` | Primer plano de la cabeza | |
-| 41 | 15:58 | Corregir chapa, lengua y plegado | Edición del script | Cabeza y sentado correctos; tumbado seguía mal | Decisión 0010 |
-| 42 | 16:02 | Diagnosticar el tumbado | Imprimir las posiciones de las articulaciones (`DOG_DEBUG=1`) | La armadura está girada 90° respecto al mundo: los desplazamientos iban por el eje equivocado | Decisión 0010 |
-| 43 | 16:06 | Rehacer el cálculo en coordenadas de mundo | Clase `Rig` del script | Las articulaciones coinciden con el cálculo a mano; todas las poses correctas | Decisión 0010 |
-| 44 | 16:10 | Automatizar | `tools/model/build.mjs` y `npm run model` | Construye, comprueba clips, valida, renderiza la hoja y copia a `public/models/dog.glb` | Decisión 0010 |
-| 45 | 16:12 | Validar | `gltf-transform validate` | Sin errores; un aviso heredado del original | Decisión 0010 |
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 17 | Localizar las descargas | Lectura del HTML de las páginas de Poly Pizza | URL directas de los GLB de Husky y Shiba Inu; licencia mostrada CC0 1.0 | `assets/source/quaternius/PROCEDENCIA.md` |
+| 18 | Descargar los dos modelos | `curl` a `assets/source/quaternius/` | `Husky.glb` (927 536 bytes) y `ShibaInu.glb` (851 196 bytes); no hizo falta intervención del usuario | Decisión 0009 |
+| 19 | Escribir un inspector de GLB | `tools/model/inspect.mjs` | Lista clips, materiales, mallas y huesos | |
+| 20 | Inspeccionar ambos modelos | `node tools/model/inspect.mjs` | Materiales de color plano, 12 clips útiles incluidos `Walk` y `Eating`, 49 y 46 huesos | Decisión 0009 |
+| 21 | Escribir el render de previsualización | `tools/model/preview.py` (Blender sin interfaz) | Hoja de contactos PNG; EEVEE funciona sin interfaz en este equipo, no hizo falta Cycles | |
+| 22 | Renderizar y comparar los dos modelos | `blender -b -P tools/model/preview.py` | Elegido el Husky por su cola recta | Decisión 0009 |
+| 23 | Medir el esqueleto del Husky | Script temporal de Blender | Las patas dependen de huesos de control sueltos: hará falta resolver cinemática inversa en el script | Decisión 0009 |
 
 ### Hito 2: prototipo de ventana transparente
 
-| Nº | Hora | Acción | Cómo | Resultado | Referencia |
-|---|---|---|---|---|---|
-| 24 | 15:00 | Consultar versiones de dependencias | `npm view` | three 0.186.1, vite 8.3.4, typescript 7.0.2, vitest 5.0.3, @tauri-apps/cli 2.12.2, @tauri-apps/api 2.12.3 | |
-| 25 | 15:01 | Crear `package.json` e instalar | `npm install` | 226 paquetes en 29 s | |
-| 26 | 15:10 | Escribir la parte nativa | `src-tauri/` (`Cargo.toml`, `tauri.conf.json`, `capabilities/default.json`, `src/lib.rs`, `src/main.rs`) | Ventana transparente, bandeja con menú, instancia única, arranque con Windows y persistencia | Decisión 0004 |
-| 27 | 15:12 | Generar un icono provisional | Render del Husky + `npx tauri icon` | Iconos en `src-tauri/icons/`; se sustituirán por el perro negro | |
-| 28 | 15:13 | Primera compilación de Rust | `cargo build` | Correcta a la primera en 2 min 8 s | Decisión 0008 |
-| 29 | 15:15 | Escribir el frontend del prototipo | `index.html`, `vite.config.ts`, `tsconfig.json`, `src/style.css`, `src/desktop.ts`, `src/scene.ts`, `src/clickThrough.ts`, `src/main.ts` | `npx tsc --noEmit` sin errores | Decisión 0004 |
-| 30 | 15:22 | Escribir las pruebas de escritorio | `tools/verify/clickthrough.ps1` y `screenshot.ps1` | Preguntan a Windows qué ventana recibiría un clic y capturan la zona de la ventana | |
-| 31 | 15:25 | Arrancar la app real | `npm run tauri dev` | Arranca; ventana de 420×340 visible | |
-| 32 | 15:27 | Corregir las pruebas | `[NullString]::Value` en lugar de `$null` al llamar a `FindWindowW` | PowerShell pasaba una cadena vacía y no encontraba la ventana | |
-| 33 | 15:28 | Probar los clics que atraviesan | `clickthrough.ps1` | Tres ejecuciones con resultados incoherentes | Decisión 0008, incidencia |
-| 34 | 15:31 | Diagnosticar | Muestreo del estado de la ventana cada 50 ms con el cursor quieto | Estado estable y cambio en menos de 100 ms: no hay oscilación | Decisión 0008 |
-| 35 | 15:34 | Hacer la prueba robusta | La prueba mide la latencia y detecta si el ratón se movió | Ocho ejecuciones correctas, de 56 a 149 ms | Decisión 0008 |
-| 36 | 15:35 | Capturar la ventana | `screenshot.ps1` | Sin fondo, borde ni marco | Decisión 0008 |
-| 37 | 15:36 | Medir el consumo en reposo | Suma de los procesos de la app | Unos 400 MB y 14 % de un núcleo en modo desarrollo | Decisión 0008 |
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 24 | Consultar versiones de dependencias | `npm view` | three 0.186.1, vite 8.3.4, typescript 7.0.2, vitest 5.0.3, @tauri-apps/cli 2.12.2, @tauri-apps/api 2.12.3 | |
+| 25 | Crear `package.json` e instalar | `npm install` | 226 paquetes en 29 s | |
+| 26 | Escribir la parte nativa | `src-tauri/` (`Cargo.toml`, `tauri.conf.json`, `capabilities/default.json`, `src/lib.rs`, `src/main.rs`) | Ventana transparente, bandeja con menú, instancia única, arranque con Windows y persistencia | Decisión 0004 |
+| 27 | Generar un icono provisional | Render del Husky + `npx tauri icon` | Iconos en `src-tauri/icons/`; se sustituirán por el perro negro | |
+| 28 | Primera compilación de Rust | `cargo build` | Correcta a la primera en 2 min 8 s | Decisión 0008 |
+| 29 | Escribir el frontend del prototipo | `index.html`, `vite.config.ts`, `tsconfig.json`, `src/style.css`, `src/desktop.ts`, `src/scene.ts`, `src/clickThrough.ts`, `src/main.ts` | `npx tsc --noEmit` sin errores | Decisión 0004 |
+| 30 | Escribir las pruebas de escritorio | `tools/verify/clickthrough.ps1` y `screenshot.ps1` | Preguntan a Windows qué ventana recibiría un clic y capturan la zona de la ventana | |
+| 31 | Arrancar la app real | `npm run tauri dev` | Arranca; ventana de 420×340 visible | |
+| 32 | Corregir las pruebas | `[NullString]::Value` en lugar de `$null` al llamar a `FindWindowW` | PowerShell pasaba una cadena vacía y no encontraba la ventana | |
+| 33 | Probar los clics que atraviesan | `clickthrough.ps1` | Tres ejecuciones con resultados incoherentes | Decisión 0008, incidencia |
+| 34 | Diagnosticar | Muestreo del estado de la ventana cada 50 ms con el cursor quieto | Estado estable y cambio en menos de 100 ms: no hay oscilación | Decisión 0008 |
+| 35 | Hacer la prueba robusta | La prueba mide la latencia y detecta si el ratón se movió | Ocho ejecuciones correctas, de 56 a 149 ms | Decisión 0008 |
+| 36 | Capturar la ventana | `screenshot.ps1` | Sin fondo, borde ni marco | Decisión 0008 |
+| 37 | Medir el consumo en reposo | Suma de los procesos de la app | Unos 400 MB y 14 % de un núcleo en modo desarrollo | Decisión 0008 |
+
+### Hito 3: modelo 3D del perro negro
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 38 | Escribir el script del modelo | `tools/model/build_dog.py` | Limpieza, recoloreado, collar, chapa, lengua y siete clips nuevos | Decisión 0010 |
+| 39 | Primera generación | `blender -b -P tools/model/build_dog.py` | GLB con 13 clips y 8 materiales a la primera; chapa en la nuca, lengua flotando y patas traseras mal plegadas | Decisión 0010 |
+| 40 | Añadir encuadre manual al render | Opción `--frame` en `preview.py` | Primer plano de la cabeza | |
+| 41 | Corregir chapa, lengua y plegado | Edición del script | Cabeza y sentado correctos; tumbado seguía mal | Decisión 0010 |
+| 42 | Diagnosticar el tumbado | Imprimir las posiciones de las articulaciones (`DOG_DEBUG=1`) | La armadura está girada 90° respecto al mundo: los desplazamientos iban por el eje equivocado | Decisión 0010 |
+| 43 | Rehacer el cálculo en coordenadas de mundo | Clase `Rig` del script | Las articulaciones coinciden con el cálculo a mano; todas las poses correctas | Decisión 0010 |
+| 44 | Automatizar | `tools/model/build.mjs` y `npm run model` | Construye, comprueba clips, valida, renderiza la hoja y copia a `public/models/dog.glb` | Decisión 0010 |
+| 45 | Validar | `gltf-transform validate` | Sin errores; un aviso heredado del original | Decisión 0010 |
+
+### Hitos 4, 5 y 6: el perro en la app, su cuidado y el escritorio
+
+Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app real.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 46 | Corregir la bitácora | Se quitan las horas por fila | Eran estimaciones mías y no coincidían con el reloj; quedan solo las comprobadas | |
+| 47 | Escribir el modelo de necesidades y sus pruebas | `src/needs.ts`, `tests/needs.test.ts` | 20 pruebas en verde | Decisión 0011 |
+| 48 | Escribir el material del pelaje y las luces | `src/blackFur.ts` | Sombreado de tres tonos con borde de luz | Decisión 0011 |
+| 49 | Escribir la carga y animación del perro | `src/dog.ts` | Clips con fundidos, cola, reacción a caricias y parpadeo encima del clip activo | Decisiones 0010 y 0011 |
+| 50 | Escribir sombra, cuenco e interfaz | `src/props.ts`, `src/ui.ts`, estilos | Panel de estado, bocadillo, corazones y aviso | Decisión 0011 |
+| 51 | Escribir los gestos del ratón | `src/interaction.ts` | Frotar, coger y clic | Decisión 0011 |
+| 52 | Escribir el comportamiento | `src/behavior.ts`, `tests/behavior.test.ts` | Máquina de estados; 4 pruebas más | Decisión 0011 |
+| 53 | Unirlo todo | `src/main.ts` | `tsc` sin errores, 24 pruebas en verde | |
+| 54 | Escribir la herramienta de depuración | `tools/verify/cdp.mjs` y relanzar la app con el puerto de depuración de WebView2 | Permite forzar actividades y capturar la ventana | Decisión 0012 |
+| 55 | Primera captura del perro en la app | `cdp.mjs --shot` | Sin errores, pero el perro se veía gris azulado | Decisión 0011 |
+| 56 | Oscurecer el pelaje y suavizar luces y borde | `src/blackFur.ts` | Se lee como negro sobre fondo claro, gris y azul marino | Decisión 0011 |
+| 57 | Escribir el mosaico de capturas | `tools/verify/sheet.ps1` | Tras corregir un error de tipos al crear la imagen | Decisión 0012 |
+| 58 | Verificar sentarse, tumbarse, dormir y triste | `cdp.mjs` forzando cada actividad | Correctos en la app real | Decisión 0012 |
+| 59 | Verificar comer, caricias, panel y paseo | `cdp.mjs` | Ración: saciedad de 30 a 65; corazones y ojos cerrados al acariciar; el paseo mueve la ventana unos 99 px por segundo | Decisión 0012 |
+| 60 | Acercar el cuenco | `BOWL_X` de 1,02 a 0,86 | El hocico no llegaba al cuenco | |
+| 61 | Escribir la simulación de ratón real | `tools/verify/input.ps1` | Frotar, clic y arrastrar | Decisión 0012 |
+| 62 | Probar con el ratón real | `input.ps1` y lectura del estado con `cdp.mjs` | Frotar: felicidad de 40 a 54,8. Clic: abre el panel. Arrastrar: la ventana sube a (742, 860) y al soltar cae a 1052 | Decisión 0012 |
+| 63 | Moderar las caricias | `PIXELS_PER_HAPPINESS` de 45 a 120 | Subía demasiado deprisa | Decisión 0011 |
+| 64 | Probar los clics que atraviesan con el perro | `clickthrough.ps1`, tres veces | Correcto las tres, entre 58 y 116 ms | Decisión 0008 |
+| 65 | Capturar el escritorio real | `screenshot.ps1` | Perro sin marco sobre el fondo de escritorio | |
+| 66 | Bajar el encuadre | `lookAt` de la cámara de 1,0 a 1,2 | El perro pisa el borde de la barra de tareas | Decisión 0011 |
+| 67 | Generar el icono definitivo | Render de la cabeza recortado en círculo (opción `--round` de `preview.py`) y `npx tauri icon` | Cabeza del perro sobre círculo ámbar, visible en barras oscuras | |
+| 68 | Distinguir caricias en cabeza y lomo | `src/behavior.ts`, `src/interaction.ts` | Por distancia a la cabeza en pantalla, no con un rayo como preveía el plan | Decisión 0011 |

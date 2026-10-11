@@ -37,6 +37,8 @@ def parse_args():
     parser.add_argument("--bg", default="0.62,0.66,0.72")
     # Encuadre manual "x,y,z,tamaño" en unidades de mundo, para primeros planos.
     parser.add_argument("--frame", default="")
+    # Recorta cada toma en círculo con fondo transparente (para el icono de la app).
+    parser.add_argument("--round", action="store_true")
     return parser.parse_args(argv)
 
 
@@ -170,12 +172,18 @@ def main():
             aim_camera(camera, center, extent, view)
             path = os.path.join(tmp, f"shot_{index:02d}.png")
             engine = render(scene, path)
-            tiles.append(load_pixels(path, args.size))
+            tile = load_pixels(path, args.size)
+            if args.round:
+                ys, xs = np.mgrid[0:args.size, 0:args.size]
+                radius = np.hypot(xs - (args.size - 1) / 2, ys - (args.size - 1) / 2)
+                # Borde suavizado de un par de píxeles.
+                tile[..., 3] = np.clip((args.size / 2 - 1 - radius) / 2, 0.0, 1.0)
+            tiles.append(tile)
             print(f"[preview] toma {index}: {shot} ({engine})")
 
     cols = min(args.cols, len(tiles))
     rows = math.ceil(len(tiles) / cols)
-    sheet = np.ones((rows * args.size, cols * args.size, 4), dtype=np.float32)
+    sheet = np.zeros((rows * args.size, cols * args.size, 4), dtype=np.float32)
     for index, tile in enumerate(tiles):
         row, col = divmod(index, cols)
         # Las filas de píxeles de Blender empiezan por abajo.
