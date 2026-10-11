@@ -1,0 +1,11 @@
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
+*.log
+.DS_Store
+Thumbs.db
+
+# Salidas intermedias del pipeline del modelo
+tools/model/out/
+*.blend1
