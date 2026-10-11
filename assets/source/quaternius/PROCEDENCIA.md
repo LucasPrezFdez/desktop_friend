@@ -9,6 +9,6 @@ Ficheros sin modificar, tal como se descargaron el 2026-10-11. El modelo de la a
 
 - **Autor:** Quaternius (https://quaternius.com), pack "Ultimate Animated Animal Pack".
 - **Licencia mostrada en Poly Pizza el día de la descarga:** Public Domain (CC0 1.0), https://creativecommons.org/publicdomain/zero/1.0/
-- **Aviso:** la página https://quaternius.com/license.html muestra desde el 28-08-2026 una licencia propia que permite usar los modelos dentro de productos pero prohíbe redistribuirlos como assets sueltos. Por prudencia, no publiques estos ficheros originales por separado.
+- **Aviso:** la página https://quaternius.com/license.html muestra desde el 28-08-2026 una licencia propia que permite usar los modelos dentro de productos pero prohíbe redistribuirlos como assets sueltos. El usuario decidió publicarlos igualmente en el repositorio de GitHub, asumiendo ese riesgo (decisión 0014).
 
 `ShibaInu.glb` se conserva solo como referencia de la comparación (decisión 0009); la app no lo usa.
