@@ -22,6 +22,8 @@ public static class In {
     [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
     [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
     [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint dx, uint dy, uint data, UIntPtr extra);
+    [DllImport("user32.dll")] public static extern IntPtr WindowFromPoint(POINT p);
+    [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr hwnd, uint flags);
 }
 '@
 
@@ -45,6 +47,17 @@ try {
     [void][In]::SetCursorPos($px, $py)
     # Margen para que la ventana detecte el cursor y empiece a capturar el ratón.
     Start-Sleep -Milliseconds 500
+    # Antes de pulsar se comprueba que el clic lo recibiría la mascota. Si el cursor ha caído en un
+    # hueco transparente, el clic llegaría a la ventana de debajo: en ese caso no se pulsa.
+    if ($Action -ne 'rub') {
+        $here = New-Object In+POINT
+        $here.X = $px
+        $here.Y = $py
+        if ([In]::GetAncestor([In]::WindowFromPoint($here), 2) -ne $hwnd) {
+            Write-Output "NO SE PULSA: en ($px, $py) no está el perro; el clic llegaría a otra ventana"
+            exit 3
+        }
+    }
     switch ($Action) {
         'rub' {
             for ($i = 0; $i -lt 60; $i++) {

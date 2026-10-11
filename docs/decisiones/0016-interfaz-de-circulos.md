@@ -1,9 +1,9 @@
-# 0016. Propuesta: el estado de la mascota como tres círculos que salen del perro
+# 0016. El estado de la mascota como tres círculos que salen del perro
 
 - **Fecha:** 2026-10-11
-- **Estado:** propuesta, en revisión por el usuario (rama `interfaz-circulos`)
+- **Estado:** aceptada por el usuario el 2026-10-11 (ver "Resolución" al final). Nació como propuesta en la rama `interfaz-circulos`
 - **Decide:** el usuario pide el diseño; los detalles no especificados los propone el agente
-- **Sustituiría a:** el panel de estado descrito en la decisión 0011
+- **Sustituye a:** el panel de estado descrito en la decisión 0011
 
 ## Lo que pidió el usuario
 - Al hacer clic para ver las estadísticas aparecen, con una animación, tres círculos: uno por cada necesidad.
@@ -40,3 +40,9 @@ Quedan a su criterio en la revisión:
 
 ## Cambios
 `src/ui.ts` (los círculos sustituyen al panel), `src/style.css` (sus estilos) y `src/main.ts` (indica a la interfaz dónde está el centro del perro). No cambia nada del comportamiento ni del modelo.
+
+## Resolución
+El usuario probó la versión de la rama y la aprobó tal cual ("me encanta el resultado"), sin pedir retoques, y pidió subir los cambios. Quedan aceptadas también las tres decisiones que no había especificado: dar de comer pulsando el círculo de la comida, sin texto de ánimo y sin porcentaje numérico visible.
+
+- La rama se fusiona en `desarrollo` y `main` y se sube a GitHub.
+- Se regenera el instalador y se actualiza la app instalada. En ella, un clic real sobre el perro abre los círculos (captura revisada).

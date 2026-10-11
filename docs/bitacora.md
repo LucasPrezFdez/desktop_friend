@@ -179,3 +179,9 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 101 | Limitar la captura de clics al círculo | `Hud.isUiAt` comprueba la distancia al centro | Esquina de la caja: ya no captura | Decisión 0016 |
 | 102 | Capturar fondos y cierre | `cdp.mjs` y `screenshot.ps1` | Legible sobre claro, oscuro y el escritorio real | Decisión 0016 |
 | 103 | Guardar las capturas de la propuesta | `docs/capturas/` | Dos mosaicos | Decisión 0016 |
+| 104 | El usuario aprueba la propuesta | Probó la versión de la rama | Aprobada sin retoques; pide subir los cambios | Decisión 0016 |
+| 105 | Actualizar la app instalada | `npm run installer`, instalación con `/S` y arranque desde el menú Inicio | Instalador de las 16:13; clics que atraviesan correctos | Decisión 0016 |
+| 106 | Comprobar los círculos en la app instalada | Clic real con `input.ps1` y captura | El primer clic cayó en un hueco transparente mientras el perro se tumbaba y llegó a la ventana de debajo (el navegador del usuario, en una zona sin botones según la captura); no abrió los círculos | |
+| 107 | Hacer segura la prueba de clic | `input.ps1` comprueba antes de pulsar que el clic lo recibiría la mascota; si no, no pulsa | Repetido: el clic abre los círculos en la app instalada | Decisión 0012 |
+| 108 | Actualizar el README | Uso con los círculos | | Decisión 0016 |
+| 109 | Fusionar y subir | `git merge --ff-only` en `desarrollo` y `main`, `git push` | Incluye también el arreglo de la cabeza (decisión 0015), que estaba sin subir | Decisiones 0015 y 0016 |
