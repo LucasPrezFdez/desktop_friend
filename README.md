@@ -9,7 +9,7 @@ Una mascota de escritorio para Windows 11: un perro negro en 3D que vive sobre l
 | Acariciarlo | Frota el cursor sobre él, sin pulsar. En la cabeza le gusta más |
 | Darle de comer | Haz clic sobre él y pulsa el círculo 🍖, o usa el menú del icono de la bandeja |
 | Ver cómo está | Haz clic sobre él: salen tres círculos con su saciedad 🍖, felicidad ❤️ y energía ⚡. El anillo de cada uno marca el nivel |
-| Moverlo | Púlsalo y arrástralo. Al soltarlo cae al suelo |
+| Moverlo | Púlsalo y arrástralo: una mano lo coge del collar, lo levanta de cara a ti y lo lleva balanceándose. Al soltarlo baja y se posa |
 | Traerlo de vuelta | Clic en el icono de la bandeja, o **Traer aquí** en su menú |
 | Ocultarlo, arrancarlo con Windows o salir | Clic derecho en el icono de la bandeja |
 

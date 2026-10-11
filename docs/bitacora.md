@@ -212,3 +212,10 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 129 | Guardar la secuencia de la versión nueva | `carry.mjs` y commit `9221b67` | **Captura no válida**: la prueba volvió a encontrarse al perro ya cogido, como en la acción 115 | Decisión 0017, revisión 2 |
 | 130 | Averiguar qué lo soltaba | Tres rondas con un espía que anota quién llama a coger, soltar o traer, y los eventos reales de puntero | Nada lo suelta por su cuenta. En las dos capturas fallidas el perro estaba cogido y balanceándose antes de que la prueba diera la orden: era el usuario arrastrándolo con el ratón real | Decisión 0017, revisión 2 |
 | 131 | Repetir y sustituir la captura | `carry.mjs`; mosaico revisado | `mano-v2-secuencia.png` corregida: subido 0,70, balanceo de 8,6° a cada lado, de 6,7° a 2,1° al parar | Decisión 0017, revisión 2 |
+| 132 | El usuario aprueba la segunda versión | Pregunta directa | "Me gusta, impleméntalo" | Decisión 0017, resolución |
+| 133 | Actualizar la app instalada | `npm run installer`, instalación con `/S` y arranque desde el menú Inicio | Instalador de 2,39 MB de las 16:50; app instalada en marcha | Decisión 0017, resolución |
+| 134 | Comprobar los clics en la app instalada | `clickthrough.ps1` | Verdadero, falso, verdadero; con aviso de que el ratón se movió durante la prueba | Decisión 0017, resolución |
+| 135 | Permitir sostener más tiempo en la prueba de arrastre | Parámetro `-HoldMs` en `input.ps1` | Para poder capturar al perro en el aire | Decisión 0012 |
+| 136 | Comprobar el arrastre en la app instalada | `input.ps1 -Action drag -HoldMs 3000` y captura | Parcial: la captura muestra al perro ya soltado, de frente; el arrastre se cortó antes, probablemente por el ratón del usuario. No se repite para no interferir | Decisión 0017, resolución |
+| 137 | Actualizar el README | Fila "Moverlo" | | Decisión 0017 |
+| 138 | Fusionar y subir | `git merge --ff-only` en `desarrollo` y `main`, `git push` | | Decisión 0017, resolución |

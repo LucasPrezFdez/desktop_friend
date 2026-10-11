@@ -1,7 +1,7 @@
-# 0017. Propuesta: una mano coge al perro del collar para llevarlo
+# 0017. Una mano coge al perro del collar para llevarlo
 
 - **Fecha:** 2026-10-11
-- **Estado:** propuesta, en revisión por el usuario (rama `mano-al-arrastrar`). Segunda versión tras sus retoques: ver "Revisión 2" al final, que sustituye a lo descrito antes sobre la pose, la orientación y el guante
+- **Estado:** aceptada por el usuario el 2026-10-11 en su segunda versión (ver "Revisión 2" y "Resolución" al final). La revisión 2 sustituye a lo descrito antes sobre la pose, la orientación y el guante
 - **Decide:** el usuario pide el efecto; el diseño lo propone el agente
 
 ## Lo que pidió el usuario
@@ -110,3 +110,14 @@ La primera versión estaba pensada para verse de perfil. Girar al perro de frent
 
 ### Límite conocido
 La ventana mide 340 px de alto y el perro colgando en vertical ocupa unos 270. Con la altura actual queda a unos 30 px del suelo y sus orejas a unos 28 px del borde superior: no se le puede levantar mucho más sin agrandar la ventana.
+
+## Resolución
+El usuario probó la segunda versión y la aprobó ("Me gusta, impleméntalo").
+
+- La rama `mano-al-arrastrar` se fusiona en `desarrollo` y `main` y se sube a GitHub.
+- Se regenera el instalador y se actualiza la app instalada.
+
+### Verificación en la app instalada
+- Clics que atraviesan: correctos (verdadero, falso, verdadero), aunque la prueba avisó de que el ratón se movió durante la medición.
+- Arrastre con el ratón real: **verificación parcial**. La captura, hecha con retraso, muestra al perro ya en el suelo, de frente y con la lengua fuera, que es el estado posterior a soltarlo y solo se alcanza tras cogerlo. El arrastre simulado se cortó antes de tiempo, probablemente porque el usuario estaba usando el ratón, y no se capturó la mano en el aire. No se insistió para no interferir con su cursor.
+- El mismo código quedó verificado dos veces con ratón real en la versión de desarrollo (acciones 119 y 128 de la bitácora).

@@ -7,7 +7,9 @@ param(
     [Parameter(Mandatory = $true)][ValidateSet('rub', 'click', 'drag')][string]$Action,
     [string]$Title = 'DesktopFriend',
     [double]$X = 0.5,
-    [double]$Y = 0.66
+    [double]$Y = 0.66,
+    # Solo para 'drag': cuánto se sostiene al perro en el aire antes de soltarlo.
+    [int]$HoldMs = 400
 )
 
 Add-Type @'
@@ -77,7 +79,7 @@ try {
                 [void][In]::SetCursorPos($px - $i * 6, $py - $i * 8)
                 Start-Sleep -Milliseconds 25
             }
-            Start-Sleep -Milliseconds 400
+            Start-Sleep -Milliseconds $HoldMs
             [void][In]::GetWindowRect($hwnd, [ref]$rect)
             Write-Output "en el aire: ventana en ($($rect.Left), $($rect.Top))"
             [In]::mouse_event($LEFT_UP, 0, 0, 0, [UIntPtr]::Zero)
