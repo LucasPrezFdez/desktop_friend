@@ -185,3 +185,20 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 107 | Hacer segura la prueba de clic | `input.ps1` comprueba antes de pulsar que el clic lo recibiría la mascota; si no, no pulsa | Repetido: el clic abre los círculos en la app instalada | Decisión 0012 |
 | 108 | Actualizar el README | Uso con los círculos | | Decisión 0016 |
 | 109 | Fusionar y subir | `git merge --ff-only` en `desarrollo` y `main`, `git push` | Incluye también el arreglo de la cabeza (decisión 0015), que estaba sin subir | Decisiones 0015 y 0016 |
+
+### Propuesta: mano al arrastrar (rama `mano-al-arrastrar`)
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 110 | Crear la rama de trabajo | `git checkout -b mano-al-arrastrar` desde `desarrollo` | | Decisión 0017 |
+| 111 | Añadir el clip en brazos y el punto de la nuca | `tools/model/build_dog.py`: clip `Carry`, modo de patas en el aire y hueso `Nape`; `npm run model` | 14 clips, 50 huesos, validación sin errores | Decisión 0017 |
+| 112 | Revisar la pose | Render con `preview.py` | Erguido, con las patas colgando y pataleo | Decisión 0017 |
+| 113 | Escribir el guante, el levantamiento y el balanceo | `src/props.ts`, `src/behavior.ts`, `src/dog.ts`, `src/main.ts` | Un primer intento de edición falló por las comillas de la terminal, sin modificar nada | Decisión 0017 |
+| 114 | Escribir la prueba de la secuencia | `tools/verify/carry.mjs` | Coge, mueve y suelta sin tocar el ratón real, y mide el balanceo | Decisión 0012 |
+| 115 | Primera pasada | `carry.mjs` | Resultados sin sentido: el perro ya estaba cogido al empezar, probablemente por el ratón real del usuario. Repetida, correcta | Decisión 0017 |
+| 116 | Revisar el guante de cerca | Primer plano acercando la cámara por depuración | El guante se lee bien de perfil; quedaba tapado de frente | Decisión 0017 |
+| 117 | Ajustar orientación, tamaño y altura | Perfil al cogerlo, mano un 30 % mayor, altura 0,45 | Se entiende que lo lleva cogido | Decisión 0017 |
+| 118 | Corregir el corte de las patas al soltarlo | El perro sigue recogido durante la caída | Sin recortes en la secuencia fotograma a fotograma | Decisión 0017 |
+| 119 | Probar con el ratón real | `input.ps1 -Action drag` vigilando el estado con el depurador | quieto, cogido, cae, contento; balanceo de 5,1° | Decisión 0017 |
+| 120 | Capturar sobre distintos fondos | `cdp.mjs` y `screenshot.ps1` | Legible en claro, oscuro y escritorio real. Una captura salió con el perro semitransparente; no se reprodujo en tres repeticiones | Decisión 0017 |
+| 121 | Guardar las capturas de la propuesta | `docs/capturas/mano-*.png` | Cuatro mosaicos | Decisión 0017 |

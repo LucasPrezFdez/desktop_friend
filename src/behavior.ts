@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import type { Desktop, Point, Rect } from './desktop';
 import type { ClipName, Dog } from './dog';
 import { canEat, feed, mood, pet, RESTED, type Mood, type Needs } from './needs';
-import type { Bowl } from './props';
+import type { Bowl, Hand } from './props';
 import type { Stage } from './scene';
 import type { Hud } from './ui';
 
@@ -34,6 +34,19 @@ const HAPPY_SECONDS = 1.6;
 const WALK_SPEED = 95;
 /** Píxeles lógicos por segundo al cuadrado al soltarlo en el aire. */
 const GRAVITY = 2600;
+/** Cuánto sube el perro cuando la mano lo levanta, en unidades de la escena. */
+const CARRY_LIFT = 0.45;
+// Balanceo al llevarlo: un péndulo amortiguado que cuelga de la nuca. Tiene que ser leve.
+const SWAY_STIFFNESS = 38;
+const SWAY_DAMPING = 5;
+/** Ángulo máximo que le da el movimiento del ratón, en radianes (unos 11 grados). */
+const SWAY_MAX = 0.2;
+/** Radianes de inclinación por cada píxel por segundo de velocidad al arrastrar. */
+const SWAY_PER_SPEED = 0.00035;
+/** Vaivén suave cuando se le sostiene quieto, en radianes (unos 2 grados). */
+const SWAY_IDLE = 0.035;
+const UP = new THREE.Vector3(0, 1, 0);
+const TOWARD_CAMERA = new THREE.Vector3(0, 0, 1);
 /** Fotogramas por segundo: los justos para cada actividad, porque la app está abierta todo el día. */
 const FPS_ACTIVE = 30;
 const FPS_CALM = 20;
@@ -47,6 +60,11 @@ const IDLE_CLIPS: ClipName[] = ['Idle', 'Idle', 'Idle', 'IdleLook', 'IdleLook', 
 
 const random = (min: number, max: number): number => min + Math.random() * (max - min);
 const headWorld = new THREE.Vector3();
+const nape = new THREE.Vector3();
+const base = new THREE.Vector3();
+const pivot = new THREE.Vector3();
+const yawTurn = new THREE.Quaternion();
+const swayTurn = new THREE.Quaternion();
 
 /** Decide qué hace el perro en cada momento y mueve la ventana por el escritorio. */
 export class Behavior {
@@ -61,6 +79,18 @@ export class Behavior {
   /** Lado hacia el que mira: 1 es a la derecha de la pantalla. */
   private side = -1;
   private facing = -0.65;
+  /** Giro actual hacia `facing`. */
+  private yaw = -0.65;
+  /** 0 en el suelo, 1 levantado por la mano. */
+  private carry = 0;
+  /** 0 a 1: cuánto se ve la mano. */
+  private grip = 0;
+  private sway = 0;
+  private swaySpeed = 0;
+  /** Velocidad horizontal del arrastre, en píxeles lógicos por segundo. */
+  private dragSpeed = 0;
+  private lastDrag: { x: number; time: number } | null = null;
+  private time = 0;
   private petLevel = 0;
   private heartMeter = 0;
   private emoteClock = 0;
@@ -77,6 +107,7 @@ export class Behavior {
     private readonly desktop: Desktop,
     private readonly stage: Stage,
     private readonly bowl: Bowl,
+    private readonly hand: Hand,
     private readonly hud: Hud,
     needs: Needs,
   ) {
@@ -178,11 +209,20 @@ export class Behavior {
     this.hud.closePanel();
     this.posture = 'stand';
     this.pending = null;
+    this.lastDrag = null;
+    this.dragSpeed = 0;
     this.begin('held');
   }
 
   drag(position: Point): void {
     if (this.activity !== 'held') return;
+    // La velocidad del arrastre es lo que hace que se balancee.
+    const now = performance.now();
+    if (this.lastDrag && now > this.lastDrag.time) {
+      const speed = (((position.x - this.lastDrag.x) / (now - this.lastDrag.time)) * 1000) / window.devicePixelRatio;
+      this.dragSpeed += (speed - this.dragSpeed) * 0.5;
+    }
+    this.lastDrag = { x: position.x, time: now };
     this.windowPosition = position;
     void this.desktop.moveWindow(position);
   }
@@ -222,7 +262,7 @@ export class Behavior {
     this.activity = activity;
     this.clock = 0;
     this.phase = 0;
-    this.dog.tongueOut = activity === 'happy';
+    this.dog.tongueOut = activity === 'happy' || activity === 'held';
     this.stage.setFps(CALM.has(activity) ? FPS_CALM : FPS_ACTIVE);
 
     switch (activity) {
@@ -283,7 +323,9 @@ export class Behavior {
         this.dog.play('Happy', { fade: 0.15 });
         break;
       case 'held':
-        this.dog.play('Idle', { fade: 0.15 });
+        // Casi de perfil: es como mejor se ve que la mano lo lleva cogido por la nuca.
+        this.facing = this.side * 1.3;
+        this.dog.play('Carry', { fade: 0.2 });
         break;
       case 'fall':
         this.fallSpeed = 0;
@@ -405,8 +447,9 @@ export class Behavior {
 
   /** Giro suave, cola, reacción a las caricias y símbolos sobre la cabeza. */
   private animateLayers(delta: number): void {
-    const turn = THREE.MathUtils.euclideanModulo(this.facing - this.dog.root.rotation.y + Math.PI, Math.PI * 2) - Math.PI;
-    this.dog.root.rotation.y += turn * Math.min(1, delta * 6);
+    const turn = THREE.MathUtils.euclideanModulo(this.facing - this.yaw + Math.PI, Math.PI * 2) - Math.PI;
+    this.yaw += turn * Math.min(1, delta * 6);
+    this.placeDog(delta);
 
     this.petLevel = Math.max(0, this.petLevel - delta * 0.9);
     this.dog.petting += (this.petLevel - this.dog.petting) * Math.min(1, delta * 8);
@@ -427,15 +470,51 @@ export class Behavior {
     }
   }
 
+  /**
+   * Coloca al perro en la escena. En el suelo solo cuenta hacia dónde mira; cuando la mano lo
+   * lleva, además sube y se balancea como un péndulo que cuelga de la nuca.
+   */
+  private placeDog(delta: number): void {
+    const held = this.activity === 'held';
+    // Mientras cae sigue con las patas recogidas, y se posa al llegar al suelo. Si bajara dentro
+    // de la ventana antes de cambiar de postura, las patas traseras asomarían por debajo.
+    const lifted = held || this.activity === 'fall';
+    this.time += delta;
+    this.carry += ((lifted ? 1 : 0) - this.carry) * Math.min(1, delta * (lifted ? 7 : 6));
+    // La mano, en cambio, suelta en cuanto se suelta el ratón.
+    this.grip += ((held ? 1 : 0) - this.grip) * Math.min(1, delta * (held ? 15 : 12));
+
+    this.dragSpeed *= Math.exp(-delta * 5);
+    const pushed = THREE.MathUtils.clamp(-this.dragSpeed * SWAY_PER_SPEED, -SWAY_MAX, SWAY_MAX);
+    const target = held ? pushed + SWAY_IDLE * Math.sin(this.time * 2.3) : 0;
+    this.swaySpeed += (SWAY_STIFFNESS * (target - this.sway) - SWAY_DAMPING * this.swaySpeed) * delta;
+    this.sway += this.swaySpeed * delta;
+
+    const root = this.dog.root;
+    // La nuca en coordenadas del propio perro: no depende de dónde esté colocado ahora.
+    root.worldToLocal(this.dog.napePosition(nape));
+    // Primero baja la mano y después lo levanta.
+    base.set(0, CARRY_LIFT * THREE.MathUtils.smoothstep(this.carry, 0.3, 1), 0);
+    yawTurn.setFromAxisAngle(UP, this.yaw);
+    swayTurn.setFromAxisAngle(TOWARD_CAMERA, this.sway);
+    pivot.copy(nape).applyQuaternion(yawTurn).add(base);
+    root.quaternion.copy(swayTurn).multiply(yawTurn);
+    root.position.copy(base).sub(pivot).applyQuaternion(swayTurn).add(pivot);
+
+    this.hand.place(pivot, this.sway, this.grip);
+  }
+
   private wagTarget(): number {
     if (this.petLevel > 0.1 && !this.asleep) return 0.9;
     switch (this.activity) {
       case 'happy':
       case 'eat':
         return 1;
+      case 'held':
+        // Va encantado: que se note.
+        return 0.9;
       case 'sleep':
       case 'sad':
-      case 'held':
       case 'fall':
         return 0;
       default:

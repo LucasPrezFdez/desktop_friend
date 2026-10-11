@@ -18,12 +18,13 @@ const sheet = resolve(root, 'tools/model/out/dog_sheet.png');
 const target = resolve(root, 'public/models/dog.glb');
 
 const EXPECTED_CLIPS = [
-  'Eat', 'Happy', 'Idle', 'IdleLook', 'Lie', 'LieDown', 'Run', 'Sad', 'Sit', 'SitDown', 'Sleep', 'Sniff', 'Walk',
+  'Carry', 'Eat', 'Happy', 'Idle', 'IdleLook', 'Lie', 'LieDown', 'Run', 'Sad', 'Sit', 'SitDown', 'Sleep', 'Sniff', 'Walk',
 ];
 const SHOTS = [
   'rest@three', 'rest@front', 'Sit:0.5@side', 'Sit:0.5@three',
   'Lie:0.5@side', 'Lie:0.5@three', 'Sleep:0.5@side', 'Sleep:0.5@three',
   'Happy:0.5@side', 'Sad:0.5@side', 'Walk:0.25@side', 'Eat:0.5@side',
+  'Carry:0@side', 'Carry:0.25@side', 'Carry:0.25@three', 'Carry:0.75@front',
 ].join(',');
 
 function runBlender(script, args) {

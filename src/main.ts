@@ -6,7 +6,7 @@ import { createDesktop } from './desktop';
 import { Dog } from './dog';
 import { Interaction } from './interaction';
 import { advance, canEat, catchUp, initialState, parseState, type PetState } from './needs';
-import { Bowl, createShadow } from './props';
+import { Bowl, createShadow, Hand } from './props';
 import { Stage } from './scene';
 import { Hud } from './ui';
 
@@ -25,7 +25,8 @@ async function main(): Promise<void> {
 
   const dog = await Dog.load();
   const bowl = new Bowl();
-  stage.scene.add(dog.root, bowl.group);
+  const hand = new Hand();
+  stage.scene.add(dog.root, bowl.group, hand.group);
 
   // Lo primero es ponerse al día con el tiempo que la app ha estado cerrada.
   const saved = parseState(await desktop.loadState<unknown>(STATE_KEY));
@@ -38,7 +39,7 @@ async function main(): Promise<void> {
     },
     () => stage.project(BODY_CENTER),
   );
-  const behavior = new Behavior(dog, desktop, stage, bowl, hud, start.needs);
+  const behavior = new Behavior(dog, desktop, stage, bowl, hand, hud, start.needs);
   window.addEventListener('resize', () => void behavior.relayout());
   await behavior.init(await desktop.loadState<number>(WINDOW_KEY));
 

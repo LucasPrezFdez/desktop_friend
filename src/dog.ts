@@ -5,7 +5,7 @@ import { createDogMaterials, PALETTE } from './blackFur';
 /** Clips que trae public/models/dog.glb (ver docs/decisiones/0010-construccion-del-modelo.md). */
 export type ClipName =
   | 'Idle' | 'IdleLook' | 'Sniff' | 'Walk' | 'Run' | 'Eat'
-  | 'SitDown' | 'Sit' | 'LieDown' | 'Lie' | 'Sleep' | 'Happy' | 'Sad';
+  | 'SitDown' | 'Sit' | 'LieDown' | 'Lie' | 'Sleep' | 'Happy' | 'Sad' | 'Carry';
 
 export interface PlayOptions {
   /** Segundos de fundido con el clip anterior. */
@@ -53,6 +53,7 @@ export class Dog {
   private readonly actions = new Map<ClipName, THREE.AnimationAction>();
   private readonly tail: THREE.Object3D[];
   private readonly head: THREE.Object3D;
+  private readonly nape: THREE.Object3D;
   /** Huesos que la app gira encima del clip, con el giro que les dejó el clip en el último fotograma. */
   private readonly layered: { bone: THREE.Object3D; fromClip: THREE.Quaternion }[];
   private readonly eyes: { material: THREE.MeshToonMaterial; open: THREE.Color }[];
@@ -93,6 +94,7 @@ export class Dog {
     };
     this.tail = TAIL_BONES.map(bone);
     this.head = bone('Head');
+    this.nape = bone('Nape');
     this.layered = [...this.tail, this.head].map((layeredBone) => ({
       bone: layeredBone,
       fromClip: layeredBone.quaternion.clone(),
@@ -160,6 +162,11 @@ export class Dog {
   /** Posición de la cabeza en la escena, para colocar corazones y bocadillos. */
   headPosition(target: THREE.Vector3): THREE.Vector3 {
     return this.head.getWorldPosition(target);
+  }
+
+  /** Posición de la nuca, sobre el collar: de ahí lo coge la mano. */
+  napePosition(target: THREE.Vector3): THREE.Vector3 {
+    return this.nape.getWorldPosition(target);
   }
 
   /** Onda que recorre la cola de la base a la punta. Se aplica encima del clip activo. */

@@ -189,9 +189,28 @@ def add_ring(bm, center, axis, side, front, radius_side, radius_front, width, th
     return faces
 
 
-def build_extras(armature, dog):
+def nape_point(section):
+    """Punto de la nuca, sobre la cara exterior del collar: de ahí lo coge la mano al levantarlo."""
+    center, _axis, _side, front, _radius_side, radius_front = section
+    return center - front * (radius_front + 0.06)
+
+
+def add_nape_bone(armature, point):
+    """Hueso sin malla que marca la nuca, para que la app sepa dónde está en cualquier pose."""
+    bpy.context.view_layer.objects.active = armature
+    bpy.ops.object.mode_set(mode="EDIT")
+    to_armature = armature.matrix_world.inverted()
+    bone = armature.data.edit_bones.new("Nape")
+    bone.head = to_armature @ point
+    bone.tail = to_armature @ (point + Vector((0.0, 0.0, 0.1)))
+    bone.parent = armature.data.edit_bones["Neck1"]
+    bone.use_deform = False
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def build_extras(armature, dog, section):
     """Collar, chapa y lengua como una malla aparte que luego se une a la del perro."""
-    center, axis, side, front, radius_side, radius_front = neck_section(armature, dog)
+    center, axis, side, front, radius_side, radius_front = section
     bm = bmesh.new()
     groups = {}  # nombre del hueso -> vértices
 
@@ -318,6 +337,7 @@ class Rig:
         self.pivots = {
             "shoulders": (rest("FrontUpperLeg.L") + rest("FrontUpperLeg.R")) / 2,
             "hips": (rest("BackLeg.L") + rest("BackLeg.R")) / 2,
+            "nape": rest("Nape"),
         }
         self.legs = []
         for upper, lower, foot in LEGS:
@@ -347,8 +367,12 @@ class Rig:
         pivot = self.position(bone).copy() if pivot is None else pivot
         self.transform(bone, Matrix.Translation(pivot) @ rotation @ Matrix.Translation(-pivot))
 
-    def apply(self, pose, pivot_name):
-        """Coloca el esqueleto en una pose y recalcula las patas para que los pies no se muevan."""
+    def apply(self, pose, pivot_name, hang=False):
+        """Coloca el esqueleto en una pose y recalcula las patas.
+
+        Normalmente los pies se quedan plantados donde estaban. Con `hang`, el perro está en el
+        aire y cada pie cuelga del arranque de su pata.
+        """
         for bone in self.bones:
             bone.matrix_basis = Matrix.Identity(4)
         update()
@@ -373,6 +397,10 @@ class Rig:
 
         for key, name in FEET.items():
             move = offset(key)
+            if hang:
+                leg = next(leg for leg in self.legs if leg["foot"] == name)
+                root = self.position(self.bones[leg["upper"]])
+                move += root + HANG[key] - self.position(self.bones[name])
             if move.length:
                 self.transform(self.bones[name], Matrix.Translation(move))
 
@@ -445,6 +473,24 @@ SAD = expand({
     "Tail1.pitch": 50.0, "Tail2.pitch": 25.0, "Tail3.pitch": 15.0,
 })
 
+# En brazos: colgado de la nuca, con el cuerpo inclinado y las patas sueltas.
+CARRY = expand({
+    "body.pitch": 35.0,
+    # El cuello se endereza para que mire al frente y no al cielo. Neck1 no se toca: lleva el collar.
+    "Neck2.pitch": -12.0, "Neck3.pitch": -12.0, "Head.pitch": -8.0,
+    "BackLeg.*.pitch": -20.0,
+    # Las patas caen con los dedos hacia abajo.
+    "IKFrontLeg.*.pitch": -35.0, "IKBackLeg.*.pitch": -25.0,
+})
+
+# Dónde cuelga cada pie respecto al arranque de su pata (hombro o rodilla), en unidades de mundo.
+HANG = {
+    "FL": Vector((0.0, -0.15, -1.0)),
+    "FR": Vector((0.0, -0.15, -1.0)),
+    "BL": Vector((0.0, 0.25, -1.25)),
+    "BR": Vector((0.0, 0.25, -1.25)),
+}
+
 HAPPY_CROUCH = {"body.dz": -0.10, "body.pitch": -3.0}
 HAPPY_HOP = {"body.dz": 0.12, "body.pitch": 10.0, "FL.dz": 0.30, "FR.dz": 0.30, "Head.pitch": 8.0}
 HAPPY_LAND = {"body.dz": -0.05}
@@ -455,6 +501,18 @@ def breathing(period, lift, nod):
         wave = math.sin(2 * math.pi * time / period)
         return {"body.dz": lift * wave, "Neck1.pitch": nod * wave}
     return overlay
+
+
+def paddle(time):
+    """Pataleo en el aire, como un cachorro al que levantan: las patas se alternan."""
+    swing = math.sin(2 * math.pi * time / 1.2)
+    lift = math.cos(2 * math.pi * time / 1.2)
+    return {
+        "FL.dy": 0.14 * swing, "FL.dz": 0.05 * lift,
+        "FR.dy": -0.14 * swing, "FR.dz": -0.05 * lift,
+        "BL.dy": -0.10 * swing, "BR.dy": 0.10 * swing,
+        "Head.roll": 4.0 * swing,
+    }
 
 
 def sad_sway(time):
@@ -472,6 +530,7 @@ CLIPS = [
         (0.0, STAND), (0.2, HAPPY_CROUCH), (0.4, HAPPY_HOP), (0.6, HAPPY_LAND), (0.8, STAND),
     ]},
     {"name": "Sad", "duration": 4.0, "pivot": "shoulders", "keys": [(0.0, SAD)], "overlay": sad_sway},
+    {"name": "Carry", "duration": 1.2, "pivot": "nape", "hang": True, "keys": [(0.0, CARRY)], "overlay": paddle},
 ]
 
 # Huesos cuya posición (no solo su giro) forma parte de la animación.
@@ -490,7 +549,7 @@ def bake_clip(rig, clip, fps):
         if overlay:
             for key, value in overlay(time).items():
                 pose[key] = pose.get(key, 0.0) + value
-        rig.apply(pose, clip["pivot"])
+        rig.apply(pose, clip["pivot"], clip.get("hang", False))
         samples.append(rig.snapshot())
         if os.environ.get("DOG_DEBUG") and frame == frames:
             for name in ("Back", "BackLeg.L", "BackUpperLeg.L", "BackLowerLeg.L", "IKBackLeg.L",
@@ -543,7 +602,9 @@ def main():
     armature, dog = clean_scene()
     clean_clips(armature)
     recolor(dog)
-    build_extras(armature, dog)
+    section = neck_section(armature, dog)
+    build_extras(armature, dog, section)
+    add_nape_bone(armature, nape_point(section))
 
     for bone in armature.pose.bones:
         bone.rotation_mode = "QUATERNION"

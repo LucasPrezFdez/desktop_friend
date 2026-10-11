@@ -79,3 +79,71 @@ export class Bowl {
     this.group.scale.setScalar(this.shown * bounce);
   }
 }
+
+/**
+ * Mano que coge al perro por el collar para llevarlo. Es un guante de dibujos animados que flota,
+ * sin brazo: tiene que verse como un juego, no como alguien agarrando a un animal.
+ * El origen del grupo es el punto de agarre; la mano queda por encima.
+ */
+/** El guante es grande respecto al perro, como en los dibujos: así se lee a tamaño real. */
+const HAND_SCALE = 1.3;
+
+export class Hand {
+  readonly group = new THREE.Group();
+
+  constructor() {
+    const glove = new THREE.MeshToonMaterial({ color: 0xfbfaf5 });
+    const stitch = new THREE.MeshToonMaterial({ color: 0x4a4a55 });
+    const add = (geometry: THREE.BufferGeometry, material: THREE.Material = glove): THREE.Mesh => {
+      const mesh = new THREE.Mesh(geometry, material);
+      this.group.add(mesh);
+      return mesh;
+    };
+
+    const palm = add(new THREE.SphereGeometry(1, 20, 14));
+    palm.scale.set(0.15, 0.125, 0.09);
+    palm.position.set(0, 0.16, 0.02);
+
+    // Tres dedos gordos que bajan por delante del collar y se cierran por debajo.
+    for (const x of [-0.09, 0, 0.09]) {
+      const knuckle = add(new THREE.CapsuleGeometry(0.044, 0.06, 6, 12));
+      knuckle.position.set(x, 0.05, 0.075);
+      knuckle.rotation.x = -0.3;
+      const tip = add(new THREE.CapsuleGeometry(0.04, 0.045, 6, 12));
+      tip.position.set(x, -0.025, 0.06);
+      tip.rotation.x = 0.9;
+    }
+
+    // El pulgar asoma por un lado.
+    const thumb = add(new THREE.CapsuleGeometry(0.046, 0.07, 6, 12));
+    thumb.position.set(-0.165, 0.09, 0.03);
+    thumb.rotation.z = -0.75;
+
+    // Puño abullonado, como el de un guante de dibujos.
+    const cuff = add(new THREE.TorusGeometry(0.1, 0.05, 10, 22));
+    cuff.rotation.x = Math.PI / 2;
+    cuff.position.set(0, 0.31, 0.01);
+
+    // Los tres pespuntes del dorso.
+    for (const x of [-0.055, 0, 0.055]) {
+      const dart = add(new THREE.CapsuleGeometry(0.008, 0.055, 4, 8), stitch);
+      dart.position.set(x, 0.2, 0.108);
+    }
+
+    this.group.visible = false;
+  }
+
+  /**
+   * Coloca la mano en el punto de agarre.
+   * @param presence 0 a 1: aparece desde arriba mientras crece.
+   * @param sway Ángulo del balanceo, en radianes.
+   */
+  place(grip: THREE.Vector3, sway: number, presence: number): void {
+    this.group.visible = presence > 0.02;
+    if (!this.group.visible) return;
+    // Un poco hacia la cámara para que el guante quede por delante del cuello.
+    this.group.position.set(grip.x, grip.y + (1 - presence) * 0.32, grip.z + 0.07);
+    this.group.rotation.z = sway;
+    this.group.scale.setScalar(presence * HAND_SCALE);
+  }
+}
