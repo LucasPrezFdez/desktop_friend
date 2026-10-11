@@ -9,3 +9,4 @@ Thumbs.db
 # Salidas intermedias del pipeline del modelo
 tools/model/out/
 *.blend1
+tools/verify/out/

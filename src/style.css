@@ -1,0 +1,38 @@
+:root {
+  color-scheme: light;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* La ventana es transparente: cualquier fondo aquí taparía el escritorio. */
+  background: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* Halo doble: el claro separa al perro negro de fondos oscuros y el oscuro de fondos claros. */
+  filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.85)) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.35));
+}
+
+#ui {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* En el navegador no hay escritorio detrás: un fondo permite ver el resultado. */
+body.browser {
+  background: linear-gradient(90deg, #f2efe9 0 50%, #1d2330 50% 100%);
+}
