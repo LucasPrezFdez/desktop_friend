@@ -59,6 +59,7 @@ Con `tools/verify/carry.mjs`, que da las órdenes sin tocar el ratón real y cap
 
 ## Incidencias
 - La primera pasada de la prueba dio resultados sin sentido: el perro ya estaba cogido antes de empezar. Lo más probable es que el usuario lo estuviera arrastrando con el ratón real en ese momento; no se ha confirmado. Repetida, salió bien.
+  - **Actualización:** volvió a ocurrir en la revisión 2 y se investigó. Con un espía puesto, en tres rondas nada soltó al perro por su cuenta; y en las dos capturas fallidas el perro aparecía cogido y balanceándose antes de que la prueba diera la orden de agarrar, cosa que solo produce un arrastre real. Era el usuario probándolo. No es un fallo de la app.
 - Una captura del escritorio real mostró al perro semitransparente. Repetida tres veces salió opaco siempre; se considera un artefacto de aquella captura.
 
 ## Qué no se ha probado
@@ -99,8 +100,8 @@ La primera versión estaba pensada para verse de perfil. Girar al perro de frent
 | Comprobación | Resultado |
 |---|---|
 | En brazos | Clip `Carry`, subido 0,70, cola al 0,90 |
-| Balanceo arrastrando a 500 px/s | 8,6° a un lado y 12,8° al otro |
-| Quieto en el aire | De 10,2° baja a 1,3° |
+| Balanceo arrastrando a 500 px/s | 8,6° a cada lado en la pasada de la captura (12,8° de máximo en otra) |
+| Quieto en el aire | De 6,7° baja a 2,1° (de 10,2° a 1,3° en otra pasada) |
 | Tras soltarlo | Contento, en el suelo, sin inclinación |
 | Con el ratón real | quieto, cogido, cae, contento, quieto; balanceo de 5,2°; mano oculta al final |
 

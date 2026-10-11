@@ -209,3 +209,6 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 126 | Recolocar el guante en diagonal junto al cuello | Inclinación y punto de agarre en `src/behavior.ts` | Se lee como una mano cogiendo el collar | Decisión 0017, revisión 2 |
 | 127 | Dejarlo claramente en el aire | Patas traseras algo más recogidas y altura de 0,45 a 0,70 | A unos 30 px del suelo | Decisión 0017, revisión 2 |
 | 128 | Verificar la versión nueva | `carry.mjs`, arrastre con el ratón real y capturas en claro y oscuro | Correcto; balanceo de 5,2° con el ratón real | Decisión 0017, revisión 2 |
+| 129 | Guardar la secuencia de la versión nueva | `carry.mjs` y commit `9221b67` | **Captura no válida**: la prueba volvió a encontrarse al perro ya cogido, como en la acción 115 | Decisión 0017, revisión 2 |
+| 130 | Averiguar qué lo soltaba | Tres rondas con un espía que anota quién llama a coger, soltar o traer, y los eventos reales de puntero | Nada lo suelta por su cuenta. En las dos capturas fallidas el perro estaba cogido y balanceándose antes de que la prueba diera la orden: era el usuario arrastrándolo con el ratón real | Decisión 0017, revisión 2 |
+| 131 | Repetir y sustituir la captura | `carry.mjs`; mosaico revisado | `mano-v2-secuencia.png` corregida: subido 0,70, balanceo de 8,6° a cada lado, de 6,7° a 2,1° al parar | Decisión 0017, revisión 2 |
