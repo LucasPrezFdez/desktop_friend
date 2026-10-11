@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  advance,
   canEat,
   catchUp,
   decay,
@@ -76,6 +77,20 @@ describe('catchUp (tiempo con la app cerrada)', () => {
     const after = catchUp(state(needs(60, 60, 60), 10 * HOUR), 5 * HOUR);
     expect(after.needs).toEqual(needs(60, 60, 60));
     expect(after.lastSeen).toBe(5 * HOUR);
+  });
+});
+
+describe('advance (app abierta)', () => {
+  it('un paso normal aplica el desgaste de estar despierto o dormido', () => {
+    expect(advance(needs(80, 80, 80), 0, 1000, false)).toEqual(decay(needs(80, 80, 80), 1000, false));
+    expect(advance(needs(80, 80, 40), 0, 1000, true)).toEqual(decay(needs(80, 80, 40), 1000, true));
+  });
+
+  it('tras una suspensión del equipo cuenta como app cerrada, no como horas despierto', () => {
+    const after = advance(needs(80, 80, 50), 0, 8 * HOUR, false);
+    expect(after).toEqual(catchUp(state(needs(80, 80, 50), 0), 8 * HOUR).needs);
+    // Despierto ocho horas habría quedado sin comida: 80 - 12 * 8 < 0.
+    expect(after.fullness).toBeGreaterThan(0);
   });
 });
 

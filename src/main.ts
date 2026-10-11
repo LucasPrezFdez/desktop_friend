@@ -4,7 +4,7 @@ import { ClickThrough } from './clickThrough';
 import { createDesktop } from './desktop';
 import { Dog } from './dog';
 import { Interaction } from './interaction';
-import { canEat, catchUp, decay, initialState, mood, parseState, type PetState } from './needs';
+import { advance, canEat, catchUp, initialState, mood, parseState, type PetState } from './needs';
 import { Bowl, createShadow } from './props';
 import { Stage } from './scene';
 import { Hud } from './ui';
@@ -32,6 +32,7 @@ async function main(): Promise<void> {
     if (behavior.feed()) void save();
   });
   const behavior = new Behavior(dog, desktop, stage, bowl, hud, start.needs);
+  window.addEventListener('resize', () => void behavior.relayout());
   await behavior.init(await desktop.loadState<number>(WINDOW_KEY));
 
   const save = async (): Promise<void> => {
@@ -69,7 +70,7 @@ async function main(): Promise<void> {
   let lastTick = Date.now();
   const tick = (): void => {
     const now = Date.now();
-    behavior.needs = decay(behavior.needs, now - lastTick, behavior.asleep);
+    behavior.needs = advance(behavior.needs, lastTick, now, behavior.asleep);
     lastTick = now;
     hud.setNeeds(behavior.needs, mood(behavior.needs), canEat(behavior.needs));
   };
@@ -87,7 +88,8 @@ async function main(): Promise<void> {
   // La ventana nace oculta y se muestra tras los primeros fotogramas: evita el destello blanco.
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      void desktop.show();
+      // Al mostrarse la ventana ya tiene su tamaño definitivo: se vuelve a apoyar en el suelo.
+      void desktop.show().then(() => behavior.relayout());
       void clickThrough.start();
     });
   });

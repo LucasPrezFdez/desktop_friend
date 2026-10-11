@@ -15,6 +15,8 @@ Las filas siguen el orden en que se hicieron las cosas. No llevan hora porque no
 | 15:14 | Primer GLB del perro negro generado |
 | 15:19 | Commit del hito 3 |
 | 15:27 | Tipos correctos y 24 pruebas en verde con la app completa |
+| 15:34 | Commit de los hitos 4, 5 y 6 |
+| 15:39 | Captura de la barra de tareas con la versión empaquetada ya corregida |
 
 ### Investigación y planificación (sin cambios en el equipo)
 
@@ -122,3 +124,22 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 66 | Bajar el encuadre | `lookAt` de la cámara de 1,0 a 1,2 | El perro pisa el borde de la barra de tareas | Decisión 0011 |
 | 67 | Generar el icono definitivo | Render de la cabeza recortado en círculo (opción `--round` de `preview.py`) y `npx tauri icon` | Cabeza del perro sobre círculo ámbar, visible en barras oscuras | |
 | 68 | Distinguir caricias en cabeza y lomo | `src/behavior.ts`, `src/interaction.ts` | Por distancia a la cabeza en pantalla, no con un rayo como preveía el plan | Decisión 0011 |
+| 69 | Probar la orden de la bandeja y la instancia única | Evento `pet-command` enviado con `cdp.mjs`; segundo lanzamiento del ejecutable | Come y la saciedad pasa de 30 a 65; la segunda instancia se cierra y la primera trae al perro a x = 2060 | Decisión 0013 |
+| 70 | Escribir el README | `README.md` | Uso, desarrollo, estructura y créditos | |
+
+### Hito 7: empaquetado y cierre
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 71 | Tratar la suspensión del equipo | `advance()` en `src/needs.ts` con dos pruebas | Un salto del reloj de más de un minuto cuenta como app cerrada; 26 pruebas en verde | Decisión 0011 |
+| 72 | Generar el instalador | `npm run tauri build` | NSIS de 2,38 MB; ejecutable de 9,8 MB | Decisión 0013 |
+| 73 | Probar la versión empaquetada | `clickthrough.ps1`, tres veces | Correcto | Decisión 0013 |
+| 74 | Medir el consumo | Primera medida a mano; después `tools/verify/usage.ps1` | 32,7 % de un núcleo recién arrancada; 15,5 % en reposo; 194 MB | Decisión 0013 |
+| 75 | Experimento sin el halo CSS | `cdp.mjs` cambiando el estilo en caliente | Sin diferencia (15,8 %): el halo se mantiene | Decisión 0013 |
+| 76 | Capturar la barra de tareas | Captura de la franja inferior | El perro pisaba la barra: la ventana estaba 39 px demasiado baja | Decisión 0013 |
+| 77 | Corregir la posición y ajustar fotogramas | `Behavior.relayout()`; 30, 20 o 10 fotogramas por segundo según la actividad | Ventana en y = 1052; consumo en reposo 12,8 % de un núcleo y 183 MB | Decisión 0013 |
+| 78 | Comprobar la barra de tareas despejada | Orden "traer aquí" y captura | Sin botón de la app; el icono tapado era de otra aplicación | Decisión 0013 |
+| 79 | Probar guardado y tiempo cerrada | Lectura de `pet.json`, ración por evento, cierre, `lastSeen` retrasado 3 horas y reapertura | Saciedad +35,0 al comer; tras reabrir −24,1 de saciedad, −15,0 de felicidad y energía al tope | Decisión 0013 |
+| 80 | Instalar la app | Instalador con `/S` | Código 0; instalada en `%LOCALAPPDATA%DesktopFriend` con acceso en el menú Inicio | Decisión 0013 |
+| 81 | Arrancar la versión instalada | Acceso del menú Inicio, `clickthrough.ps1` y captura | Correcto; queda en marcha | Decisión 0013 |
+| 82 | Documentar el cierre | Decisiones 0011 a 0013 y esta bitácora | | |

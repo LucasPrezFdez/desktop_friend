@@ -30,6 +30,7 @@ Tres valores de 0 a 100: **saciedad**, **felicidad** y **energía** (`src/needs.
 - Acariciar sube un punto de felicidad cada 120 px frotados. El primer valor (45 px) llenaba la felicidad en cinco segundos y se subió tras medirlo con el ratón real.
 - **La mascota no muere.** Con la app cerrada el tiempo cuenta como mucho 12 horas y las necesidades no bajan de 10.
 - Todo se calcula con marcas de tiempo, nunca contando fotogramas.
+- Si el equipo se suspende con la app abierta (un salto del reloj de más de un minuto), ese rato cuenta como app cerrada. Sin esto, ocho horas de suspensión se aplicarían como ocho horas despierto y el perro amanecería sin comida.
 - El estado se guarda cada 20 segundos, al dar de comer, al soltar al perro y al salir.
 
 ## Comportamiento

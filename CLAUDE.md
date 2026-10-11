@@ -8,6 +8,7 @@ Toda decisión y toda acción se documentan, en español, antes de cerrar el tra
 
 - **Decisiones**: un fichero nuevo en `docs/decisiones/NNNN-titulo.md` con fecha, contexto, opciones consideradas, decisión, consecuencias y fuentes. No se reescriben las decisiones antiguas: si una cambia, se añade otra que la sustituye y se enlazan.
 - **Acciones**: una fila nueva en `docs/bitacora.md` (qué se hizo, comando o fichero, resultado, referencia a la decisión o al commit).
+- **Horas**: en la bitácora solo se anotan horas comprobadas (salidas de herramientas, `git log`). No se estiman.
 - **Investigación**: `docs/investigacion.md` recoge los hechos y sus fuentes, marcando cada dato como verificado [V], inferido [I] o no verificado [NV].
 
 ## Convenciones
@@ -22,3 +23,5 @@ Toda decisión y toda acción se documentan, en español, antes de cerrar el tra
 - `npm run tauri dev`: app real.
 - `npx vitest run`: pruebas unitarias.
 - `npm run model`: regenera `public/models/dog.glb` con Blender.
+- `npm run tauri build`: instalador NSIS.
+- `tools/verify/`: verificación de la app en marcha (ver `docs/decisiones/0012-como-se-verifica.md`).

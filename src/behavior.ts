@@ -34,6 +34,11 @@ const HAPPY_SECONDS = 1.6;
 const WALK_SPEED = 95;
 /** Píxeles lógicos por segundo al cuadrado al soltarlo en el aire. */
 const GRAVITY = 2600;
+/** Fotogramas por segundo: los justos para cada actividad, porque la app está abierta todo el día. */
+const FPS_ACTIVE = 30;
+const FPS_CALM = 20;
+const FPS_ASLEEP = 10;
+const CALM: ReadonlySet<string> = new Set(['idle', 'sit', 'lie', 'sad']);
 /** Píxeles frotados por cada corazón. */
 const PIXELS_PER_HEART = 90;
 /** Radio en píxeles alrededor de la cabeza dentro del cual la caricia es "en la cabeza". */
@@ -64,6 +69,7 @@ export class Behavior {
   private windowSize: Point = { x: 0, y: 0 };
   private work: Rect = { x: 0, y: 0, width: 0, height: 0 };
   private targetX = 0;
+  private ready = false;
   private fallSpeed = 0;
 
   constructor(
@@ -82,7 +88,20 @@ export class Behavior {
     await this.measureDesktop();
     this.windowPosition = { x: this.clampX(savedX ?? this.homeX), y: this.floorY };
     await this.desktop.moveWindow(this.windowPosition);
+    this.ready = true;
     this.begin('idle');
+  }
+
+  /**
+   * Vuelve a apoyar la ventana en el suelo cuando cambia su tamaño. Hace falta porque al arrancar
+   * la ventana se mide antes de que Windows le quite la barra de título, y saldría demasiado baja.
+   */
+  async relayout(): Promise<void> {
+    if (!this.ready) return;
+    await this.measureDesktop();
+    if (this.activity === 'held' || this.activity === 'fall') return;
+    this.windowPosition = { x: this.clampX(this.windowPosition.x), y: this.floorY };
+    await this.desktop.moveWindow(this.windowPosition);
   }
 
   get asleep(): boolean {
@@ -122,6 +141,7 @@ export class Behavior {
     const head = this.headOnScreen();
     const onHead = !point || Math.hypot(point.x - head.x, point.y - head.y) < HEAD_RADIUS;
     this.petLevel = Math.max(this.petLevel, onHead ? 1 : 0.45);
+    this.stage.setFps(FPS_ACTIVE);
     this.heartMeter += pixels;
     if (this.heartMeter >= PIXELS_PER_HEART) {
       this.heartMeter = 0;
@@ -203,7 +223,7 @@ export class Behavior {
     this.clock = 0;
     this.phase = 0;
     this.dog.tongueOut = activity === 'happy';
-    this.stage.setFps(30);
+    this.stage.setFps(CALM.has(activity) ? FPS_CALM : FPS_ACTIVE);
 
     switch (activity) {
       case 'idle':
@@ -279,7 +299,7 @@ export class Behavior {
     this.phase = 1;
     this.dog.play('Sleep', { fade: 0.9 });
     // Dormido casi no se mueve: con menos fotogramas por segundo gasta menos.
-    this.stage.setFps(15);
+    this.stage.setFps(FPS_ASLEEP);
   }
 
   private next(): void {

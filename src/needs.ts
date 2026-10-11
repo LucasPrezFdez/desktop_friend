@@ -32,6 +32,8 @@ const OFFLINE = { fullness: -8, happiness: -5, energy: 10 };
 export const OFFLINE_CAP = 12 * HOUR;
 /** Suelo de las necesidades tras una ausencia. */
 export const OFFLINE_FLOOR = 10;
+/** Un salto del reloj mayor que este entre dos pasos significa que el equipo estuvo suspendido. */
+export const SUSPEND_GAP = 60_000;
 
 export const FEED_AMOUNT = 35;
 /** Por encima de esta saciedad el perro no quiere comer más. */
@@ -58,6 +60,17 @@ export function decay(needs: Needs, elapsedMs: number, asleep: boolean): Needs {
     happiness: clamp(needs.happiness + rate.happiness * hours),
     energy: clamp(needs.energy + rate.energy * hours),
   };
+}
+
+/**
+ * Avanza las necesidades con la app abierta. Si entre un paso y el siguiente ha pasado mucho
+ * tiempo, el equipo estuvo suspendido: ese rato cuenta como app cerrada, no como horas despierto.
+ */
+export function advance(needs: Needs, lastTick: number, now: number, asleep: boolean): Needs {
+  if (now - lastTick > SUSPEND_GAP) {
+    return catchUp({ version: 1, needs, lastSeen: lastTick }, now).needs;
+  }
+  return decay(needs, now - lastTick, asleep);
 }
 
 /** Aplica el tiempo que la app ha estado cerrada. Un reloj atrasado (tiempo negativo) no cambia nada. */
