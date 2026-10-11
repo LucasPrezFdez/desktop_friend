@@ -1,10 +1,11 @@
+import { Vector3 } from 'three';
 import { Behavior } from './behavior';
 import { createLights } from './blackFur';
 import { ClickThrough } from './clickThrough';
 import { createDesktop } from './desktop';
 import { Dog } from './dog';
 import { Interaction } from './interaction';
-import { advance, canEat, catchUp, initialState, mood, parseState, type PetState } from './needs';
+import { advance, canEat, catchUp, initialState, parseState, type PetState } from './needs';
 import { Bowl, createShadow } from './props';
 import { Stage } from './scene';
 import { Hud } from './ui';
@@ -14,6 +15,8 @@ const WINDOW_KEY = 'windowX';
 const SAVE_EVERY_MS = 20_000;
 // Por encima de esta opacidad el píxel bajo el cursor es perro (o cuenco), no sombra ni borde.
 const SOLID_ALPHA = 128;
+// Centro del cuerpo del perro en la escena: de ahí salen los círculos de estado.
+const BODY_CENTER = new Vector3(0, 0.62, 0);
 
 async function main(): Promise<void> {
   const desktop = createDesktop();
@@ -28,9 +31,13 @@ async function main(): Promise<void> {
   const saved = parseState(await desktop.loadState<unknown>(STATE_KEY));
   const start = saved ? catchUp(saved, Date.now()) : initialState(Date.now());
 
-  const hud = new Hud(document.querySelector<HTMLElement>('#ui')!, () => {
-    if (behavior.feed()) void save();
-  });
+  const hud = new Hud(
+    document.querySelector<HTMLElement>('#ui')!,
+    () => {
+      if (behavior.feed()) void save();
+    },
+    () => stage.project(BODY_CENTER),
+  );
   const behavior = new Behavior(dog, desktop, stage, bowl, hud, start.needs);
   window.addEventListener('resize', () => void behavior.relayout());
   await behavior.init(await desktop.loadState<number>(WINDOW_KEY));
@@ -72,7 +79,7 @@ async function main(): Promise<void> {
     const now = Date.now();
     behavior.needs = advance(behavior.needs, lastTick, now, behavior.asleep);
     lastTick = now;
-    hud.setNeeds(behavior.needs, mood(behavior.needs), canEat(behavior.needs));
+    hud.setNeeds(behavior.needs, canEat(behavior.needs));
   };
   tick();
   window.setInterval(tick, 1000);

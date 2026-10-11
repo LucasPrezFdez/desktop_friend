@@ -167,3 +167,15 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 94 | Aplicar el arreglo | `src/dog.ts`: los huesos girados por la app vuelven al giro del clip antes de que actúe el mezclador | 11 líneas añadidas, único cambio en el código de la app. Un primer intento de edición por script falló por los finales de línea de Windows, sin modificar nada | Decisión 0015 |
 | 95 | Verificar el arreglo | La misma prueba, con capturas, y pasadas de 6 y 12 s | 12° de máximo y 0,0° de residuo sentado y tumbado; de pie sin cambios; 26 pruebas en verde | Decisión 0015 |
 | 96 | Actualizar la app instalada | `npm run installer`, instalación con `/S` y arranque desde el menú Inicio | Instalador y ejecutable instalado de las 16:01; app en marcha | Decisión 0015 |
+
+### Propuesta: interfaz de círculos (rama `interfaz-circulos`)
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 97 | Crear la rama de trabajo | `git checkout -b interfaz-circulos` desde `desarrollo` | La versión instalada y las demás ramas no se tocan | Decisión 0016 |
+| 98 | Sustituir el panel por tres círculos | `src/ui.ts`, `src/style.css`, `src/main.ts` | Círculos con emoticono y anillo de nivel que salen del perro | Decisión 0016 |
+| 99 | Capturar la animación de apertura | App de desarrollo y `cdp.mjs`, seis fotogramas | Salida escalonada con rebote y llenado de los anillos | Decisión 0016 |
+| 100 | Probar el clic en el círculo de la comida | Clic con cursor virtual | Da de comer (saciedad de 40 a 75); lleno, avisa. Las esquinas de la caja capturaban el clic | Decisión 0016 |
+| 101 | Limitar la captura de clics al círculo | `Hud.isUiAt` comprueba la distancia al centro | Esquina de la caja: ya no captura | Decisión 0016 |
+| 102 | Capturar fondos y cierre | `cdp.mjs` y `screenshot.ps1` | Legible sobre claro, oscuro y el escritorio real | Decisión 0016 |
+| 103 | Guardar las capturas de la propuesta | `docs/capturas/` | Dos mosaicos | Decisión 0016 |
