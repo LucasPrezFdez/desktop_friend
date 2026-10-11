@@ -35,7 +35,13 @@ const WALK_SPEED = 95;
 /** Píxeles lógicos por segundo al cuadrado al soltarlo en el aire. */
 const GRAVITY = 2600;
 /** Cuánto sube el perro cuando la mano lo levanta, en unidades de la escena. */
-const CARRY_LIFT = 0.45;
+const CARRY_LIFT = 0.7;
+// La mano entra en diagonal desde un lado y agarra el collar por detrás del cuello. Encima de la
+// cabeza parecía un gorro; así se ve la palma junto al cuello, a la altura del collar.
+/** Dónde quedan las puntas de los dedos respecto a la nuca, vistas desde la cámara. */
+const HAND_GRIP = new THREE.Vector3(0.085, 0.04, -0.05);
+/** Inclinación de la mano, en radianes: los dedos apuntan hacia el cuello. */
+const HAND_TILT = -0.8;
 // Balanceo al llevarlo: un péndulo amortiguado que cuelga de la nuca. Tiene que ser leve.
 const SWAY_STIFFNESS = 38;
 const SWAY_DAMPING = 5;
@@ -63,6 +69,7 @@ const headWorld = new THREE.Vector3();
 const nape = new THREE.Vector3();
 const base = new THREE.Vector3();
 const pivot = new THREE.Vector3();
+const fingertips = new THREE.Vector3();
 const yawTurn = new THREE.Quaternion();
 const swayTurn = new THREE.Quaternion();
 
@@ -323,8 +330,8 @@ export class Behavior {
         this.dog.play('Happy', { fade: 0.15 });
         break;
       case 'held':
-        // Casi de perfil: es como mejor se ve que la mano lo lleva cogido por la nuca.
-        this.facing = this.side * 1.3;
+        // De frente, como un cachorro al que sostienen en alto de cara a ti.
+        this.facing = 0;
         this.dog.play('Carry', { fade: 0.2 });
         break;
       case 'fall':
@@ -501,7 +508,9 @@ export class Behavior {
     root.quaternion.copy(swayTurn).multiply(yawTurn);
     root.position.copy(base).sub(pivot).applyQuaternion(swayTurn).add(pivot);
 
-    this.hand.place(pivot, this.sway, this.grip);
+    // La mano gira con el perro alrededor de la nuca.
+    fingertips.copy(HAND_GRIP).applyQuaternion(swayTurn).add(pivot);
+    this.hand.place(fingertips, this.sway + HAND_TILT, this.grip);
   }
 
   private wagTarget(): number {

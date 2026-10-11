@@ -1,7 +1,7 @@
 # 0017. Propuesta: una mano coge al perro del collar para llevarlo
 
 - **Fecha:** 2026-10-11
-- **Estado:** propuesta, en revisión por el usuario (rama `mano-al-arrastrar`)
+- **Estado:** propuesta, en revisión por el usuario (rama `mano-al-arrastrar`). Segunda versión tras sus retoques: ver "Revisión 2" al final, que sustituye a lo descrito antes sobre la pose, la orientación y el guante
 - **Decide:** el usuario pide el efecto; el diseño lo propone el agente
 
 ## Lo que pidió el usuario
@@ -67,3 +67,45 @@ Con `tools/verify/carry.mjs`, que da las órdenes sin tocar el ratón real y cap
 
 ## Pendiente de la opinión del usuario
 Si resulta simpático o no es un juicio suyo. Cosas fáciles de retocar: tamaño y color del guante, altura, cuánto se balancea, la pose en el aire y si debe añadirse algún gesto más de alegría.
+
+## Revisión 2: retoques pedidos por el usuario
+Al ver la primera versión, el usuario dijo que le gustaba con retoques:
+
+1. El guante tiene que ser **más pequeño**.
+2. El perro tiene que estar **de frente, con las patas colgando**, mientras se le mueve.
+
+### Qué implicaba
+La primera versión estaba pensada para verse de perfil. Girar al perro de frente sin más no servía, por dos motivos comprobados con capturas:
+- La pose, de frente, parecía un perro de pie y no uno colgando.
+- La nuca queda detrás de la cabeza, así que el guante desaparecía tras ella.
+
+### Cambios
+| Aspecto | Primera versión | Ahora |
+|---|---|---|
+| Orientación al cogerlo | Casi de perfil | De frente a la cámara |
+| Pose `Carry` | Cuerpo inclinado 35°, pataleo hacia delante y atrás | Cuerpo casi vertical (62°) con la barriga hacia delante, cabeza mirando al frente, patas delanteras colgando flojas ante el pecho y traseras colgando algo abiertas. El pataleo pasa a ser un sube y baja alterno, que es lo que se aprecia de frente |
+| Tamaño del guante | 1,3 | 0,85 |
+| Posición del guante | En la nuca, visible de perfil | Entra en diagonal por un lado e inclinado; asoman la palma y el puño junto al cuello, a la altura del collar, y los dedos se pierden por detrás |
+| Altura | 0,45 | 0,70 |
+
+### Lo que se probó y se descartó
+| Intento | Por qué no |
+|---|---|
+| Guante en la nuca, con el perro de frente | La cabeza lo tapa casi entero |
+| Guante encima de la cabeza, con los dedos bajando por detrás (dos alturas) | **Parecía un gorro de cocinero**, y tocaba el borde superior de la ventana |
+| Guante en diagonal junto al cuello (elegido) | Se lee como una mano que coge el collar por detrás, que es lo que se pidió |
+
+### Verificación de esta versión
+| Comprobación | Resultado |
+|---|---|
+| En brazos | Clip `Carry`, subido 0,70, cola al 0,90 |
+| Balanceo arrastrando a 500 px/s | 8,6° a un lado y 12,8° al otro |
+| Quieto en el aire | De 10,2° baja a 1,3° |
+| Tras soltarlo | Contento, en el suelo, sin inclinación |
+| Con el ratón real | quieto, cogido, cae, contento, quieto; balanceo de 5,2°; mano oculta al final |
+
+- `npx tsc --noEmit` sin errores, 26 pruebas en verde, `npm run model` sin errores de validación.
+- Capturas nuevas: `docs/capturas/mano-v2-secuencia.png` y `mano-v2-fondos-y-detalle.png`. Las `mano-*.png` anteriores son de la primera versión.
+
+### Límite conocido
+La ventana mide 340 px de alto y el perro colgando en vertical ocupa unos 270. Con la altura actual queda a unos 30 px del suelo y sus orejas a unos 28 px del borde superior: no se le puede levantar mucho más sin agrandar la ventana.

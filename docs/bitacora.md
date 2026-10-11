@@ -202,3 +202,10 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 119 | Probar con el ratón real | `input.ps1 -Action drag` vigilando el estado con el depurador | quieto, cogido, cae, contento; balanceo de 5,1° | Decisión 0017 |
 | 120 | Capturar sobre distintos fondos | `cdp.mjs` y `screenshot.ps1` | Legible en claro, oscuro y escritorio real. Una captura salió con el perro semitransparente; no se reprodujo en tres repeticiones | Decisión 0017 |
 | 121 | Guardar las capturas de la propuesta | `docs/capturas/mano-*.png` | Cuatro mosaicos | Decisión 0017 |
+| 122 | Preguntar al usuario si le gusta | Pregunta directa, como pidió | "Me gusta, con retoques": guante más pequeño y perro de frente con las patas colgando | Decisión 0017, revisión 2 |
+| 123 | Ver la pose anterior de frente | Capturas con tres giros | De frente parece de pie, y la cabeza tapa el guante | Decisión 0017, revisión 2 |
+| 124 | Rehacer la pose para verse de frente | `build_dog.py`: cuerpo casi vertical, patas colgando, pataleo en vertical; `npm run model` | Render revisado: se ve como un cachorro sostenido en alto | Decisión 0017, revisión 2 |
+| 125 | Girar al perro de frente y reducir el guante | `src/behavior.ts`, `src/props.ts` | Con el guante sobre la cabeza parecía un gorro de cocinero, en dos alturas | Decisión 0017, revisión 2 |
+| 126 | Recolocar el guante en diagonal junto al cuello | Inclinación y punto de agarre en `src/behavior.ts` | Se lee como una mano cogiendo el collar | Decisión 0017, revisión 2 |
+| 127 | Dejarlo claramente en el aire | Patas traseras algo más recogidas y altura de 0,45 a 0,70 | A unos 30 px del suelo | Decisión 0017, revisión 2 |
+| 128 | Verificar la versión nueva | `carry.mjs`, arrastre con el ratón real y capturas en claro y oscuro | Correcto; balanceo de 5,2° con el ratón real | Decisión 0017, revisión 2 |

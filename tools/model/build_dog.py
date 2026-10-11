@@ -473,22 +473,25 @@ SAD = expand({
     "Tail1.pitch": 50.0, "Tail2.pitch": 25.0, "Tail3.pitch": 15.0,
 })
 
-# En brazos: colgado de la nuca, con el cuerpo inclinado y las patas sueltas.
+# En brazos: colgado de la nuca y pensado para verse de frente, como un cachorro al que
+# sostienen en alto de cara a ti. Cuerpo casi vertical, barriga hacia delante y patas sueltas.
 CARRY = expand({
-    "body.pitch": 35.0,
-    # El cuello se endereza para que mire al frente y no al cielo. Neck1 no se toca: lleva el collar.
-    "Neck2.pitch": -12.0, "Neck3.pitch": -12.0, "Head.pitch": -8.0,
-    "BackLeg.*.pitch": -20.0,
-    # Las patas caen con los dedos hacia abajo.
-    "IKFrontLeg.*.pitch": -35.0, "IKBackLeg.*.pitch": -25.0,
+    "body.pitch": 62.0,
+    # El cuello se dobla hacia delante para que mire al frente y no al cielo.
+    # Neck1 no se toca: lleva el collar.
+    "Neck2.pitch": -20.0, "Neck3.pitch": -20.0, "Head.pitch": -15.0,
+    "BackLeg.*.pitch": -35.0,
+    # Las patas caen flojas, con los dedos hacia abajo.
+    "IKFrontLeg.*.pitch": -50.0, "IKBackLeg.*.pitch": -35.0,
 })
 
 # Dónde cuelga cada pie respecto al arranque de su pata (hombro o rodilla), en unidades de mundo.
+# Las delanteras caen por delante del pecho y las traseras algo abiertas: de frente se ven las cuatro.
 HANG = {
-    "FL": Vector((0.0, -0.15, -1.0)),
-    "FR": Vector((0.0, -0.15, -1.0)),
-    "BL": Vector((0.0, 0.25, -1.25)),
-    "BR": Vector((0.0, 0.25, -1.25)),
+    "FL": Vector((0.07, -0.28, -0.95)),
+    "FR": Vector((-0.07, -0.28, -0.95)),
+    "BL": Vector((0.16, -0.05, -0.95)),
+    "BR": Vector((-0.16, -0.05, -0.95)),
 }
 
 HAPPY_CROUCH = {"body.dz": -0.10, "body.pitch": -3.0}
@@ -504,14 +507,19 @@ def breathing(period, lift, nod):
 
 
 def paddle(time):
-    """Pataleo en el aire, como un cachorro al que levantan: las patas se alternan."""
+    """Pataleo en el aire, como un cachorro al que levantan: las patas se alternan.
+
+    Visto de frente lo que se aprecia es el sube y baja y el vaivén lateral, así que el
+    movimiento va sobre todo en esos dos ejes.
+    """
     swing = math.sin(2 * math.pi * time / 1.2)
     lift = math.cos(2 * math.pi * time / 1.2)
     return {
-        "FL.dy": 0.14 * swing, "FL.dz": 0.05 * lift,
-        "FR.dy": -0.14 * swing, "FR.dz": -0.05 * lift,
-        "BL.dy": -0.10 * swing, "BR.dy": 0.10 * swing,
-        "Head.roll": 4.0 * swing,
+        "FL.dz": 0.10 * swing, "FL.dx": 0.03 * lift,
+        "FR.dz": -0.10 * swing, "FR.dx": 0.03 * lift,
+        "BL.dz": -0.12 * swing, "BL.dx": 0.05 * lift,
+        "BR.dz": 0.12 * swing, "BR.dx": 0.05 * lift,
+        "Head.roll": 5.0 * swing,
     }
 
 

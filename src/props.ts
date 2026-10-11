@@ -83,10 +83,10 @@ export class Bowl {
 /**
  * Mano que coge al perro por el collar para llevarlo. Es un guante de dibujos animados que flota,
  * sin brazo: tiene que verse como un juego, no como alguien agarrando a un animal.
- * El origen del grupo es el punto de agarre; la mano queda por encima.
+ * El origen del grupo son las puntas de los dedos; la mano queda por encima.
  */
-/** El guante es grande respecto al perro, como en los dibujos: así se lee a tamaño real. */
-const HAND_SCALE = 1.3;
+/** Tamaño del guante respecto a como está modelado. */
+const HAND_SCALE = 0.85;
 
 export class Hand {
   readonly group = new THREE.Group();
@@ -134,16 +134,16 @@ export class Hand {
   }
 
   /**
-   * Coloca la mano en el punto de agarre.
+   * Coloca la mano.
+   * @param fingertips Dónde quedan las puntas de los dedos.
+   * @param angle Inclinación de la mano, en radianes (0 es con los dedos hacia abajo).
    * @param presence 0 a 1: aparece desde arriba mientras crece.
-   * @param sway Ángulo del balanceo, en radianes.
    */
-  place(grip: THREE.Vector3, sway: number, presence: number): void {
+  place(fingertips: THREE.Vector3, angle: number, presence: number): void {
     this.group.visible = presence > 0.02;
     if (!this.group.visible) return;
-    // Un poco hacia la cámara para que el guante quede por delante del cuello.
-    this.group.position.set(grip.x, grip.y + (1 - presence) * 0.32, grip.z + 0.07);
-    this.group.rotation.z = sway;
+    this.group.position.set(fingertips.x, fingertips.y + (1 - presence) * 0.32, fingertips.z);
+    this.group.rotation.z = angle;
     this.group.scale.setScalar(presence * HAND_SCALE);
   }
 }
