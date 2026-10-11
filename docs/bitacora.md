@@ -49,6 +49,19 @@ Se hizo mientras compilaba Rust, porque no dependía de ello.
 | 22 | 15:08 | Renderizar y comparar los dos modelos | `blender -b -P tools/model/preview.py` | Elegido el Husky por su cola recta | Decisión 0009 |
 | 23 | 15:20 | Medir el esqueleto del Husky | Script temporal de Blender | Las patas dependen de huesos de control sueltos: hará falta resolver cinemática inversa en el script | Decisión 0009 |
 
+### Hito 3: modelo 3D del perro negro
+
+| Nº | Hora | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|---|
+| 38 | 15:45 | Escribir el script del modelo | `tools/model/build_dog.py` | Limpieza, recoloreado, collar, chapa, lengua y siete clips nuevos | Decisión 0010 |
+| 39 | 15:50 | Primera generación | `blender -b -P tools/model/build_dog.py` | GLB con 13 clips y 8 materiales a la primera; chapa en la nuca, lengua flotando y patas traseras mal plegadas | Decisión 0010 |
+| 40 | 15:55 | Añadir encuadre manual al render | Opción `--frame` en `preview.py` | Primer plano de la cabeza | |
+| 41 | 15:58 | Corregir chapa, lengua y plegado | Edición del script | Cabeza y sentado correctos; tumbado seguía mal | Decisión 0010 |
+| 42 | 16:02 | Diagnosticar el tumbado | Imprimir las posiciones de las articulaciones (`DOG_DEBUG=1`) | La armadura está girada 90° respecto al mundo: los desplazamientos iban por el eje equivocado | Decisión 0010 |
+| 43 | 16:06 | Rehacer el cálculo en coordenadas de mundo | Clase `Rig` del script | Las articulaciones coinciden con el cálculo a mano; todas las poses correctas | Decisión 0010 |
+| 44 | 16:10 | Automatizar | `tools/model/build.mjs` y `npm run model` | Construye, comprueba clips, valida, renderiza la hoja y copia a `public/models/dog.glb` | Decisión 0010 |
+| 45 | 16:12 | Validar | `gltf-transform validate` | Sin errores; un aviso heredado del original | Decisión 0010 |
+
 ### Hito 2: prototipo de ventana transparente
 
 | Nº | Hora | Acción | Cómo | Resultado | Referencia |

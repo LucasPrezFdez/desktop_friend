@@ -35,6 +35,8 @@ def parse_args():
     parser.add_argument("--size", type=int, default=320)
     parser.add_argument("--cols", type=int, default=4)
     parser.add_argument("--bg", default="0.62,0.66,0.72")
+    # Encuadre manual "x,y,z,tamaño" en unidades de mundo, para primeros planos.
+    parser.add_argument("--frame", default="")
     return parser.parse_args(argv)
 
 
@@ -152,6 +154,9 @@ def main():
     lo, hi = world_bounds(meshes)
     center = (lo + hi) / 2
     extent = max(hi - lo)
+    if args.frame:
+        x, y, z, extent = (float(v) for v in args.frame.split(","))
+        center = Vector((x, y, z))
     print(f"[preview] bbox min={tuple(round(v, 3) for v in lo)} max={tuple(round(v, 3) for v in hi)}")
     print(f"[preview] clips: {sorted(a.name for a in bpy.data.actions)}")
 
