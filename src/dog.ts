@@ -53,6 +53,8 @@ export class Dog {
   private readonly actions = new Map<ClipName, THREE.AnimationAction>();
   private readonly tail: THREE.Object3D[];
   private readonly head: THREE.Object3D;
+  /** Huesos que la app gira encima del clip, con el giro que les dejó el clip en el último fotograma. */
+  private readonly layered: { bone: THREE.Object3D; fromClip: THREE.Quaternion }[];
   private readonly eyes: { material: THREE.MeshToonMaterial; open: THREE.Color }[];
   private readonly tongue: THREE.Object3D | undefined;
   private readonly furColor = new THREE.Color(PALETTE.Fur);
@@ -91,6 +93,10 @@ export class Dog {
     };
     this.tail = TAIL_BONES.map(bone);
     this.head = bone('Head');
+    this.layered = [...this.tail, this.head].map((layeredBone) => ({
+      bone: layeredBone,
+      fromClip: layeredBone.quaternion.clone(),
+    }));
 
     this.mixer = new THREE.AnimationMixer(model);
     for (const clip of clips) {
@@ -139,7 +145,12 @@ export class Dog {
 
   update(deltaSeconds: number): void {
     this.time += deltaSeconds;
+    // El mezclador solo reescribe un hueso cuando su valor cambia. Si el clip lo deja quieto (la cabeza
+    // en Sit o Lie, por ejemplo), el hueso conservaría el giro añadido en el fotograma anterior y el de
+    // este se sumaría encima, deformando la cabeza y la cola. Por eso antes se devuelve al giro del clip.
+    for (const layer of this.layered) layer.bone.quaternion.copy(layer.fromClip);
     this.mixer.update(deltaSeconds);
+    for (const layer of this.layered) layer.fromClip.copy(layer.bone.quaternion);
     this.root.updateMatrixWorld(true);
     this.wagTail();
     this.enjoyPetting();

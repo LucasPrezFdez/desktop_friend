@@ -153,3 +153,17 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 85 | Preguntar al usuario ramas y modelos | Dos preguntas | Fusionar en `main` y subir todo, modelos incluidos | Decisión 0014 |
 | 86 | Fusionar `desarrollo` en `main` | `git merge --ff-only desarrollo` | Avance rápido, sin reescribir historial | Decisión 0014 |
 | 87 | Subir a GitHub | `git push -u origin main desarrollo` | Las dos ramas publicadas en https://github.com/LucasPrezFdez/desktop_friend con 78 ficheros versionados | Decisión 0014 |
+
+### Arreglo: cabeza deformada al acariciar
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 88 | Preparar la reproducción | Se cierra la app instalada y se arranca la de desarrollo con el puerto de depuración | Solo puede haber una instancia abierta | Decisión 0015 |
+| 89 | Revisar el mezclador de Three.js | Lectura de `PropertyMixer.apply` | Solo reescribe un hueso si su valor cambia: hipótesis de que el giro de la caricia se acumula | Decisión 0015 |
+| 90 | Escribir la prueba con cursor virtual | `tools/verify/pet-face.mjs` y `cdp-client.mjs` | Inyecta movimientos del ratón en la página y mide el giro de la cabeza, sin mover el ratón real | Decisión 0015 |
+| 91 | Reproducir el fallo | Prueba en sentado, tumbado y de pie, con capturas | 179° sentado y tumbado, con 29 a 37° de residuo; 18° y 0,2° de pie | Decisión 0015 |
+| 92 | Confirmar la causa | Comprobación de qué clips tienen fija la pista de la cabeza | Fija en `Sit`, `Lie`, `LieDown`, `Eat` y `Run`: coincide con dónde falla | Decisión 0015 |
+| 93 | Medir la cola antes de arreglar | Se añade la cola a la prueba | Queda entre 43 y 67° de su giro inicial: mismo fallo | Decisión 0015 |
+| 94 | Aplicar el arreglo | `src/dog.ts`: los huesos girados por la app vuelven al giro del clip antes de que actúe el mezclador | 11 líneas añadidas, único cambio en el código de la app. Un primer intento de edición por script falló por los finales de línea de Windows, sin modificar nada | Decisión 0015 |
+| 95 | Verificar el arreglo | La misma prueba, con capturas, y pasadas de 6 y 12 s | 12° de máximo y 0,0° de residuo sentado y tumbado; de pie sin cambios; 26 pruebas en verde | Decisión 0015 |
+| 96 | Actualizar la app instalada | `npm run installer`, instalación con `/S` y arranque desde el menú Inicio | Instalador y ejecutable instalado de las 16:01; app en marcha | Decisión 0015 |
