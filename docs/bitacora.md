@@ -149,3 +149,7 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
 | 83 | Dejar el instalador en la carpeta raíz | `tools/copy-installer.mjs` y el comando `npm run installer` (compila y copia) | `DesktopFriend_0.1.0_x64-setup.exe` en la raíz del proyecto. Lo pidió el usuario para no tener que buscarlo en `src-tauri/target`. No se versiona en git porque se genera | |
+| 84 | Diagnosticar por qué GitHub estaba vacío | `git remote -v`, `git branch -vv`, `git ls-remote` | El remoto estaba bien configurado, pero no se había hecho ningún `push`; el repositorio es público | Decisión 0014 |
+| 85 | Preguntar al usuario ramas y modelos | Dos preguntas | Fusionar en `main` y subir todo, modelos incluidos | Decisión 0014 |
+| 86 | Fusionar `desarrollo` en `main` | `git merge --ff-only desarrollo` | Avance rápido, sin reescribir historial | Decisión 0014 |
+| 87 | Subir a GitHub | `git push -u origin main desarrollo` | Las dos ramas publicadas en https://github.com/LucasPrezFdez/desktop_friend con 78 ficheros versionados | Decisión 0014 |
