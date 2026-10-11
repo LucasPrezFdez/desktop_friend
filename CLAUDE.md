@@ -23,5 +23,5 @@ Toda decisión y toda acción se documentan, en español, antes de cerrar el tra
 - `npm run tauri dev`: app real.
 - `npx vitest run`: pruebas unitarias.
 - `npm run model`: regenera `public/models/dog.glb` con Blender.
-- `npm run tauri build`: instalador NSIS.
+- `npm run installer`: compila y deja el instalador NSIS en la carpeta raíz.
 - `tools/verify/`: verificación de la app en marcha (ver `docs/decisiones/0012-como-se-verifica.md`).

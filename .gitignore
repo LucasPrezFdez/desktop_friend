@@ -10,3 +10,6 @@ Thumbs.db
 tools/model/out/
 *.blend1
 tools/verify/out/
+
+# Instalador copiado a la raíz por `npm run installer` (se genera, no se versiona)
+/*-setup.exe

@@ -143,3 +143,9 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 80 | Instalar la app | Instalador con `/S` | Código 0; instalada en `%LOCALAPPDATA%DesktopFriend` con acceso en el menú Inicio | Decisión 0013 |
 | 81 | Arrancar la versión instalada | Acceso del menú Inicio, `clickthrough.ps1` y captura | Correcto; queda en marcha | Decisión 0013 |
 | 82 | Documentar el cierre | Decisiones 0011 a 0013 y esta bitácora | | |
+
+### Después del cierre
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 83 | Dejar el instalador en la carpeta raíz | `tools/copy-installer.mjs` y el comando `npm run installer` (compila y copia) | `DesktopFriend_0.1.0_x64-setup.exe` en la raíz del proyecto. Lo pidió el usuario para no tener que buscarlo en `src-tauri/target`. No se versiona en git porque se genera | |

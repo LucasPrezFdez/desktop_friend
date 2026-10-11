@@ -19,7 +19,7 @@ Con el tiempo le entra hambre, se aburre y se cansa. Si tiene hambre o está tri
 
 ## Instalar
 
-Ejecuta el instalador que queda en `src-tauri/target/release/bundle/nsis/` después de compilar (ver abajo).
+Ejecuta `DesktopFriend_0.1.0_x64-setup.exe`, que está en la carpeta raíz del proyecto. Se vuelve a generar con `npm run installer`.
 
 ## Desarrollo
 
@@ -31,7 +31,7 @@ npm run tauri dev      # la app real, con recarga en caliente
 npm run dev            # solo el frontend, en el navegador (el escritorio se simula)
 npx vitest run         # pruebas unitarias
 npm run model          # regenera public/models/dog.glb con Blender
-npm run tauri build    # instalador NSIS
+npm run installer      # compila y deja el instalador en la carpeta raíz
 ```
 
 ### Estructura
