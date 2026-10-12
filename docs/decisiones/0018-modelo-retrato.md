@@ -1,7 +1,7 @@
 # 0018. Modelo nuevo: un retrato del perro del usuario, con collar lila
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta en su séptima versión (ver las revisiones 2 a 7 al final; la 7 añade las cejas canosas; la 6 cambia el alto y la inclinación del cráneo de la 4; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
+- **Estado:** propuesta en su octava versión (ver las revisiones 2 a 8 al final; la 8 rehace la forma de toda la cabeza y sustituye a lo dicho en la 4 sobre hocico y trufa y en la 6 sobre el alto del cráneo; la 7 añade las cejas canosas y queda guardada con la etiqueta `modelo-revision-7`; la 6 cambia el alto y la inclinación del cráneo de la 4; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
 - **Decide:** el usuario pide el cambio; el diseño lo propone el agente
 - **Relación con otras decisiones:** mantiene la 0005 y la 0009 (se sigue partiendo del Husky de Quaternius y de Blender en modo script) y sustituye, de la 0010, la tabla de colores y la lista de piezas añadidas. El resto de la 0010 (cinemática propia, poses en coordenadas de mundo, clips) sigue en vigor
 
@@ -403,3 +403,86 @@ Para colocar los pelos respecto a la abertura, la forma de la almendra y los eje
 
 ### Límite
 La cabeza del perro ocupa unos 70 píxeles de ancho en el escritorio, contando las orejas. A ese tamaño unos pocos pelos finos no pueden verse uno a uno; hacerlos más gruesos o más numerosos los acercaría a la línea que se pidió evitar. Si se quieren más visibles, se retoca `BROW_WIDTH` o se añaden pelos a `BROW_HAIRS`.
+
+## Revisión 8: la forma de la cabeza, estudiada otra vez sobre las fotos
+El usuario pidió **guardar el modelo** de la revisión 7 y, con las cuatro fotos adjuntas de nuevo, **estudiar la forma de la cabeza para que se parezca lo más posible**.
+
+### El modelo guardado
+La revisión 7 queda en la etiqueta de git `modelo-revision-7` (commit `c5e2406`). Para volver a ella: `git checkout modelo-revision-7 -- tools/model/build_dog.py public/models/dog.glb`.
+
+### Método
+1. Se recortó la cabeza de cada foto y se renderizó el modelo desde el mismo ángulo, una fila bajo la otra.
+2. Se midió sobre los recortes, **en separaciones entre ojos** en lugar de en anchos de cráneo: el ancho del cráneo no se ve en ninguna foto (lo tapan las orejas) y en la revisión 4 hubo que deducirlo; la separación entre ojos se mide directamente en las cuatro.
+3. Se midió la malla de la revisión 7 con un volcado de sus perfiles.
+
+### Diagnóstico
+La revisión 4 solo había dado forma al cráneo por detrás de los ojos. **La cara seguía siendo la del Husky**, escalada: un plano liso con los ojos pegados, sin stop ni arcos de cejas, y un hocico en forma de caja. Visto desde arriba, el cráneo redondo acababa en una pared recta a la altura de las cejas.
+
+| Medida (en separaciones entre ojos) | Fotos 1 / 2 / 3 / 4 | Revisión 7 | Revisión 8 |
+|---|---|---|---|
+| Ancho del hocico | 1,3 / 0,87 / 1,05 / 0,93 | 0,68 | 0,86 |
+| Ancho de la trufa | 0,57 / 0,41 / 0,48 / 0,41 | 0,34 | 0,42 |
+| De la coronilla a la línea de ojos | 0,75 / 0,81 / 1,13 / 1,06 | 0,57 a 0,63 | 0,67 a 0,73 |
+| De la línea de ojos al centro de la trufa | 0,47 / 0,67 / 0,80 / 0,86 | 0,49 a 0,71 | 0,49 a 0,71 |
+| Diámetro del ojo | 0,25 en las cuatro, redondo | 0,25 de ancho, 0,17 de alto | Sin cambios |
+
+La foto 1 es un primer plano y agranda hocico y trufa. Las cifras del modelo están tomadas en renders desde los ángulos estimados de las fotos 1 a 3; las de la revisión 8 son anteriores a los dos últimos retoques (hocico un 1,5 % más ancho, borde de las canas) y son aproximadas, medidas a ojo sobre el mosaico.
+
+### Opciones consideradas
+| Opción | A favor | En contra |
+|---|---|---|
+| Seguir retocando parámetros de la cara del Husky | Poco código | Es lo que se hizo en las revisiones 2 a 6; el stop, las cejas y un hocico redondeado no salen de escalar una cara plana |
+| Modelar la cabeza a mano o importar otra malla | Control total | Rompe la regla de generar el modelo por script; habría que volver a pesar la malla sobre el esqueleto |
+| **Describir la cabeza como volúmenes redondeados fundidos y llevar la malla del Husky a esa superficie** | La forma queda escrita en una docena de medidas; la malla conserva sus pesos y los clips siguen valiendo | El script tarda algo más; la superficie es aproximada |
+
+### Decisión (`tools/model/build_dog.py`)
+La cabeza es la superficie de `head_field`: la unión suavizada de estos volúmenes.
+
+| Volumen | Qué aporta |
+|---|---|
+| Cráneo (el elipsoide de las revisiones 4 y 6) | La bóveda. Alto 0,42 en lugar de 0,35 |
+| Quijada (`JAW_*`) | La cara por debajo de los ojos y por detrás del hocico |
+| Hocico (`MUZZLE_BASE`, `MUZZLE_END`, `MUZZLE_WIDE`) | Un cono redondeado, un 32 % más ancho que alto, que se estrecha hacia la punta. Con la unión suavizada aparece el stop |
+| Belfos (`LIP_*`) | Dos almohadillas a los lados de la trufa |
+| Arcos de las cejas (`BROW_AT`, `BROW_RADII`, `BROW_OUT`) | Dos bultos sobre los ojos, con el surco de la frente en medio |
+| Trufa (`NOSE_*`) | Un elipsoide en la punta; es trufa lo que queda dentro de él |
+
+Cómo se aplica (`reshape`):
+1. Toda la cabeza se subdivide (antes solo el cráneo) hasta aristas de 0,07.
+2. El Husky se acerca primero a las proporciones del retrato, como antes, para que cada vértice caiga cerca de su sitio.
+3. Cada vértice se lleva a la superficie (`to_surface`) y se reparten por ella en cuatro pasadas, para que no queden triángulos afilados.
+4. Las canas del hocico se delimitan con tres planos (`MUZZLE_WHITE_*`) y **la malla se corta por ellos**: el borde sale recto en vez de en dientes de sierra. La caña queda negra hasta la trufa.
+
+Ojos, cejas canosas, orejas, collar y lengua se colocan como antes, buscando la piel, así que se adaptan solos. No hubo que tocar `src/`.
+
+`tools/model/preview.py` admite ahora una vista cualquiera como dirección `x/y/z`, para renderizar desde el ángulo de una foto.
+
+### Cambio respecto a la revisión 6
+En la revisión 6 el usuario pidió menos frente y la coronilla bajó a 0,39 anchos de cráneo sobre los ojos. Las fotos dan más: 0,50 en la foto 1 y, en separaciones entre ojos, entre 0,75 y 1,13 frente a 0,57–0,63 del modelo. En esta revisión **la coronilla vuelve a subir, a 0,45**, a medio camino. Se mantienen las otras dos correcciones de la revisión 6 (frente menos abultada que la nuca y cráneo inclinado 24° hacia atrás), que son las que quitaban la frente vertical. Si al usuario le vuelve a parecer frentón, basta bajar el alto de `SKULL_RADII`.
+
+### Lo que se probó y se descartó
+| Intento | Por qué no |
+|---|---|
+| Hocico de sección casi redonda (12 % más ancho que alto) | 0,68 separaciones entre ojos de ancho, igual que antes; las fotos piden de 0,9 a 1 |
+| Arcos de cejas que sobresalían 0,075 | Tapaban media abertura del ojo y le daban cara de enfado |
+| Canas del hocico delimitadas solo por dos planos inclinados | Formaban un aro gris por encima de la caña; se añadió el tercer plano |
+
+### Verificación de esta versión
+| Comprobación | Resultado |
+|---|---|
+| Fotos y renders desde el mismo ángulo, lado a lado (no se guarda: las fotos no están en el repositorio) | Bóveda, stop, hocico corto y ancho y trufa grande, como en las fotos |
+| Renders en seis vistas (`docs/capturas/nuevo-modelo-cabeza.png`) | De perfil, frente tendida, stop y hocico que se estrecha; desde arriba, cráneo redondo sin pared en las cejas |
+| App en desarrollo, primer plano claro, oscuro y con los ojos cerrados (`docs/capturas/nuevo-modelo-cara.png`) | Misma lectura que en los renders |
+| App en desarrollo, primer plano sobre fucsia | Sin fondo a la vista entre cráneo, orejas y mejillas |
+| App en desarrollo, lengua fuera y comiendo | La lengua cuelga bajo el hocico; el hocico llega al cuenco |
+| App en desarrollo, actividades (`docs/capturas/nuevo-modelo-app.png`) y `tools/verify/carry.mjs` | Reposo, sentado, tumbado, andando, comiendo y en brazos |
+| `npm run model` | 14 clips, sin errores de validación. 1 239 828 bytes, 13 051 vértices, 12 materiales |
+| `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
+
+`docs/capturas/nuevo-modelo-union-orejas.png` sigue siendo de la revisión 6.
+
+### Lo que no se ha hecho
+- **No ha medido un segundo agente**, como en la revisión 4: las medidas y el juicio son del agente principal.
+- **Los ojos no se han tocado.** En las fotos son redondos; en el modelo la abertura es una almendra un tercio más baja que ancha (revisión 5). Es la diferencia más visible que queda.
+- **Las orejas no se han tocado.** Vistas desde arriba siguen saliendo hacia los lados más que las del perro.
+- Sigue sin haber foto de perfil: el largo del hocico y la inclinación de la frente son una estimación.

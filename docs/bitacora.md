@@ -338,3 +338,18 @@ Hora comprobada: 18:40, pruebas unitarias en verde con esta versión.
 | 192 | Regenerar, validar y probar | `npm run model`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 146 064 bytes, 10 988 vértices, 12 materiales; 26 pruebas en verde | Decisión 0018, revisión 7 |
 | 193 | Rehacer las capturas | `docs/capturas/nuevo-modelo-cara.png`, `-cabeza.png` y `-poses.png` | `-app.png` y `-union-orejas.png` no se rehacen: siguen siendo de la revisión 6 | Decisión 0018, revisión 7 |
 | 194 | Dejar la app en marcha con esta versión | Recarga de la página por el puerto de depuración | La cámara y el fondo vuelven a su estado normal tras las capturas | |
+
+### Modelo nuevo, revisión 8: la forma de la cabeza
+
+Hora comprobada: 19:03, pruebas unitarias en verde con esta versión.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 195 | Guardar el modelo de la revisión 7 | `git tag -a modelo-revision-7` sobre el commit `c5e2406` | Etiqueta local; no se ha subido al remoto | Decisión 0018, revisión 8 |
+| 196 | Recortar la cabeza de las cuatro fotos y renderizar el modelo desde sus ángulos | Recortes fuera del repositorio; `tools/model/preview.py` admite ahora vistas `x/y/z` | Mosaico de fotos y renders, lado a lado | Decisión 0018, revisión 8 |
+| 197 | Medir fotos y malla | A ojo sobre los recortes, en separaciones entre ojos; volcado de perfiles de la malla con una copia desechable del script | La cara era la del Husky sin tocar; hocico 0,68 de ancho frente a 0,9–1 de las fotos | `investigacion.md`, "La cabeza del perro, medida" |
+| 198 | Rehacer la forma de la cabeza | `tools/model/build_dog.py`: `head_field` (cráneo, quijada, hocico, belfos, arcos de cejas y trufa fundidos), `to_surface`, reparto de vértices; toda la cabeza subdividida | Funciona al primer intento; tres rondas de ajuste de medidas (hocico más ancho, cejas menos salientes, cráneo más alto y hocico más hondo) | Decisión 0018, revisión 8 |
+| 199 | Limpiar el borde de las canas del hocico | La malla se corta por tres planos (`MUZZLE_WHITE_*`) | Lo que parecía un pico junto a la boca era el borde en dientes de sierra; ahora es recto y la caña queda negra hasta la trufa | Decisión 0018, revisión 8 |
+| 200 | Regenerar, validar y probar | `npm run model`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 239 828 bytes, 13 051 vértices, 12 materiales; 26 pruebas en verde | Decisión 0018, revisión 8 |
+| 201 | Probar en la app | `tools/verify/cdp.mjs` (actividades, primeros planos, fucsia, lengua, ojos cerrados, comer) y `tools/verify/carry.mjs` | Sin huecos; la lengua y el cuenco encajan; en brazos, balanceo máximo de 10,2° | Decisión 0018, revisión 8 |
+| 202 | Rehacer las capturas | `docs/capturas/nuevo-modelo-cabeza.png`, `-cara.png`, `-poses.png` y `-app.png` | `-union-orejas.png` no se rehace: sigue siendo de la revisión 6 | Decisión 0018, revisión 8 |

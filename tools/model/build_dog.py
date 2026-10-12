@@ -179,14 +179,14 @@ HEAD_SCALE = 1.32
 # Tamaño final de la cabeza respecto a las medidas de abajo, que son las de referencia: se aplica
 # al acabar de darle forma, así que encoge o agranda la cabeza entera sin cambiar sus proporciones.
 HEAD_SIZE = 0.90
-# Donde acaba la frente y empieza el hocico, ya con la cabeza agrandada.
+# Primer ajuste del Husky, antes de darle la forma del retrato (ver reshape): dónde acaba la
+# frente y empieza el hocico, ya con la cabeza agrandada, y cuánto se acorta, ensancha y ahonda.
 STOP_Y = -2.05
 MUZZLE_LENGTH = 0.83
 MUZZLE_WIDTH = 1.47
-# El hocico y la mandíbula también crecen hacia abajo, desde la altura de la caña.
 MUZZLE_DEPTH = 1.15
 MUZZLE_TOP_Z = 2.78
-# Medidas de la cabeza, sacadas de las fotos (docs/decisiones/0018, revisión 4) y expresadas
+# Medidas de la cabeza, sacadas de las fotos (docs/decisiones/0018, revisiones 4 y 8) y expresadas
 # respecto al ancho del cráneo. Son las de la forma final, la que queda después de squash().
 SKULL_WIDTH = 0.90
 # El cráneo, visto de frente, es un arco ancho y rebajado: casi plano arriba y con las esquinas
@@ -194,8 +194,9 @@ SKULL_WIDTH = 0.90
 # SKULL_SQUARENESS, más llenas las esquinas (2 sería una elipse).
 SKULL_CENTER = Vector((0.0, -1.78, 2.72))
 # Semiejes: medio ancho, fondo y alto. El fondo es distinto hacia delante (la frente) que hacia
-# atrás (la nuca): con una frente tan abultada como la nuca, el perro salía frentón.
-SKULL_RADII = Vector((SKULL_WIDTH / 2, 0.50, 0.35))
+# atrás (la nuca): con una frente tan abultada como la nuca, el perro salía frentón. Con el alto
+# de 0,42 la coronilla queda 0,45 anchos de cráneo por encima de los ojos (en las fotos, 0,50).
+SKULL_RADII = Vector((SKULL_WIDTH / 2, 0.50, 0.42))
 SKULL_FRONT = 0.34
 SKULL_SQUARENESS = 4.0
 # El cráneo va inclinado hacia atrás: la frente sube tendida desde los ojos y lo más alto de la
@@ -204,8 +205,41 @@ SKULL_TILT = math.radians(24)
 SKULL_TO_LOCAL = Matrix.Rotation(SKULL_TILT, 3, "X")
 # Altura de la coronilla sobre el centro del cráneo, ya con la inclinación.
 SKULL_TOP = math.hypot(SKULL_RADII.z * math.cos(SKULL_TILT), SKULL_RADII.y * math.sin(SKULL_TILT))
-# Arista más larga que se admite en el cráneo antes de darle forma, en unidades del Husky.
+# Arista más larga que se admite en la cabeza antes de darle forma, en unidades del Husky.
 SKULL_EDGE = 0.07
+# Pasadas para repartir los vértices por la superficie de la cabeza.
+HEAD_RELAX = 4
+# El resto de la cabeza son volúmenes redondeados que se funden con el cráneo (ver head_field):
+# la malla del Husky se lleva entera a esa superficie. Centros y radios en las mismas unidades.
+# Quijada: rellena la cara por debajo de los ojos y por detrás del hocico.
+JAW_CENTER = Vector((0.0, -1.80, 2.47))
+JAW_RADII = Vector((0.36, 0.30, 0.28))
+# Hocico: un cono redondeado que se estrecha del stop a la punta.
+MUZZLE_BASE = Vector((0.0, -2.00, 2.41))
+MUZZLE_BASE_RADIUS = 0.25
+MUZZLE_END = Vector((0.0, -2.32, 2.40))
+MUZZLE_END_RADIUS = 0.20
+# Es más ancho que alto.
+MUZZLE_WIDE = 1.32
+# Canas del hocico: es casi blanco por delante y por debajo de un plano inclinado que pasa por
+# MUZZLE_WHITE_AT, y gris hasta otro plano paralelo, más atrás. Al estar inclinados, la barbilla
+# es blanca hasta la comisura. Por encima de MUZZLE_WHITE_TOP no hay canas: la caña es negra
+# hasta la trufa.
+MUZZLE_WHITE_AT = Vector((0.0, -2.30, 2.42))
+MUZZLE_GREY_AT = Vector((0.0, -2.20, 2.42))
+MUZZLE_WHITE_TOWARDS = Vector((0.0, -1.0, -0.6)).normalized()
+MUZZLE_WHITE_TOP = 2.55
+# Belfos: dos almohadillas a los lados de la trufa.
+LIP_CENTER = Vector((0.13, -2.37, 2.34))
+LIP_RADIUS = 0.16
+# Arcos de las cejas: dos bultos sobre los ojos con un surco en medio. Cada uno se apoya en el
+# cráneo, en el punto más cercano a BROW_AT, y sobresale BROW_OUT.
+BROW_AT = Vector((0.20, -2.30, 3.00))
+BROW_RADII = Vector((0.15, 0.12, 0.12))
+BROW_OUT = 0.05
+# La trufa: lo que asoma de este elipsoide mide unos 0,31 anchos de cráneo de ancho.
+NOSE_CENTER = Vector((0.0, -2.475, 2.52))
+NOSE_RADII = Vector((0.16, 0.075, 0.10))
 # Los ojos quedan poco por encima del centro del cráneo; entre sus centros hay 0,67 anchos de cráneo.
 EYE_X = 0.67 * SKULL_WIDTH / 2
 EYE_Z = SKULL_CENTER.z + 0.025
@@ -236,9 +270,6 @@ BROW_WIDTH = 0.20
 # (medido en el render, con el grosor de la propia oreja, quedan a unos 0,15).
 EAR_SET_Y = -1.73
 EAR_SET_Z = SKULL_CENTER.z + SKULL_TOP - 0.22 * SKULL_WIDTH
-# La trufa mide 0,31 anchos de cráneo.
-NOSE_WIDTH = 0.31 * SKULL_WIDTH
-NOSE_STRETCH = 1.3
 BELLY_DROP = 0.25
 # El perro retratado es pequeño y el Husky es alto de patas. Al final se aplasta el modelo entero
 # en vertical (ver squash()): las patas se acortan y, como el aplastamiento afecta por igual a la
@@ -279,6 +310,86 @@ def skull_reach(rel):
     section = (abs(local.x / SKULL_RADII.x) ** n + abs(local.z / SKULL_RADII.z) ** n) ** (2 / n)
     depth = SKULL_FRONT if local.y < 0 else SKULL_RADII.y
     return math.sqrt(section + (local.y / depth) ** 2)
+
+
+def head_measure(point):
+    """Lo contrario de head_point: de la malla terminada a las medidas de la cabeza."""
+    p = HEAD_PIVOT + (point - HEAD_PIVOT) / HEAD_SIZE
+    p.z = HEAD_PIVOT.z + (p.z - HEAD_PIVOT.z) * SQUASH
+    return p
+
+
+def smooth_min(a, b, k):
+    """El menor de dos, redondeando la unión en un ancho k: así se funden dos volúmenes."""
+    h = max(k - abs(a - b), 0.0) / k
+    return min(a, b) - h * h * k / 4
+
+
+def ellipsoid(p, center, radii):
+    """Distancia aproximada a un elipsoide: negativa dentro."""
+    rel = p - center
+    k0 = Vector((rel.x / radii.x, rel.y / radii.y, rel.z / radii.z)).length
+    k1 = Vector((rel.x / radii.x ** 2, rel.y / radii.y ** 2, rel.z / radii.z ** 2)).length
+    return k0 * (k0 - 1) / k1 if k1 > 1e-9 else -min(radii)
+
+
+def round_cone(p, a, b, radius_a, radius_b, wide=1.0):
+    """Distancia aproximada a un cono de puntas redondas, de a a b; `wide` lo ensancha en X."""
+    ab = b - a
+    rel = p - a
+    rel.x /= wide
+    t = max(0.0, min(1.0, rel.dot(ab) / ab.length_squared))
+    return (rel - ab * t).length - (radius_a + (radius_b - radius_a) * t)
+
+
+def cranium_field(p):
+    rel = p - SKULL_CENTER
+    reach = skull_reach(rel)
+    return rel.length * (1 - 1 / reach) if reach > 1e-6 else -SKULL_RADII.z
+
+
+def to_surface(field, p, steps=12):
+    """Lleva un punto a la superficie de un campo (donde vale 0), bajando por su pendiente."""
+    p = p.copy()
+    e = 2e-3
+    for _ in range(steps):
+        d = field(p)
+        if abs(d) < 1e-4:
+            break
+        slope = Vector((
+            field(p + Vector((e, 0, 0))) - field(p - Vector((e, 0, 0))),
+            field(p + Vector((0, e, 0))) - field(p - Vector((0, e, 0))),
+            field(p + Vector((0, 0, e))) - field(p - Vector((0, 0, e))),
+        )) / (2 * e)
+        if slope.length_squared < 1e-9:
+            break
+        p -= slope * (d / slope.length_squared)
+    return p
+
+
+def mirror_x(point, sign):
+    return Vector((point.x * sign, point.y, point.z))
+
+
+def brow_center(sign):
+    """Centro de un arco de ceja: hundido en el cráneo hasta que solo asome BROW_OUT."""
+    on_skull = to_surface(cranium_field, mirror_x(BROW_AT, sign))
+    inward = (SKULL_CENTER - on_skull).normalized()
+    return on_skull + inward * (BROW_RADII.y - BROW_OUT)
+
+
+BROW_CENTERS = [brow_center(sign) for sign in (1, -1)]
+
+
+def head_field(p):
+    """La forma de la cabeza: distancia aproximada a su superficie, negativa dentro."""
+    d = smooth_min(cranium_field(p), ellipsoid(p, JAW_CENTER, JAW_RADII), 0.12)
+    d = smooth_min(d, round_cone(p, MUZZLE_BASE, MUZZLE_END, MUZZLE_BASE_RADIUS, MUZZLE_END_RADIUS, MUZZLE_WIDE), 0.10)
+    for center in BROW_CENTERS:
+        d = smooth_min(d, ellipsoid(p, center, BROW_RADII), 0.04)
+    for sign in (1, -1):
+        d = smooth_min(d, (p - mirror_x(LIP_CENTER, sign)).length - LIP_RADIUS, 0.06)
+    return smooth_min(d, ellipsoid(p, NOSE_CENTER, NOSE_RADII), 0.03)
 
 
 def headness(point):
@@ -323,46 +434,54 @@ def reshape(dog):
     head_edges = [e for e in bm.edges if all(headness(v.co) > 0.05 for v in e.verts)]
     bmesh.ops.subdivide_edges(bm, edges=head_edges, cuts=1, use_grid_fill=True)
     bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])
-    # En el cráneo (por detrás y por encima de los ojos del pack) se sigue cortando toda arista
-    # larga. El relleno de las orejas deja triángulos enormes y, con pocos vértices, la curva del
-    # cráneo se quedaría en una línea recta de esquina a esquina.
+    # En la cabeza se sigue cortando toda arista larga. El relleno de las orejas deja triángulos
+    # enormes y, con pocos vértices, las curvas se quedarían en líneas rectas.
     for _ in range(6):
         long_edges = [
             e for e in bm.edges
-            if e.calc_length() > SKULL_EDGE
-            and all(headness(v.co) > 0.6 and v.co.y > -1.93 and v.co.z > 2.55 for v in e.verts)
+            if e.calc_length() > SKULL_EDGE and all(headness(v.co) > 0.6 for v in e.verts)
         ]
         if not long_edges:
             break
         bmesh.ops.subdivide_edges(bm, edges=long_edges, cuts=1, use_grid_fill=True)
         bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])
     # Reparte mejor los triángulos: los muy afilados se sombrean como rayas oscuras.
-    skull_faces = [
-        f for f in bm.faces if all(headness(v.co) > 0.6 and v.co.y > -1.93 and v.co.z > 2.55 for v in f.verts)
-    ]
+    skull_faces = [f for f in bm.faces if all(headness(v.co) > 0.6 for v in f.verts)]
     skull_edges = {e for f in skull_faces for e in f.edges if all(face in skull_faces for face in e.link_faces)}
     bmesh.ops.beautify_fill(bm, faces=skull_faces, edges=list(skull_edges))
 
+    # La cabeza, en dos pasos. Primero se acerca el Husky a las proporciones del retrato, para que
+    # cada vértice caiga cerca de donde le toca; después se lleva a la superficie de head_field.
+    heads, shaped = {}, {}
+    for vert in bm.verts:
+        head = headness(vert.co)
+        heads[vert] = head
+        if head <= 0:
+            continue
+        # Cabeza más grande en proporción al cuerpo, como en un perro pequeño.
+        p = HEAD_PIVOT + (vert.co - HEAD_PIVOT) * (1 + (HEAD_SCALE - 1) * head)
+        # Hocico más corto y más ancho.
+        muzzle = smoothstep(0.0, 0.22, STOP_Y - p.y)
+        if p.y < STOP_Y:
+            p.y = STOP_Y + (p.y - STOP_Y) * MUZZLE_LENGTH
+        p.x *= 1 + (MUZZLE_WIDTH - 1) * muzzle
+        p.z = MUZZLE_TOP_Z + (p.z - MUZZLE_TOP_Z) * (1 + (MUZZLE_DEPTH - 1) * muzzle)
+        shaped[vert] = p.lerp(to_surface(head_field, p), head)
+    # Los vértices se reparten por la superficie: amontonados dan triángulos afilados.
+    whole = [v for v in shaped if heads[v] >= 1.0]
+    for _ in range(HEAD_RELAX):
+        spread = {}
+        for vert in whole:
+            around = [shaped[e.other_vert(vert)] for e in vert.link_edges if e.other_vert(vert) in shaped]
+            middle = sum(around, Vector()) / len(around)
+            spread[vert] = to_surface(head_field, shaped[vert].lerp(middle, 0.5), steps=4)
+        shaped.update(spread)
+
     for vert in bm.verts:
         p = vert.co.copy()
-
-        # Cabeza más grande en proporción al cuerpo, como en un perro pequeño.
-        head = headness(p)
-        p = HEAD_PIVOT + (p - HEAD_PIVOT) * (1 + (HEAD_SCALE - 1) * head)
+        head = heads[vert]
         if head > 0:
-            # Hocico más corto y más ancho.
-            muzzle = smoothstep(0.0, 0.22, STOP_Y - p.y)
-            if p.y < STOP_Y:
-                p.y = STOP_Y + (p.y - STOP_Y) * MUZZLE_LENGTH
-            p.x *= 1 + (MUZZLE_WIDTH - 1) * muzzle
-            p.z = MUZZLE_TOP_Z + (p.z - MUZZLE_TOP_Z) * (1 + (MUZZLE_DEPTH - 1) * muzzle)
-            # Cráneo: todo lo que queda detrás de los ojos y por encima de las mejillas se lleva a la
-            # superficie del elipsoide. Así no queda ni el pico del Husky ni el hueco de sus orejas.
-            rel = p - SKULL_CENTER
-            reach = skull_reach(rel)
-            cranium = head * smoothstep(-0.20, -0.04, rel.z) * smoothstep(-0.02, 0.16, p.y - STOP_Y)
-            if reach > 1e-6:
-                p = p.lerp(SKULL_CENTER + rel / reach, cranium)
+            p = shaped[vert]
             p.z = lift(p.z, head)
             p = HEAD_PIVOT + (p - HEAD_PIVOT) * (1 + (HEAD_SIZE - 1) * head)
 
@@ -390,7 +509,6 @@ def reshape(dog):
     bm.normal_update()
     fur, light, nose = slot(dog, "Fur"), slot(dog, "FurLight"), slot(dog, "Nose")
     muzzle_slot, grey = slot(dog, "Muzzle"), slot(dog, "FurGrey")
-    old_eyes = (slot(dog, "PackEyeWhite"), slot(dog, "PackEyePupil"))
 
     # Los ojos van donde digan EYE_X y EYE_Z, sobre la piel: se busca lanzando un rayo desde delante.
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
@@ -403,35 +521,38 @@ def reshape(dog):
         if center is None:
             raise SystemExit("No se encontró la piel donde va el ojo")
         eyes[sign] = (center, normal)
-    eye_y = eyes[1][0].y
-    tip_y = min(v.co.y for f in bm.faces if f.material_index == nose for v in f.verts)
+
+    # Las canas del hocico acaban en planos. La malla se corta por ellos: si no, el borde de cada
+    # mancha sale en dientes de sierra.
+    def beyond(point, plane):
+        at, towards = plane
+        return (head_measure(point) - at).dot(towards) > 0
+
+    white, grey_band = (MUZZLE_WHITE_AT, MUZZLE_WHITE_TOWARDS), (MUZZLE_GREY_AT, MUZZLE_WHITE_TOWARDS)
+    below_bridge = (Vector((0.0, 0.0, MUZZLE_WHITE_TOP)), Vector((0.0, 0.0, -1.0)))
+    for at, towards in (white, grey_band, below_bridge):
+        head_faces = [f for f in bm.faces if all(headness(v.co) > 0.5 for v in f.verts)]
+        geom = list({*head_faces, *(e for f in head_faces for e in f.edges), *(v for f in head_faces for v in f.verts)})
+        # La normal del plano, pasada de las medidas de la cabeza a la malla estirada.
+        normal = Vector((towards.x, towards.y, towards.z * SQUASH)).normalized()
+        bmesh.ops.bisect_plane(bm, geom=geom, dist=1e-4, plane_co=head_point(*at), plane_no=normal)
+    bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])
+    bm.normal_update()
 
     for face in bm.faces:
         center = face.calc_center_median()
         if headness(center) < 0.5:
             continue
-        if face.material_index in old_eyes or (face.material_index == nose and center.y > (eye_y + tip_y) / 2):
-            face.material_index = fur  # ojos del pack y su contorno
-        if face.material_index == nose and abs(center.x) > NOSE_WIDTH * HEAD_SIZE / 2:
-            face.material_index = muzzle_slot  # la trufa del Husky es más ancha que la del retrato
-        if face.material_index == nose:
-            continue
-        # 0 a la altura de los ojos, 1 en la punta del hocico.
-        along = (eye_y - center.y) / (eye_y - tip_y)
-        bridge = face.normal.z > 0.55 and abs(center.x) < 0.11
-        chin = face.normal.z < -0.3
-        if along > 0.60 and not (bridge and along < 0.85) or chin and along > 0.25:
+        # La trufa es lo que queda dentro de su elipsoide; la del Husky y sus ojos se repintan.
+        if ellipsoid(head_measure(center), NOSE_CENTER, NOSE_RADII) < 0.012:
+            face.material_index = nose
+        elif beyond(center, white) and beyond(center, below_bridge):
             face.material_index = muzzle_slot
-        elif along > 0.36 and not bridge:
+        elif beyond(center, grey_band) and beyond(center, below_bridge):
             face.material_index = grey
         else:
             face.material_index = fur
 
-    # La trufa del retrato es más alta que la del Husky: se estira hacia abajo desde su borde de arriba.
-    nose_verts = {v for f in bm.faces if f.material_index == nose for v in f.verts}
-    nose_top = max(v.co.z for v in nose_verts)
-    for vert in nose_verts:
-        vert.co.z = nose_top - (nose_top - vert.co.z) * NOSE_STRETCH
     # Los triángulos casi sin área se sombrean como manchas oscuras.
     bmesh.ops.dissolve_degenerate(bm, dist=0.012, edges=[e for e in bm.edges if all(headness(v.co) > 0.3 for v in e.verts)])
     bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])

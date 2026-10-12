@@ -94,7 +94,8 @@ def setup_scene(size, bg):
 
 
 def aim_camera(camera, center, extent, view):
-    direction = VIEWS[view].normalized()
+    # Una vista que no está en la lista es una dirección "x/y/z" desde el modelo hacia la cámara.
+    direction = (VIEWS[view] if view in VIEWS else Vector([float(v) for v in view.split("/")])).normalized()
     camera.location = center + direction * extent * 4.0
     camera.rotation_euler = (-direction).to_track_quat("-Z", "Y").to_euler()
     camera.data.ortho_scale = extent * 1.5

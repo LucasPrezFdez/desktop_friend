@@ -248,6 +248,17 @@ Medido por un segundo agente sobre las cuatro fotos (1536 × 2048 píxeles), par
 - Ancho del hocico: de 0,60 a 0,67 en las fotos, unos 0,55 a 0,60 descontando la perspectiva. [I]
 - El largo del hocico y la inclinación de la frente no se pueden determinar con estas fotos. [NV]
 
+Medido por el agente principal sobre recortes de las mismas fotos, para la revisión 8. Todo en separaciones entre los centros de los ojos, que se miden directamente en las cuatro; valores de las fotos 1, 2, 3 y 4. Son medidas a ojo sobre los recortes, con un error de unas décimas.
+
+- Ancho del hocico: 1,3 / 0,87 / 1,05 / 0,93. La foto 1 es un primer plano y lo agranda. [V]
+- Ancho de la trufa: 0,57 / 0,41 / 0,48 / 0,41. [V]
+- Diámetro del ojo: 0,25 en las cuatro; la abertura es redonda. [V]
+- De la coronilla a la línea de ojos: 0,75 / 0,81 / 1,13 / 1,06. Crece cuanto más alta está la cámara, porque se suma el largo del cráneo. [V]
+- De la línea de ojos al centro de la trufa: 0,47 / 0,67 / 0,80 / 0,86. [V]
+- Con las proporciones del modelo, esas cuatro últimas cifras corresponden a una cámara unos 10°, 25°, 37° y 43° por encima del eje del hocico. [I]
+- Sobre cada ojo hay un abultamiento, con un surco en medio de la frente (fotos 1 y 3); el stop queda entre los ojos. [V]
+- La caña del hocico es negra hasta la trufa; las canas están a los lados de la trufa, en los labios y en la barbilla (fotos 2 y 3). [V]
+
 ## Cómo cambiar la malla sin romper los clips
 - Los clips guardan, para cada hueso, un giro respecto a su postura de reposo. Si un hueso solo se traslada en reposo, o se gira junto con su malla, los clips siguen valiendo. [V] Comprobado con las orejas (trasladadas y colgadas de otro hueso) y la cola (girada 38°).
 - Un escalado no uniforme del nodo raíz afecta por igual a la malla, al esqueleto y a los clips: los pies siguen coincidiendo con sus huesos de control. [V] Comprobado en la hoja de poses con suelo.
