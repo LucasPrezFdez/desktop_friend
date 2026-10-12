@@ -292,3 +292,17 @@ Horas comprobadas: 16:57 y 17:01, pruebas unitarias en verde con las dos última
 | 174 | Últimos retoques | Borde delantero de la oreja pegado a la mejilla; triángulos degenerados disueltos; trufa estirada; arranque de la oreja algo más bajo | Revisado en renders y en la app por el agente principal; sin cuarta medición | Decisión 0018, revisión 4 |
 | 175 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 153 836 bytes, 11 200 vértices; 26 pruebas en verde. Las pruebas le dieron de comer varias veces más | Decisión 0018, revisión 4 |
 | 176 | Rehacer las capturas | `docs/capturas/nuevo-modelo-*.png` | `nuevo-modelo-cabeza.png` pasa a ser la hoja de seis vistas | Decisión 0018, revisión 4 |
+
+### Modelo nuevo, revisión 5: cabeza más pequeña y ojos nuevos
+
+Hora comprobada: 17:16, pruebas unitarias en verde con esta versión.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 177 | Arrancar la app a petición del usuario | `npm run tauri dev` | La copia abierta a las 15:53 se había cerrado. El primer arranque terminó solo con código 0, sin error; el segundo quedó en marcha. Causa sin averiguar | |
+| 178 | Comprobar que el perro se ve en el escritorio | `tools/verify/screenshot.ps1` | Visible en el monitor principal, junto a la bandeja. Antes, en el segundo monitor, la captura de su zona salía negra | |
+| 179 | Encoger la cabeza un 10 % | `HEAD_SIZE` y `head_point` en `tools/model/build_dog.py` | Misma forma: el perfil del cráneo impreso no cambia | Decisión 0018, revisión 5 |
+| 180 | Rehacer los ojos | `Extras.eye`: globo abombado, abertura almendrada, iris marrón oscuro, pupila negra, dos brillos; material nuevo `EyeWhite` | Descartados un iris más claro y un aro de canas ancho | Decisión 0018, revisión 5 |
+| 181 | Adaptar la app | `src/blackFur.ts` (colores de los ojos), `src/dog.ts` (el parpadeo pinta también `EyeWhite`) | | Decisión 0018, revisión 5 |
+| 182 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 152 504 bytes, 11 106 vértices, 12 materiales; 26 pruebas en verde | Decisión 0018, revisión 5 |
+| 183 | Rehacer las capturas | `docs/capturas/nuevo-modelo-*.png` | `nuevo-modelo-cara.png` incluye ahora el ojo cerrado | Decisión 0018, revisión 5 |

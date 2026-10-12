@@ -51,9 +51,10 @@ COLORS = {
     # Canas: el hocico casi blanco y una franja gris de transición.
     "Muzzle": (0.450, 0.445, 0.435),
     "FurGrey": (0.100, 0.099, 0.110),
-    "EyeIris": (0.025, 0.011, 0.005),
-    # Pupila velada, azul grisáceo, como en las fotos.
-    "EyePupil": (0.145, 0.238, 0.392),
+    # Iris marrón oscuro y pupila negra; el blanco apenas asoma en las comisuras.
+    "EyeIris": (0.047, 0.018, 0.007),
+    "EyePupil": (0.003, 0.003, 0.004),
+    "EyeWhite": (0.560, 0.530, 0.480),
     "EyeShine": (0.900, 0.900, 0.900),
     "Collar": (0.462, 0.258, 0.807),
     "Tag": (0.900, 0.580, 0.080),
@@ -175,6 +176,9 @@ NECK_ORIGIN = Vector((0.0, -1.42, 2.16))
 NECK_AXIS = Vector((0.0, -0.575, 0.817))
 HEAD_PIVOT = Vector((0.0, -1.62, 2.48))
 HEAD_SCALE = 1.32
+# Tamaño final de la cabeza respecto a las medidas de abajo, que son las de referencia: se aplica
+# al acabar de darle forma, así que encoge o agranda la cabeza entera sin cambiar sus proporciones.
+HEAD_SIZE = 0.90
 # Donde acaba la frente y empieza el hocico, ya con la cabeza agrandada.
 STOP_Y = -2.05
 MUZZLE_LENGTH = 0.83
@@ -197,6 +201,12 @@ SKULL_EDGE = 0.07
 EYE_X = 0.67 * SKULL_WIDTH / 2
 EYE_Z = SKULL_CENTER.z + 0.025
 EYE_RADIUS = 0.17 * SKULL_WIDTH / 2
+# Dentro del ojo, en radios: hasta dónde llegan la pupila y el iris, y cuánto se abre la almendra
+# de los párpados hacia arriba y hacia abajo.
+EYE_PUPIL = 0.42
+EYE_IRIS = 0.82
+EYE_OPEN_UP = 0.62
+EYE_OPEN_DOWN = 0.72
 # Las orejas nacen en las esquinas de arriba, 0,22 anchos de cráneo por debajo de la coronilla
 # (medido en el render, con el grosor de la propia oreja, quedan a unos 0,15).
 EAR_SET_Y = -1.73
@@ -230,6 +240,11 @@ LEG_GROUPS = [
 def lift(z, amount=1.0):
     """Estira en vertical lo que squash() aplastará después, para que conserve su forma."""
     return HEAD_PIVOT.z + (z - HEAD_PIVOT.z) * (1 + (1 / SQUASH - 1) * amount)
+
+
+def head_point(x, y, z):
+    """Pasa un punto de las medidas de la cabeza a donde queda en la malla ya terminada."""
+    return HEAD_PIVOT + (Vector((x, y, lift(z))) - HEAD_PIVOT) * HEAD_SIZE
 
 
 def skull_reach(rel):
@@ -322,6 +337,7 @@ def reshape(dog):
             if reach > 1e-6:
                 p = p.lerp(SKULL_CENTER + rel / reach, cranium)
             p.z = lift(p.z, head)
+            p = HEAD_PIVOT + (p - HEAD_PIVOT) * (1 + (HEAD_SIZE - 1) * head)
 
         # Tronco más hondo y más ancho: el pelo de la barriga acorta las patas a la vista.
         torso = weight(vert, TORSO_BONES)
@@ -354,7 +370,9 @@ def reshape(dog):
     skin = bvhtree.BVHTree.FromBMesh(bm)
     eyes = {}
     for sign in (1, -1):
-        center, normal, _index, _distance = skin.ray_cast(Vector((sign * EYE_X, -5.0, lift(EYE_Z))), Vector((0.0, 1.0, 0.0)))
+        origin = head_point(sign * EYE_X, 0.0, EYE_Z)
+        origin.y = -5.0
+        center, normal, _index, _distance = skin.ray_cast(origin, Vector((0.0, 1.0, 0.0)))
         if center is None:
             raise SystemExit("No se encontró la piel donde va el ojo")
         eyes[sign] = (center, normal)
@@ -367,7 +385,7 @@ def reshape(dog):
             continue
         if face.material_index in old_eyes or (face.material_index == nose and center.y > (eye_y + tip_y) / 2):
             face.material_index = fur  # ojos del pack y su contorno
-        if face.material_index == nose and abs(center.x) > NOSE_WIDTH / 2:
+        if face.material_index == nose and abs(center.x) > NOSE_WIDTH * HEAD_SIZE / 2:
             face.material_index = muzzle_slot  # la trufa del Husky es más ancha que la del retrato
         if face.material_index == nose:
             continue
@@ -521,6 +539,7 @@ class Extras:
         self.slots = []
         self.weights = []  # (vértice, hueso, peso)
         self.outward = []  # (caras, dirección) de las piezas abiertas, para orientarlas a mano
+        self.smooth = set()  # caras que se sombrean lisas; el resto, planas
         self.points = world_vertices(dog)
         self.tree = kdtree.KDTree(len(self.points))
         for index, point in enumerate(self.points):
@@ -573,7 +592,7 @@ class Extras:
     def ear(self, attach, sign):
         """Oreja caída: una lámina con algo de grosor que sigue EAR_PATH. Devuelve dónde van sus huesos."""
         def mirrored(offset):
-            return Vector((offset[0] * sign, offset[1], offset[2] / SQUASH))
+            return Vector((offset[0] * sign, offset[1], offset[2] / SQUASH)) * HEAD_SIZE
 
         steps = 2
         path = catmull_rom([attach + mirrored(offset) for offset, _ in EAR_PATH], steps)
@@ -588,8 +607,8 @@ class Extras:
             back = Vector((0.0, 1.0, 0.0)).lerp(hanging, free).normalized()
             tangent = (path[min(i + 1, len(path) - 1)] - path[max(i - 1, 0)]).normalized()
             normal = tangent.cross(back).normalized() * sign  # hacia fuera
-            half = widths[i].x / 2
-            thickness = 0.09 * smoothstep(-0.10, 0.25, fraction)
+            half = widths[i].x * HEAD_SIZE / 2
+            thickness = 0.09 * HEAD_SIZE * smoothstep(-0.10, 0.25, fraction)
             # (posición, altura sobre la piel) de los cuatro vértices de la sección.
             section = [
                 (center - back * half, -0.02), (center + normal * thickness, thickness),
@@ -624,7 +643,7 @@ class Extras:
             row = rows[row_index]
             center = (row[0].co + row[2].co) / 2 + (row[1].co - row[3].co) * 0.3
             half = (row[2].co - row[0].co).length / 2
-            self.tuft(center + back * shift * half * 0.8, down + back * lean, length, back, 0.22, 0.04,
+            self.tuft(center + back * shift * half * 0.8, down + back * lean, length * HEAD_SIZE, back, 0.20, 0.04,
                       "FurLight", {f"Ear4{side}": 1.0})
 
         fractions = [i / (len(path) - 1) for i in range(len(path))]
@@ -650,18 +669,24 @@ class Extras:
                 return {f"{EAR_BONES[k]}{side}": 1 - u, f"{EAR_BONES[k + 1]}{side}": u}
         return {f"Ear4{side}": 1.0}
 
-    def eye(self, center, normal, radius, segments=12):
-        """Ojo grande y redondo: cerco negro, iris marrón, pupila velada y un brillo."""
+    def eye(self, center, normal, radius, segments=16):
+        """Ojo: un globo abombado (pupila negra, iris marrón oscuro y algo de blanco en las
+        comisuras) que asoma por una abertura almendrada entre los párpados."""
         up = Vector((0.0, 0.0, 1.0))
         up = (up - normal * up.dot(normal)).normalized()
         right = up.cross(normal)
         up = up / SQUASH  # para que siga redondo después de squash()
+        angles = [2 * math.pi * i / segments for i in range(segments)]
+        ball = 2.0 * radius
+        # El borde del globo queda hundido bajo los párpados; solo asoma su parte central.
+        sunk = math.sqrt(ball ** 2 - (1.1 * radius) ** 2) + 0.12 * radius
 
-        def ring(scale, height):
-            return [
-                self.bm.verts.new(center + (right * math.cos(a) + up * math.sin(a)) * radius * scale + normal * height)
-                for a in (2 * math.pi * i / segments for i in range(segments))
-            ]
+        def bulge(reach):
+            """Altura del globo a esa distancia de su centro."""
+            return math.sqrt(ball ** 2 - reach ** 2) - sunk
+
+        def at(angle, reach, height):
+            return center + (right * math.cos(angle) + up * math.sin(angle)) * reach + normal * height
 
         def band(inner, outer):
             return [
@@ -669,33 +694,55 @@ class Extras:
                 for i in range(segments)
             ]
 
-        skirt, rim, iris = ring(1.16, -0.06), ring(1.0, 0.0), ring(0.70, 0.010)
-        top = self.bm.verts.new(center + normal * 0.02)
-        pupil = [self.bm.faces.new((iris[i], iris[(i + 1) % segments], top)) for i in range(segments)]
-        lid, brown = band(rim, skirt), band(iris, rim)
-        # Canas alrededor del ojo: un aro pegado a la piel. Pintando las caras de la cabeza el borde
-        # salía en picos, como pestañas.
-        inner, outer = ring(1.10, 0.004), ring(1.42, 0.0)
-        for vert in outer:
-            on_skin, skin_normal, _index, _distance = self.skin.find_nearest(vert.co)
-            vert.co = on_skin + skin_normal * 0.006
-        halo = band(inner, outer)
-        self.paint(halo, "FurGrey")
-        self.bind([*inner, *outer], "Head")
-        self.outward.append((halo, normal))
-        spot = center + (right * 0.30 + up * 0.38) * radius + normal * 0.028
-        shine_verts = [
-            self.bm.verts.new(spot + (right * dx + up * dy) * radius * 0.2)
-            for dx, dy in ((1, 0), (0, 1), (-1, 0), (0, -1))
-        ]
-        shine = [self.bm.faces.new(shine_verts)]
-        self.paint(lid, "Nose")
-        self.paint(brown, "EyeIris")
+        def on_ball(scale):
+            return [self.bm.verts.new(at(a, radius * scale, bulge(radius * scale))) for a in angles]
+
+        pupil_ring, iris_ring, white_ring = on_ball(EYE_PUPIL), on_ball(EYE_IRIS), on_ball(1.1)
+        top = self.bm.verts.new(center + normal * bulge(0.0))
+        pupil = [self.bm.faces.new((pupil_ring[i], pupil_ring[(i + 1) % segments], top)) for i in range(segments)]
+        iris, white = band(pupil_ring, iris_ring), band(iris_ring, white_ring)
+
+        def opening(angle):
+            """Hasta dónde llega la abertura en esa dirección: una almendra, más cerrada por arriba."""
+            tall = EYE_OPEN_UP if math.sin(angle) > 0 else EYE_OPEN_DOWN
+            return radius / (abs(math.cos(angle)) ** 1.6 + abs(math.sin(angle) / tall) ** 1.6) ** (1 / 1.6)
+
+        # Párpados: del borde de la abertura, que se apoya en el globo, a la piel de alrededor.
+        edge, rim, outer = [], [], []
+        for angle in angles:
+            reach = opening(angle)
+            height = bulge(reach) + 0.04 * radius
+            edge.append(self.bm.verts.new(at(angle, reach, height)))
+            lid = at(angle, reach + 0.24 * radius, height * 0.5)
+            on_skin, skin_normal, _index, _distance = self.skin.find_nearest(lid)
+            rim.append(self.bm.verts.new(lid.lerp(on_skin + skin_normal * 0.012, 0.5)))
+            halo = at(angle, reach + 0.42 * radius, 0.0)
+            on_skin, skin_normal, _index, _distance = self.skin.find_nearest(halo)
+            outer.append(self.bm.verts.new(on_skin + skin_normal * 0.006))
+        lids, halo = band(edge, rim), band(rim, outer)
+
+        # Dos brillos: uno grande arriba y otro pequeño enfrente.
+        shine, shine_verts = [], []
+        for angle, reach, size in ((2.2, 0.36, 0.17), (-0.9, 0.30, 0.08)):
+            spot = at(angle, radius * reach, bulge(radius * reach) + 0.02 * radius)
+            verts = [
+                self.bm.verts.new(spot + (right * dx + up * dy) * radius * size)
+                for dx, dy in ((1, 0), (0, 1), (-1, 0), (0, -1))
+            ]
+            shine.append(self.bm.faces.new(verts))
+            shine_verts += verts
+
         self.paint(pupil, "EyePupil")
+        self.paint(iris, "EyeIris")
+        self.paint(white, "EyeWhite")
+        self.paint(lids, "Nose")
+        self.paint(halo, "FurGrey")
         self.paint(shine, "EyeShine")
-        self.bind([*skirt, *rim, *iris, top, *shine_verts], "Head")
+        self.bind([*pupil_ring, *iris_ring, *white_ring, top, *edge, *rim, *outer, *shine_verts], "Head")
+        # El globo se sombrea liso para que se vea redondo.
+        self.smooth.update([*pupil, *iris, *white])
         # Es una pieza abierta: el cálculo automático de normales podría dejarla del revés.
-        self.outward.append(([*lid, *brown, *pupil, *shine], normal))
+        self.outward.append(([*pupil, *iris, *white, *lids, *halo, *shine], normal))
 
     def join(self):
         bm = self.bm
@@ -706,7 +753,7 @@ class Extras:
                 if face.normal.dot(direction) < 0:
                     face.normal_flip()
         for face in bm.faces:
-            face.smooth = False
+            face.smooth = face in self.smooth
 
         mesh = bpy.data.meshes.new("DogExtras")
         bm.verts.index_update()
@@ -735,10 +782,11 @@ def report_skull(skin):
     def half_width(z):
         hits = []
         for step in range(15):
-            y = SKULL_CENTER.y - 0.35 + 0.05 * step
-            hit, _normal, _index, _distance = skin.ray_cast(Vector((3.0, y, lift(z))), Vector((-1.0, 0.0, 0.0)))
+            origin = head_point(0.0, SKULL_CENTER.y - 0.35 + 0.05 * step, z)
+            origin.x = 3.0
+            hit, _normal, _index, _distance = skin.ray_cast(origin, Vector((-1.0, 0.0, 0.0)))
             if hit is not None:
-                hits.append(hit.x)
+                hits.append(hit.x / HEAD_SIZE)
         return max(hits, default=0.0)
 
     crown = SKULL_CENTER.z + SKULL_RADII.z
@@ -801,13 +849,13 @@ def build_extras(armature, dog, section, eyes):
         eye_center, eye_normal = eyes[sign]
         # Mira un poco más al frente que el ojo del pack: de cara se le ven los dos ojos enteros.
         gaze = (eye_normal + Vector((0.0, -0.45, 0.0))).normalized()
-        extras.eye(eye_center, gaze, EYE_RADIUS)
+        extras.eye(eye_center, gaze, EYE_RADIUS * HEAD_SIZE)
 
         # La oreja arranca en la esquina de arriba del cráneo: se busca la piel lanzando un rayo
         # desde el costado.
-        attach, _normal, _index, _distance = extras.skin.ray_cast(
-            Vector((sign * 3.0, EAR_SET_Y, lift(EAR_SET_Z))), Vector((-sign, 0.0, 0.0))
-        )
+        origin = head_point(0.0, EAR_SET_Y, EAR_SET_Z)
+        origin.x = sign * 3.0
+        attach, _normal, _index, _distance = extras.skin.ray_cast(origin, Vector((-sign, 0.0, 0.0)))
         if attach is None:
             raise SystemExit("No se encontró el cráneo donde nace la oreja")
         ear_bones.update(extras.ear(attach, sign))

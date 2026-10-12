@@ -81,7 +81,7 @@ export class Dog {
     });
     this.tongue = tongue;
     this.tongueOut = false;
-    this.eyes = ['EyeIris', 'EyePupil', 'EyeShine'].map((name) => {
+    this.eyes = ['EyeIris', 'EyePupil', 'EyeWhite', 'EyeShine'].map((name) => {
       const material = materials.get(name)!;
       return { material, open: material.color.clone() };
     });

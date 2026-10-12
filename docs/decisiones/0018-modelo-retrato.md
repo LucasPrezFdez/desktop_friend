@@ -1,7 +1,7 @@
 # 0018. Modelo nuevo: un retrato del perro del usuario, con collar lila
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta en su cuarta versión (ver las revisiones 2, 3 y 4 al final; la 4 sustituye a lo dicho antes sobre el cráneo, los ojos, las orejas y la trufa), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
+- **Estado:** propuesta en su quinta versión (ver las revisiones 2 a 5 al final; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
 - **Decide:** el usuario pide el cambio; el diseño lo propone el agente
 - **Relación con otras decisiones:** mantiene la 0005 y la 0009 (se sigue partiendo del Husky de Quaternius y de Blender en modo script) y sustituye, de la 0010, la tabla de colores y la lista de piezas añadidas. El resto de la 0010 (cinemática propia, poses en coordenadas de mundo, clips) sigue en vigor
 
@@ -278,3 +278,45 @@ El script imprime al construir el perfil del cráneo en anchos de cráneo, para 
 - El perro tiene dos abultamientos de ceja y un surco en medio de la frente; el modelo tiene la frente lisa.
 - Vistas desde arriba, las orejas del modelo salen como alas rígidas; las del perro caen más pegadas.
 - El escalón de 0,03 anchos de cráneo donde la oreja se separa del cráneo, visto desde arriba y de frente.
+
+## Revisión 5: cabeza más pequeña y ojos nuevos
+Al ver la revisión 4 funcionando en la app, el usuario pidió tres cosas:
+
+1. La cabeza, **un poco más pequeña**.
+2. El azul de los ojos no queda bien: **la parte de fuera del ojo, marrón oscuro; la de dentro, negra**.
+3. Mejorar el diseño de los ojos, porque **no parecían realistas**.
+
+Con esto se retira la pupila velada azul de las revisiones anteriores. Era una interpretación del agente a partir de las fotos; el usuario no la había pedido.
+
+### Cabeza
+`HEAD_SIZE = 0,90`: la cabeza entera (cráneo, hocico, ojos y orejas) se encoge un 10 % alrededor de la base del cráneo, al terminar de darle forma. Las proporciones medidas en la revisión 4 no cambian: el perfil del cráneo que imprime el script es el mismo.
+
+### Ojos
+| | Antes | Ahora |
+|---|---|---|
+| Forma | Disco plano de anillos concéntricos | Globo abombado que asoma por una abertura almendrada, algo más cerrada por arriba |
+| Colores | Aro marrón fino y un disco azul grande | Iris marrón oscuro (`#3e2413`), pupila negra (`#0a0a0c`) y algo de blanco en las comisuras (`#c8c2b8`, material nuevo `EyeWhite`) |
+| Párpados | Un aro negro | Borde negro que se apoya en el globo y baja hasta la piel |
+| Brillo | Uno | Dos: uno grande arriba y otro pequeño enfrente |
+| Sombreado | Plano, como el resto | El globo se sombrea liso para que se vea redondo |
+| Canas | Aro gris de ancho fijo | Borde gris fino que sigue la forma de la almendra |
+
+En la app, el parpadeo pinta también `EyeWhite` (`src/dog.ts`).
+
+### Lo que se probó y se descartó
+| Intento | Por qué no |
+|---|---|
+| Iris marrón medio (`#4a2c17`) | El usuario lo pidió oscuro, y en las fotos lo es |
+| Aro de canas hasta 1,5 radios | A tamaño de la app se veía un aro gris con un punto dentro |
+
+### Verificación de esta versión
+| Comprobación | Resultado |
+|---|---|
+| Renders en seis vistas (`docs/capturas/nuevo-modelo-cabeza.png`) | Ojos almendrados con iris, pupila y brillos; cabeza más pequeña con la misma forma |
+| Primer plano en la app, fondo claro y oscuro, y con los ojos cerrados (`docs/capturas/nuevo-modelo-cara.png`) | El ojo se lee como un ojo de perro; cerrado queda oscuro con un borde gris fino |
+| App en desarrollo, seis ángulos sobre fucsia (`docs/capturas/nuevo-modelo-union-orejas.png`) | Sin huecos entre cráneo, orejas y mejillas |
+| App en desarrollo, actividades (`docs/capturas/nuevo-modelo-app.png`) | Reposo, sentado, tumbado, andando, comiendo (el morro sigue llegando al cuenco) y en brazos (la mano sigue viéndose) |
+| `npm run model` | 14 clips, sin errores de validación. 1 152 504 bytes, 11 106 vértices, 12 materiales |
+| `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
+
+Esta revisión no ha pasado por el segundo agente: el tamaño de la cabeza y el aspecto de los ojos son juicio del usuario.

@@ -10,9 +10,10 @@ export const PALETTE: Record<string, number> = {
   // Canas: el hocico casi blanco y una franja gris de transición, también alrededor de los ojos.
   Muzzle: 0xb9b6b1,
   FurGrey: 0x5c5b63,
-  EyeIris: 0x2c1a0e,
-  // Pupila velada, azul grisáceo.
-  EyePupil: 0x6a86a8,
+  // Iris marrón oscuro y pupila negra; el blanco apenas asoma en las comisuras.
+  EyeIris: 0x3e2413,
+  EyePupil: 0x0a0a0c,
+  EyeWhite: 0xc8c2b8,
   EyeShine: 0xffffff,
   Collar: 0xb58be8,
   Tag: 0xf4b830,
