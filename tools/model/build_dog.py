@@ -216,6 +216,22 @@ EYE_PUPIL = 0.42
 EYE_IRIS = 0.82
 EYE_OPEN_UP = 0.62
 EYE_OPEN_DOWN = 0.72
+# Cejas canosas: unos pocos pelos sueltos sobre cada ojo, no una línea. Cada pelo es (ángulo desde
+# la comisura de fuera, separación del borde de la abertura, largo, giro hacia la sien, material);
+# ángulos en grados y distancias en radios del ojo. Los dos ojos no llevan los mismos.
+BROW_HAIRS = {
+    1: (
+        (138, 0.55, 0.42, 62, "Muzzle"), (122, 0.95, 0.38, 60, "FurGrey"), (110, 0.50, 0.55, 55, "Muzzle"),
+        (98, 1.10, 0.40, 50, "Muzzle"), (86, 0.62, 0.50, 45, "FurGrey"), (72, 0.98, 0.36, 40, "Muzzle"),
+        (60, 0.58, 0.44, 30, "Muzzle"),
+    ),
+    -1: (
+        (134, 0.80, 0.40, 64, "Muzzle"), (120, 0.48, 0.50, 58, "Muzzle"), (106, 1.05, 0.36, 52, "FurGrey"),
+        (94, 0.60, 0.56, 48, "Muzzle"), (80, 1.12, 0.38, 42, "Muzzle"), (68, 0.66, 0.44, 36, "FurGrey"),
+        (54, 0.92, 0.34, 28, "Muzzle"),
+    ),
+}
+BROW_WIDTH = 0.20
 # Las orejas nacen en las esquinas de arriba, 0,22 anchos de cráneo por debajo de la coronilla
 # (medido en el render, con el grosor de la propia oreja, quedan a unos 0,15).
 EAR_SET_Y = -1.73
@@ -541,6 +557,20 @@ EAR_BONES_AT = (0.22, 0.45, 0.66, 0.85)
 EAR_ROOT = 0.12
 
 
+def eye_axes(normal):
+    """Ejes del plano del ojo: hacia la derecha y hacia arriba."""
+    up = Vector((0.0, 0.0, 1.0))
+    up = (up - normal * up.dot(normal)).normalized()
+    right = up.cross(normal)
+    return right, up / SQUASH  # para que siga redondo después de squash()
+
+
+def eye_opening(angle, radius):
+    """Hasta dónde llega la abertura del ojo en esa dirección: una almendra, más cerrada por arriba."""
+    tall = EYE_OPEN_UP if math.sin(angle) > 0 else EYE_OPEN_DOWN
+    return radius / (abs(math.cos(angle)) ** 1.6 + abs(math.sin(angle) / tall) ** 1.6) ** (1 / 1.6)
+
+
 class Extras:
     """Piezas añadidas, en una malla aparte que al final se une a la del perro."""
 
@@ -683,10 +713,7 @@ class Extras:
     def eye(self, center, normal, radius, segments=16):
         """Ojo: un globo abombado (pupila negra, iris marrón oscuro y algo de blanco en las
         comisuras) que asoma por una abertura almendrada entre los párpados."""
-        up = Vector((0.0, 0.0, 1.0))
-        up = (up - normal * up.dot(normal)).normalized()
-        right = up.cross(normal)
-        up = up / SQUASH  # para que siga redondo después de squash()
+        right, up = eye_axes(normal)
         angles = [2 * math.pi * i / segments for i in range(segments)]
         ball = 2.0 * radius
         # El borde del globo queda hundido bajo los párpados; solo asoma su parte central.
@@ -713,15 +740,10 @@ class Extras:
         pupil = [self.bm.faces.new((pupil_ring[i], pupil_ring[(i + 1) % segments], top)) for i in range(segments)]
         iris, white = band(pupil_ring, iris_ring), band(iris_ring, white_ring)
 
-        def opening(angle):
-            """Hasta dónde llega la abertura en esa dirección: una almendra, más cerrada por arriba."""
-            tall = EYE_OPEN_UP if math.sin(angle) > 0 else EYE_OPEN_DOWN
-            return radius / (abs(math.cos(angle)) ** 1.6 + abs(math.sin(angle) / tall) ** 1.6) ** (1 / 1.6)
-
         # Párpados: del borde de la abertura, que se apoya en el globo, a la piel de alrededor.
         edge, rim, outer = [], [], []
         for angle in angles:
-            reach = opening(angle)
+            reach = eye_opening(angle, radius)
             height = bulge(reach) + 0.04 * radius
             edge.append(self.bm.verts.new(at(angle, reach, height)))
             lid = at(angle, reach + 0.24 * radius, height * 0.5)
@@ -754,6 +776,32 @@ class Extras:
         self.smooth.update([*pupil, *iris, *white])
         # Es una pieza abierta: el cálculo automático de normales podría dejarla del revés.
         self.outward.append(([*pupil, *iris, *white, *lids, *halo, *shine], normal))
+
+    def brow(self, center, normal, radius, sign):
+        """Ceja canosa: unos pocos pelos sueltos, tendidos sobre la piel por encima del ojo."""
+        right, up = eye_axes(normal)
+
+        def spoke(angle):
+            return right * sign * math.cos(angle) + up * math.sin(angle)
+
+        for degrees, gap, length, sweep, name in BROW_HAIRS[sign]:
+            angle = math.radians(degrees)
+            along = spoke(angle - math.radians(sweep))
+            across = along.cross(normal).normalized() * BROW_WIDTH * radius / 2
+            base = center + spoke(angle) * (eye_opening(angle, radius) + gap * radius)
+            # Raíz, mitad y punta, cada una apoyada en la piel: el pelo sigue su curva.
+            verts = []
+            for step, half in ((0.0, 1.0), (0.55, 0.8)):
+                on_skin, skin_normal, _index, _distance = self.skin.find_nearest(base + along * length * radius * step)
+                point = on_skin + skin_normal * 0.016
+                verts += [self.bm.verts.new(point + across * half), self.bm.verts.new(point - across * half)]
+            on_skin, skin_normal, _index, _distance = self.skin.find_nearest(base + along * length * radius)
+            verts.append(self.bm.verts.new(on_skin + skin_normal * 0.016))
+            faces = [self.bm.faces.new((verts[0], verts[1], verts[3], verts[2])),
+                     self.bm.faces.new((verts[2], verts[3], verts[4]))]
+            self.paint(faces, name)
+            self.bind(verts, "Head")
+            self.outward.append((faces, normal))
 
     def join(self):
         bm = self.bm
@@ -861,6 +909,7 @@ def build_extras(armature, dog, section, eyes):
         # Mira un poco más al frente que el ojo del pack: de cara se le ven los dos ojos enteros.
         gaze = (eye_normal + Vector((0.0, -0.45, 0.0))).normalized()
         extras.eye(eye_center, gaze, EYE_RADIUS * HEAD_SIZE)
+        extras.brow(eye_center, gaze, EYE_RADIUS * HEAD_SIZE, sign)
 
         # La oreja arranca en la esquina de arriba del cráneo: se busca la piel lanzando un rayo
         # desde el costado.

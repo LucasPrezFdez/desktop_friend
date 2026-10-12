@@ -1,7 +1,7 @@
 # 0018. Modelo nuevo: un retrato del perro del usuario, con collar lila
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta en su sexta versión (ver las revisiones 2 a 6 al final; la 6 cambia el alto y la inclinación del cráneo de la 4; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
+- **Estado:** propuesta en su séptima versión (ver las revisiones 2 a 7 al final; la 7 añade las cejas canosas; la 6 cambia el alto y la inclinación del cráneo de la 4; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
 - **Decide:** el usuario pide el cambio; el diseño lo propone el agente
 - **Relación con otras decisiones:** mantiene la 0005 y la 0009 (se sigue partiendo del Husky de Quaternius y de Blender en modo script) y sustituye, de la 0010, la tabla de colores y la lista de piezas añadidas. El resto de la 0010 (cinemática propia, poses en coordenadas de mundo, clips) sigue en vigor
 
@@ -353,3 +353,53 @@ Una primera versión más tímida (alto 0,37, fondo delantero 0,40, 18°) cambia
 | `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
 
 Sigue sin haber una foto de perfil con la que comparar la frente.
+
+## Revisión 7: cejas canosas
+El usuario adjuntó una foto (`2.jpeg`) y pidió las **"cejas" blancas como en ella: solo unos pocos pelos, sin hacer una línea blanca a modo de ceja**.
+
+### Qué se ve en la foto
+Sobre cada ojo hay canas sueltas, cortas, que salen del párpado de arriba y suben tendidas hacia la sien. Son más densas sobre la mitad de dentro del ojo, no forman un borde continuo y no son iguales en los dos ojos.
+
+### Opciones consideradas
+| Opción | A favor | En contra |
+|---|---|---|
+| Pintar de gris las caras de la piel de encima del ojo | No añade geometría | Con esta malla salen manchas o una franja: justo la línea que se pidió evitar. Ya se descartó para el contorno del ojo en la revisión 4 |
+| Una pieza con forma de ceja | Sencilla | Es una línea |
+| **Pelos sueltos, uno a uno** | Se leen como canas; cada uno se coloca y se orienta por separado | A tamaño real en el escritorio se quedan en un moteado tenue |
+
+### Decisión (`tools/model/build_dog.py`)
+Siete pelos por ojo, definidos uno a uno en `BROW_HAIRS` y dibujados por `Extras.brow`.
+
+| Aspecto | Valor |
+|---|---|
+| Forma de cada pelo | Lámina fina de dos tramos que acaba en punta, apoyada en la piel en su raíz, su mitad y su punta |
+| Ancho | 0,20 radios del ojo (`BROW_WIDTH`) |
+| Largo | De 0,34 a 0,56 radios |
+| Colocación | Entre 48° y 138° desde la comisura de fuera, a dos alturas alternas sobre el párpado (0,5 a 1,1 radios del borde de la abertura) |
+| Dirección | Girados hacia la sien entre 28° y 64° respecto a la radial: van casi paralelos, no en abanico |
+| Color | Cinco en `Muzzle` (casi blanco) y dos en `FurGrey` por ojo |
+| Asimetría | Cada ojo tiene su propia lista |
+
+Van unidos al hueso `Head`. No cambian con el parpadeo: usan materiales de pelaje y la app solo repinta los del ojo. No hubo que tocar `src/`.
+
+Para colocar los pelos respecto a la abertura, la forma de la almendra y los ejes del ojo se sacaron de `Extras.eye` a dos funciones (`eye_opening`, `eye_axes`); el ojo no cambia.
+
+### Lo que se probó y se descartó
+| Intento | Por qué no |
+|---|---|
+| Seis pelos radiales en abanico, pegados al párpado | Parecían pestañas de dibujo animado |
+| Ancho de 0,15 radios | Bien de cerca; a tamaño real casi no se veían |
+
+### Verificación de esta versión
+| Comprobación | Resultado |
+|---|---|
+| Renders en seis vistas (`docs/capturas/nuevo-modelo-cabeza.png`) | Pelos sueltos sobre cada ojo, pegados a la piel también de perfil y en tres cuartos |
+| Primer plano en la app, fondo claro y oscuro, y con los ojos cerrados (`docs/capturas/nuevo-modelo-cara.png`) | Se leen como canas sueltas; con el ojo cerrado siguen en su sitio |
+| App a tamaño real (420×340), sentado, ampliando la captura | Moteado gris tenue sobre el ojo; no se distingue pelo a pelo |
+| `npm run model` | 14 clips, sin errores de validación. 1 146 064 bytes, 10 988 vértices, 12 materiales |
+| `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
+
+`docs/capturas/nuevo-modelo-poses.png` también se rehízo. `nuevo-modelo-app.png` y `nuevo-modelo-union-orejas.png` son de la revisión 6: no se rehicieron.
+
+### Límite
+La cabeza del perro ocupa unos 70 píxeles de ancho en el escritorio, contando las orejas. A ese tamaño unos pocos pelos finos no pueden verse uno a uno; hacerlos más gruesos o más numerosos los acercaría a la línea que se pidió evitar. Si se quieren más visibles, se retoca `BROW_WIDTH` o se añaden pelos a `BROW_HAIRS`.

@@ -214,6 +214,7 @@ Cuatro fotos del usuario, que no se guardan en el repositorio.
 - Perro pequeño de pelo negro, de tipo spaniel. [V] La raza o mezcla exacta no se conoce. [NV]
 - Orejas caídas, largas y anchas, con flecos ondulados; arrancan a los lados del cráneo, por debajo de su punto más alto. [V]
 - Hocico corto y ancho con canas: casi blanco en labios y barbilla, gris hacia los ojos; la caña sigue negra. Canas también alrededor de los ojos. [V]
+- Sobre cada ojo, canas sueltas y cortas que salen del párpado de arriba y suben tendidas hacia la sien; más densas sobre la mitad de dentro, sin formar un borde continuo y distintas en cada ojo (`2.jpeg`, adjunta el 2026-10-12). [V]
 - Ojos grandes y redondos, marrón oscuro, con el centro velado de azul grisáceo en las cuatro fotos. [V] La causa no se conoce y no hace falta para el modelo. [NV]
 - Mancha blanca y gris pequeña en el pecho; pelo ondulado en cuello y pecho. [V]
 - Cola con flecos largos; en la foto en que se le ve sentado desde arriba la lleva levantada. [V]

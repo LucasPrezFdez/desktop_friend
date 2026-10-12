@@ -316,3 +316,25 @@ Hora comprobada: 17:21, pruebas unitarias en verde con esta versión.
 | 184 | Rebajar la frente | `tools/model/build_dog.py`: cráneo más bajo, menos fondo hacia delante que hacia atrás e inclinado hacia atrás (`SKULL_RADII`, `SKULL_FRONT`, `SKULL_TILT`) | Primer intento (18°) con poco efecto de frente; con 24° la frente sube tendida y lo más alto queda entre las orejas | Decisión 0018, revisión 6 |
 | 185 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 141 500 bytes, 10 890 vértices; 26 pruebas en verde | Decisión 0018, revisión 6 |
 | 186 | Rehacer las capturas | `docs/capturas/nuevo-modelo-*.png` | `nuevo-modelo-union-orejas.png` incluye ahora una vista de perfil | Decisión 0018, revisión 6 |
+
+### Arranque de la app con el modelo de la revisión 6
+
+Hora comprobada: 18:31, hora de inicio del proceso `desktopfriend.exe` según `Get-Process`.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 187 | Arrancar la app a petición del usuario | `npm run tauri dev` con el puerto de depuración 9223, en la rama `nuevo-modelo-3d` | No había ninguna copia abierta. Arranca a la primera y queda en marcha | Commit 24b0244 |
+| 188 | Comprobar que se dibuja el modelo nuevo | `tools/verify/cdp.mjs` (estado y captura sobre blanco; después `--bg none`) | Perro tumbado, con el collar lila; la ventana vuelve a ser transparente | Decisión 0018, revisión 6 |
+
+### Modelo nuevo, revisión 7: cejas canosas
+
+Hora comprobada: 18:40, pruebas unitarias en verde con esta versión.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 189 | Mirar las cejas en la foto del usuario | `2.jpeg`, adjunta a la petición | Canas sueltas sobre cada ojo, tendidas hacia la sien, sin borde continuo | `investigacion.md`, "El perro de las fotos" |
+| 190 | Añadir las cejas como pelos sueltos | `tools/model/build_dog.py`: `BROW_HAIRS`, `BROW_WIDTH` y `Extras.brow`; `eye_axes` y `eye_opening` salen de `Extras.eye` | Primer intento (abanico radial pegado al párpado) descartado: parecían pestañas. Quedan siete pelos por ojo, girados hacia la sien y a dos alturas | Decisión 0018, revisión 7 |
+| 191 | Probar en la app a tamaño real | `npm run model`, recarga de la página y `tools/verify/cdp.mjs` | Con 0,15 radios de ancho casi no se veían; se sube a 0,20 | Decisión 0018, revisión 7 |
+| 192 | Regenerar, validar y probar | `npm run model`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 146 064 bytes, 10 988 vértices, 12 materiales; 26 pruebas en verde | Decisión 0018, revisión 7 |
+| 193 | Rehacer las capturas | `docs/capturas/nuevo-modelo-cara.png`, `-cabeza.png` y `-poses.png` | `-app.png` y `-union-orejas.png` no se rehacen: siguen siendo de la revisión 6 | Decisión 0018, revisión 7 |
+| 194 | Dejar la app en marcha con esta versión | Recarga de la página por el puerto de depuración | La cámara y el fondo vuelven a su estado normal tras las capturas | |
