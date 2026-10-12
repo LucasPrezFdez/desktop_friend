@@ -1,7 +1,7 @@
 # 0018. Modelo nuevo: un retrato del perro del usuario, con collar lila
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta en su segunda versión (ver "Revisión 2" al final), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
+- **Estado:** propuesta en su tercera versión (ver "Revisión 2" y "Revisión 3" al final), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
 - **Decide:** el usuario pide el cambio; el diseño lo propone el agente
 - **Relación con otras decisiones:** mantiene la 0005 y la 0009 (se sigue partiendo del Husky de Quaternius y de Blender en modo script) y sustituye, de la 0010, la tabla de colores y la lista de piezas añadidas. El resto de la 0010 (cinemática propia, poses en coordenadas de mundo, clips) sigue en vigor
 
@@ -163,3 +163,36 @@ El recorrido de la oreja baja 0,62 en vez de 0,78 (un 20 % menos): ahora acaba a
 | `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
 
 Las cuatro capturas `docs/capturas/nuevo-modelo-*.png` se han rehecho con esta versión.
+
+## Revisión 3: la hendidura, otra vez
+El usuario dijo que la hendidura seguía sin convencerle, **a los dos lados de la cabeza**, y adjuntó una captura con una línea roja dibujada: un arco que va de lo alto del cráneo a lo alto de la oreja. Pidió rellenarla siguiendo esa línea y que quedase realista.
+
+### Qué estaba mal en la revisión 2
+La revisión 2 rellenó el hundimiento del cráneo, pero la hendidura que veía el usuario era otra: la **muesca en la silueta entre la cúpula del cráneo y la oreja**. La oreja salía de golpe por el costado, a la altura de los ojos, y subía en un pliegue propio; entre ese pliegue y la cúpula quedaba un entrante. El agente arregló lo que encontró al mirar el modelo y no comprobó que fuera lo mismo que señalaba la captura.
+
+### Arreglo
+| Cambio | Cómo |
+|---|---|
+| La oreja nace arriba | El recorrido (`EAR_PATH`) empieza en lo alto de la cúpula, baja pegado a ella y cuelga desde el costado. La línea de arriba de la cabeza pasa del cráneo a la oreja sin entrante, como en el dibujo |
+| La raíz se ciñe a la piel | Cada vértice de la raíz se lleva al punto más cercano de la malla del cráneo (`BVHTree.find_nearest`): los bordes quedan a ras, un poco hundidos, y el grosor crece desde cero. La oreja parece salir de la piel, no ir apoyada encima |
+| La raíz va tumbada | Arriba, el ancho de la oreja va de delante a atrás; al colgar gira hasta mirar hacia fuera y hacia delante |
+| La raíz no se mueve | El primer 20 % del recorrido pesa sobre `Head`; los huesos de la oreja empiezan después (`EAR_ROOT`, `EAR_BONES_AT`) |
+
+El largo que cuelga es el de la revisión 2.
+
+### Lo que se probó y se descartó
+| Intento | Por qué no |
+|---|---|
+| Raíz como una lámina recta apoyada sobre la cúpula | De frente y de espaldas la silueta ya era lisa, pero desde arriba se veían las esquinas de la lámina como hombreras, con una muesca a cada lado |
+| Estrechar esa lámina hacia arriba | Las esquinas seguían despegadas de la cúpula |
+
+### Verificación de esta versión
+| Comprobación | Resultado |
+|---|---|
+| Renders de la cabeza en seis vistas, incluida una nueva desde arriba y de frente (`above` en `preview.py`) | Silueta continua del cráneo a las orejas en todas |
+| App en desarrollo, primeros planos sobre fondo fucsia desde seis ángulos, entre ellos el de la captura del usuario y uno desde arriba (`docs/capturas/nuevo-modelo-union-orejas.png`) | No asoma el fondo entre cráneo y orejas en ninguno; tampoco triste ni mientras se le acaricia |
+| `npm run model` | 14 clips, sin errores de validación. 1 104 756 bytes, 10 120 vértices |
+| App en desarrollo, resto de actividades | Reposo, sentado, tumbado, andando, comiendo y en brazos, sin cambios |
+| `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
+
+Las capturas `docs/capturas/nuevo-modelo-*.png` se han rehecho con esta versión.

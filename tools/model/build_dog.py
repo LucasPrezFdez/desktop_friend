@@ -21,7 +21,7 @@ import sys
 
 import bmesh
 import bpy
-from mathutils import Matrix, Vector, kdtree
+from mathutils import Matrix, Vector, bvhtree, kdtree
 
 # Clips del pack que se conservan, con su nombre final.
 KEPT_CLIPS = {
@@ -428,20 +428,24 @@ def catmull_rom(points, steps):
 
 
 # Oreja izquierda desde su arranque en el cráneo: (hacia fuera, hacia atrás, hacia arriba) y ancho.
-# Sale hacia fuera, hace un pliegue y cuelga hasta la altura de la mandíbula.
+# Nace arriba, dentro de la cúpula del cráneo, baja pegada a ella y cuelga hasta la altura de la
+# mandíbula. Si saliera de golpe por el costado, entre la cúpula y la oreja quedaría una hendidura.
 EAR_PATH = [
-    ((-0.08, 0.00, 0.00), 0.22),
-    ((0.04, 0.00, 0.03), 0.28),
-    ((0.10, 0.00, -0.10), 0.38),
-    ((0.12, -0.02, -0.29), 0.45),
-    ((0.11, -0.04, -0.47), 0.43),
+    ((-0.19, 0.00, 0.205), 0.22),
+    ((-0.07, 0.00, 0.112), 0.30),
+    ((0.02, 0.00, -0.012), 0.38),
+    ((0.09, 0.00, -0.14), 0.42),
+    ((0.12, -0.02, -0.31), 0.45),
+    ((0.11, -0.04, -0.48), 0.43),
     ((0.09, -0.06, -0.62), 0.26),
 ]
 # La oreja no cuelga de canto: su cara ancha mira hacia fuera y algo hacia delante, así se ve
 # tanto de frente como de perfil. Este es el eje de su ancho para la oreja izquierda.
 EAR_ACROSS = Vector((0.6, 0.8, 0.0))
 # En qué punto del recorrido (0 a 1) queda cada hueso de la oreja.
-EAR_BONES_AT = (0.12, 0.38, 0.62, 0.84)
+EAR_BONES_AT = (0.32, 0.52, 0.70, 0.87)
+# Hasta aquí la oreja es raíz: va fija al cráneo y no se mueve con sus huesos.
+EAR_ROOT = 0.20
 
 
 class Extras:
@@ -458,6 +462,7 @@ class Extras:
         for index, point in enumerate(self.points):
             self.tree.insert(point, index)
         self.tree.balance()
+        self.skin = bvhtree.BVHTree.FromPolygons(self.points, [tuple(p.vertices) for p in dog.data.polygons])
         self.group_names = {g.index: g.name for g in dog.vertex_groups}
 
     def paint(self, faces, name):
@@ -509,20 +514,34 @@ class Extras:
         steps = 2
         path = catmull_rom([attach + mirrored(offset) for offset, _ in EAR_PATH], steps)
         widths = catmull_rom([Vector((width, 0.0, 0.0)) for _, width in EAR_PATH], steps)
-        back = Vector((EAR_ACROSS.x * sign, EAR_ACROSS.y, 0.0)).normalized()
+        hanging = Vector((EAR_ACROSS.x * sign, EAR_ACROSS.y, 0.0)).normalized()
         rows = []
         for i, center in enumerate(path):
+            fraction = i / (len(path) - 1)
+            # La raíz va tumbada sobre el cráneo, de delante a atrás y casi sin grosor; al colgar
+            # gira hacia fuera y engorda.
+            free = smoothstep(EAR_ROOT, 0.5, fraction)
+            back = Vector((0.0, 1.0, 0.0)).lerp(hanging, free).normalized()
             tangent = (path[min(i + 1, len(path) - 1)] - path[max(i - 1, 0)]).normalized()
             normal = tangent.cross(back).normalized() * sign  # hacia fuera
             half = widths[i].x / 2
-            row = [
-                self.bm.verts.new(center - back * half),
-                self.bm.verts.new(center + normal * 0.09),
-                self.bm.verts.new(center + back * half),
-                self.bm.verts.new(center - normal * 0.03),
+            thickness = 0.09 * smoothstep(0.0, 0.4, fraction)
+            # (posición, altura sobre la piel) de los cuatro vértices de la sección.
+            section = [
+                (center - back * half, -0.02), (center + normal * thickness, thickness),
+                (center + back * half, -0.02), (center - normal * 0.03, -0.03),
             ]
+            # La raíz se ciñe a la piel del cráneo: nace a ras de ella y se va despegando.
+            hug = 1 - free
+            row = []
+            for point, height in section:
+                if hug > 0:
+                    on_skin, skin_normal, _index, _distance = self.skin.find_nearest(point)
+                    point = point.lerp(on_skin + skin_normal * height, hug)
+                row.append(self.bm.verts.new(point))
             rows.append(row)
-            self.bind(row, self.ear_weights(i / (len(path) - 1), sign))
+            self.bind(row, self.ear_weights(fraction, sign))
+        back = hanging
         faces = [self.bm.faces.new(rows[0]), self.bm.faces.new(rows[-1])]
         for a, b in zip(rows, rows[1:]):
             for k in range(4):
@@ -551,8 +570,11 @@ class Extras:
     def ear_weights(fraction, sign):
         """Reparte cada fila de la oreja entre los dos huesos que tiene más cerca."""
         side = ".L" if sign > 0 else ".R"
+        if fraction <= EAR_ROOT:
+            return {"Head": 1.0}
         if fraction <= EAR_BONES_AT[0]:
-            return {f"Ear1{side}": 1.0}
+            u = (fraction - EAR_ROOT) / (EAR_BONES_AT[0] - EAR_ROOT)
+            return {"Head": 1 - u, f"Ear1{side}": u}
         for k in range(len(EAR_BONES) - 1):
             low, high = EAR_BONES_AT[k], EAR_BONES_AT[k + 1]
             if fraction <= high:

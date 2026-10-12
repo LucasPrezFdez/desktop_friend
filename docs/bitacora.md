@@ -261,3 +261,16 @@ Hora comprobada: 16:12, pruebas unitarias en verde con esta versión.
 | 157 | Acortar las orejas | `EAR_PATH`: el recorrido baja 0,62 en vez de 0,78 | Acaban a la altura de la mandíbula | Decisión 0018, revisión 2 |
 | 158 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; sin hendidura en la app; 26 pruebas en verde. Las pruebas le dieron de comer una vez más | Decisión 0018, revisión 2 |
 | 159 | Rehacer las capturas | `docs/capturas/nuevo-modelo-*.png` | Las cuatro corresponden ya a la revisión 2 | Decisión 0018, revisión 2 |
+
+### Modelo nuevo, revisión 3: unión de las orejas con el cráneo
+
+Hora comprobada: 16:21, pruebas unitarias en verde con esta versión.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 160 | Estudiar la captura con la línea roja | Ampliación de la imagen (144 × 101 píxeles) | La hendidura que señala el usuario es la muesca de la silueta entre la cúpula del cráneo y la oreja, no el hundimiento que se rellenó en la revisión 2 | Decisión 0018, revisión 3 |
+| 161 | Hacer que la oreja nazca en lo alto del cráneo | `EAR_PATH`, `EAR_ROOT` y `EAR_BONES_AT` en `tools/model/build_dog.py` | Silueta lisa de frente y de espaldas; desde arriba, las esquinas de la raíz quedaban despegadas como hombreras | Decisión 0018, revisión 3 |
+| 162 | Ceñir la raíz de la oreja a la piel | `Extras.ear`: cada vértice de la raíz va al punto más cercano de la malla (`BVHTree.find_nearest`) | La oreja sale a ras del cráneo desde todos los ángulos | Decisión 0018, revisión 3 |
+| 163 | Añadir una vista desde arriba a los renders | `above` en `tools/model/preview.py` | | Decisión 0018, revisión 3 |
+| 164 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs` con la cámara acercada a la cabeza, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; sin hueco entre cráneo y orejas en seis ángulos; 26 pruebas en verde. Las pruebas le dieron de comer una vez más | Decisión 0018, revisión 3 |
+| 165 | Rehacer las capturas | `docs/capturas/nuevo-modelo-*.png` y la nueva `nuevo-modelo-union-orejas.png` | | Decisión 0018, revisión 3 |

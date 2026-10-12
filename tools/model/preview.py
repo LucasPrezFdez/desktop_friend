@@ -5,7 +5,7 @@
 #       --in modelo.glb --out hoja.png --shots "rest@three,Walk:0.25@side" [--size 320] [--cols 4]
 #
 # Cada toma es "<clip>[:<fracción 0-1>]@<vista>". "rest" es la pose de reposo.
-# Vistas: front, side, back, three (tres cuartos), top.
+# Vistas: front, side, back, three (tres cuartos), top, above (desde arriba y de frente).
 import argparse
 import math
 import os
@@ -24,6 +24,8 @@ VIEWS = {
     "back": Vector((0.0, 1.0, 0.15)),
     "three": Vector((0.8, -1.0, 0.45)),
     "top": Vector((0.0, -0.01, 1.0)),
+    # Desde arriba y de frente: como se ve al perro cuando se le mira desde encima de la pantalla.
+    "above": Vector((0.45, -1.0, 0.95)),
 }
 
 
