@@ -374,3 +374,13 @@ Hora comprobada: 19:12, pruebas unitarias en verde con esta versión.
 | 207 | Probar en la app | Recarga de la página y `tools/verify/cdp.mjs` (primeros planos, fucsia, lengua, ojos cerrados, comer) | Vite no recarga la página al cambiar el modelo: llevaba 213 s sin cargarse y hubo que recargarla. Sin huecos; lengua y cuenco encajan | Decisión 0018, revisión 9 |
 | 208 | Comprobar que se ve en el escritorio | Copia de pantalla del rectángulo de la ventana (`BitBlt` con `CAPTUREBLT`) | El perro se ve, sentado, con el morro nuevo | Decisión 0018, revisión 9 |
 | 209 | Rehacer las capturas | `docs/capturas/nuevo-modelo-cabeza.png`, `-cara.png` y `-poses.png` | `-app.png` sigue siendo de la revisión 8 y `-union-orejas.png`, de la 6 | Decisión 0018, revisión 9 |
+
+### Fusión del modelo nuevo en main
+
+Hora comprobada: 19:21, salida de `date` antes de la fusión.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 210 | El usuario pide confirmar y fusionar en `main` | Petición directa | "haz commit de los cambios y mergea en main". El árbol estaba limpio: la revisión 9 ya estaba en el commit `24001d0` | Decisión 0018, resolución |
+| 211 | Cerrar la decisión | `docs/decisiones/0018-modelo-retrato.md` pasa a aceptada; la 0010 enlaza a la 0018 | | Decisión 0018, resolución |
+| 212 | Fusionar | Avance rápido de `main` y `desarrollo` hasta `nuevo-modelo-3d` | Sin subir a GitHub; sin regenerar el instalador | Decisión 0018, resolución |

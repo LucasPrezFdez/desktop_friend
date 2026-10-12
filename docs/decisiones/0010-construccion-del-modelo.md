@@ -1,7 +1,7 @@
 # 0010. Cómo se construye el modelo: decisiones del script de Blender
 
 - **Fecha:** 2026-10-11
-- **Estado:** aceptada
+- **Estado:** aceptada. La tabla de colores y la lista de piezas añadidas quedan sustituidas por la [0018](0018-modelo-retrato.md); el resto sigue en vigor
 - **Decide:** el agente
 
 ## Contexto

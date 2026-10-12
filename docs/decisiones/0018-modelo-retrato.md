@@ -1,7 +1,7 @@
 # 0018. Modelo nuevo: un retrato del perro del usuario, con collar lila
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta en su novena versión (ver las revisiones 2 a 9 al final; la 9 sube el hocico de la 8; la 8 rehace la forma de toda la cabeza y sustituye a lo dicho en la 4 sobre hocico y trufa y en la 6 sobre el alto del cráneo; la 7 añade las cejas canosas y queda guardada con la etiqueta `modelo-revision-7`; la 6 cambia el alto y la inclinación del cráneo de la 4; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
+- **Estado:** aceptada por el usuario el 2026-10-12 en su novena versión (ver las revisiones 2 a 9 y la "Resolución" al final; la 9 sube el hocico de la 8; la 8 rehace la forma de toda la cabeza y sustituye a lo dicho en la 4 sobre hocico y trufa y en la 6 sobre el alto del cráneo; la 7 añade las cejas canosas y queda guardada con la etiqueta `modelo-revision-7`; la 6 cambia el alto y la inclinación del cráneo de la 4; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos). Fusionada en `desarrollo` y `main`
 - **Decide:** el usuario pide el cambio; el diseño lo propone el agente
 - **Relación con otras decisiones:** mantiene la 0005 y la 0009 (se sigue partiendo del Husky de Quaternius y de Blender en modo script) y sustituye, de la 0010, la tabla de colores y la lista de piezas añadidas. El resto de la 0010 (cinemática propia, poses en coordenadas de mundo, clips) sigue en vigor
 
@@ -516,3 +516,12 @@ La distancia de los ojos a la trufa, que coincidía con las fotos (0,49 separaci
 | `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
 
 `docs/capturas/nuevo-modelo-poses.png` también se rehízo. `nuevo-modelo-app.png` es de la revisión 8 y `nuevo-modelo-union-orejas.png`, de la 6.
+
+## Resolución
+Tras ver la revisión 9 en el escritorio, el usuario pidió confirmar los cambios y fusionarlos en `main` ("haz commit de los cambios y mergea en main"). El agente lo toma como la aprobación de la novena versión; el usuario no lo dijo con esas palabras.
+
+- La rama `nuevo-modelo-3d` se fusiona en `main`, como pidió, y también en `desarrollo`, para que la rama de trabajo no quede por detrás (así se hizo con las decisiones 0016 y 0017).
+- **No se sube a GitHub**: no se pidió. `main` y `desarrollo` quedan diez commits por delante de `origin`, y la etiqueta `modelo-revision-7` es solo local.
+- **No se regenera el instalador ni se actualiza la app instalada**: tampoco se pidió. La versión instalada, si la hay, sigue con el modelo anterior.
+
+Lo que quedó sin hacer en la revisión 8 sigue pendiente: los ojos son almendrados y en las fotos son redondos, y las orejas se abren más que las del perro vistas desde arriba.
