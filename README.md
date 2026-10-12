@@ -11,6 +11,7 @@ Una mascota de escritorio para Windows 11: un perro negro en 3D que vive sobre l
 | Ver cómo está | Haz clic sobre él: salen tres círculos con su saciedad 🍖, felicidad ❤️ y energía ⚡. El anillo de cada uno marca el nivel |
 | Moverlo | Púlsalo y arrástralo: una mano lo coge del collar, lo levanta de cara a ti y lo lleva balanceándose. Al soltarlo baja y se posa |
 | Acostarlo | Al cogerlo aparece su cama a un lado. Suéltalo encima: se echa del todo, con la cabeza apoyada en el borde, se duerme y recupera energía mucho más deprisa que durmiendo en el suelo. Cuando está descansado se levanta solo y la cama se guarda |
+| Cambiar de mascota | Clic derecho sobre él, o **Cambiar de mascota** en el menú de la bandeja: sale un círculo por mascota, con su retrato. De momento solo está el perro |
 | Traerlo de vuelta | Clic en el icono de la bandeja, o **Traer aquí** en su menú |
 | Ocultarlo, arrancarlo con Windows o salir | Clic derecho en el icono de la bandeja |
 
@@ -46,6 +47,7 @@ npm run installer      # compila y deja el instalador en la carpeta raíz
 | `bed.html`, `src/bedWindow.ts` | Segunda ventana, que dibuja la cama mientras se lleva al perro |
 | `src/needs.ts` | Necesidades de la mascota (funciones puras) |
 | `src/behavior.ts`, `src/interaction.ts`, `src/ui.ts` | Comportamiento, gestos del ratón e interfaz |
+| `src/pets.ts`, `src/petMenu.ts`, `src/portrait.ts` | Lista de mascotas, menú para cambiar entre ellas y retrato que sale en él |
 | `src-tauri/` | Parte nativa: ventanas, bandeja, arranque con Windows |
 | `tools/model/` | Generación de los modelos 3D (perro y cama) con Blender |
 | `tools/verify/` | Herramientas de verificación de la app en marcha |
@@ -62,6 +64,7 @@ npm run tauri dev
 
 node tools/verify/cdp.mjs --eval "pet.behavior.force('sit')" --wait 1500 --shot sentado.png
 node tools/verify/bed.mjs                                # toda la secuencia de la cama
+node tools/verify/menu.mjs                               # el menú para cambiar de mascota
 node tools/verify/cdp.mjs --page bed --shot cama.png     # la ventana de la cama
 powershell -File tools/verify/clickthrough.ps1
 powershell -File tools/verify/input.ps1 -Action rub

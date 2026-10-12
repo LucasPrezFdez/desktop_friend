@@ -295,6 +295,25 @@ Hechos comprobados al añadir la cama (decisión 0019). No hubo búsqueda en la 
 - Un perro con el pecho a 0,68 unidades del suelo se ve agachado aunque tenga las patas dobladas debajo; con el pecho a 0,37, las patas delanteras estiradas y la cabeza horizontal, se ve tumbado. De pie lo tiene a 1,56. [V] Renders de las dos versiones del clip `Nap` y alturas del hueso `FrontUpperLeg.L` que imprime `DOG_DEBUG=1`.
 - Para bajar la cabeza hasta el suelo hay que doblar el cuello unos 100° y enderezar después la cabeza casi 80°. [V] Valores de `NAP` en `tools/model/build_dog.py`.
 
+# Parte 5. El menú de mascotas (12 de octubre de 2026)
+
+Hechos comprobados al hacer el menú (decisión 0020). No hubo búsqueda en la web: son medidas sobre la app en marcha.
+
+## El retrato, sacado del canvas de WebGL
+- Lo dibujado en un canvas de WebGL se puede copiar a otro canvas con `drawImage` si se hace justo después de dibujar, en la misma tarea, sin activar `preserveDrawingBuffer`. La copia conserva el fondo transparente. [V] `src/portrait.ts`; retrato de 160 × 160 guardado desde la app.
+- Funciona también con la ventana todavía oculta, que es cuando la app lo saca. [V] Retrato leído por depuración nada más recargar la app.
+- El filtro CSS del canvas (el halo del perro) no pasa a la copia. [V] El mismo retrato.
+
+## Recargar la ventana de Tauri
+- `location.reload()` en la ventana del perro vuelve a arrancar el frontend sin cerrar la app: relee lo guardado con el plugin `store` y la ventana no cambia de sitio. [V] Cambio de mascota con dos mascotas ficticias.
+
+## Pruebas con el protocolo DevTools
+- Un clic con el botón derecho inyectado con `Input.dispatchMouseEvent` (`mousePressed` y `mouseReleased`) lanza el evento `contextmenu` de la página. [V] `tools/verify/menu.mjs`.
+- Un evento de Tauri emitido desde la propia página con `emit` llega a los `listen` de esa página: sirve para simular las órdenes de la bandeja. [V] La misma prueba.
+
+## El servidor de desarrollo
+- Con dos ediciones muy seguidas de un mismo fichero, Vite 8 recargó la app con la versión intermedia y siguió sirviéndola después, con el fichero ya correcto en disco. [V] Visto dos veces con `src/portrait.ts`; `curl` al servidor devolvía la versión vieja. Volver a tocar el fichero lo arregla. [I] Parece que el vigilante de ficheros se pierde el segundo cambio; no se ha investigado.
+
 # Fuentes
 
 ## Tauri

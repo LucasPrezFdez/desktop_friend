@@ -1,11 +1,11 @@
-# Simula gestos reales del ratón sobre la mascota: frotar (acariciar), clic y arrastrar.
+# Simula gestos reales del ratón sobre la mascota: frotar (acariciar), clic, clic derecho (menu) y arrastrar.
 # Mueve el cursor de verdad durante un par de segundos y luego lo devuelve a su sitio.
 #
-# Uso: powershell -File tools/verify/input.ps1 -Action rub|click|drag [-X 0.5 -Y 0.66]
+# Uso: powershell -File tools/verify/input.ps1 -Action rub|click|menu|drag [-X 0.5 -Y 0.66]
 # X e Y son la posición dentro de la ventana, de 0 a 1.
 # Para soltarlo en la cama, que sale a 300 px hacia el lado con más sitio: -Action drag -DX -300 -DY -150
 param(
-    [Parameter(Mandatory = $true)][ValidateSet('rub', 'click', 'drag')][string]$Action,
+    [Parameter(Mandatory = $true)][ValidateSet('rub', 'click', 'menu', 'drag')][string]$Action,
     [string]$Title = 'DesktopFriend',
     [double]$X = 0.5,
     [double]$Y = 0.66,
@@ -38,6 +38,8 @@ public static class In {
 
 $LEFT_DOWN = 0x2
 $LEFT_UP = 0x4
+$RIGHT_DOWN = 0x8
+$RIGHT_UP = 0x10
 
 [void][In]::SetProcessDPIAware()
 $hwnd = [In]::FindWindowW([NullString]::Value, $Title)
@@ -78,6 +80,12 @@ try {
             [In]::mouse_event($LEFT_DOWN, 0, 0, 0, [UIntPtr]::Zero)
             Start-Sleep -Milliseconds 80
             [In]::mouse_event($LEFT_UP, 0, 0, 0, [UIntPtr]::Zero)
+            Start-Sleep -Milliseconds 300
+        }
+        'menu' {
+            [In]::mouse_event($RIGHT_DOWN, 0, 0, 0, [UIntPtr]::Zero)
+            Start-Sleep -Milliseconds 80
+            [In]::mouse_event($RIGHT_UP, 0, 0, 0, [UIntPtr]::Zero)
             Start-Sleep -Milliseconds 300
         }
         'drag' {

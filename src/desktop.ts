@@ -16,7 +16,7 @@ export interface Rect extends Point {
 }
 
 /** Órdenes que llegan desde la bandeja del sistema (ver src-tauri/src/lib.rs). */
-export type PetCommand = 'feed' | 'come' | 'quit';
+export type PetCommand = 'feed' | 'come' | 'pets' | 'quit';
 
 /** Lo que la ventana del perro le pide a la de la cama (ver src/bedWindow.ts). */
 export interface BedOrder {
@@ -271,6 +271,7 @@ class BrowserDesktop implements Desktop {
     window.addEventListener('keydown', (event) => {
       if (event.key === 'f') handler('feed');
       if (event.key === 'c') handler('come');
+      if (event.key === 'm') handler('pets');
     });
   }
 

@@ -41,13 +41,15 @@ body.browser {
 
 /* Círculos de estado. El contenedor es un punto situado en el centro del perro:
    cerrados, los tres círculos están ahí, diminutos; al abrirse salen cada uno a su sitio. */
-.stats {
+.stats,
+.pets {
   position: absolute;
   width: 0;
   height: 0;
 }
 
-.stat {
+.stat,
+.pet {
   position: absolute;
   left: -30px;
   top: -30px;
@@ -69,7 +71,8 @@ body.browser {
     opacity 0.18s ease-in;
 }
 
-.stats.open .stat {
+.stats.open .stat,
+.pets.open .pet {
   opacity: 1;
   transform: translate(var(--dx), var(--dy)) scale(1);
   pointer-events: auto;
@@ -79,28 +82,33 @@ body.browser {
     opacity 0.16s ease-out var(--delay);
 }
 
-.stat svg {
+.stat svg,
+.pet svg {
   position: absolute;
   inset: 0;
   /* El anillo empieza a llenarse por arriba. */
   transform: rotate(-90deg);
 }
 
-.stat circle {
+.stat circle,
+.pet circle {
   fill: none;
   stroke-width: 5;
 }
 
-.stat .track {
+.stat .track,
+.pet .track {
   stroke: rgba(255, 255, 255, 0.16);
 }
 
-.stat .level {
+.stat .level,
+.pet .level {
   stroke-linecap: round;
   transition: stroke-dashoffset 0.25s ease-in;
 }
 
-.stats.open .level {
+.stats.open .level,
+.pets.open .level {
   /* El anillo se llena cuando el círculo ya ha llegado a su sitio. */
   transition: stroke-dashoffset 0.6s ease-out calc(var(--delay) + 0.2s);
 }
@@ -148,6 +156,83 @@ body.browser {
 
 .stat.fullness.full {
   cursor: default;
+}
+
+/* Menú para cambiar de mascota. Son círculos como los de estado, con el retrato de cada una
+   y algo más grandes, para que el retrato se distinga. */
+.pet {
+  left: -36px;
+  top: -36px;
+  width: 72px;
+  height: 72px;
+}
+
+.pet circle {
+  stroke-width: 3.5;
+}
+
+.pet .level {
+  /* El lila del collar. El anillo mide 2π × 27; vacío mientras no sea la mascota elegida. */
+  stroke: #b58be8;
+  stroke-dasharray: 169.7;
+  stroke-dashoffset: 169.7;
+}
+
+.pets.open .pet.active .level {
+  stroke-dashoffset: 0;
+}
+
+.pet.option {
+  cursor: pointer;
+}
+
+.pets.open .pet.option:hover {
+  transform: translate(var(--dx), var(--dy)) scale(1.1);
+  transition: transform 0.15s ease-out;
+}
+
+.pet .portrait {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  /* Fondo claro: sobre el disco oscuro, una mascota negra no se vería. */
+  background: #f3eee4 center / cover no-repeat;
+}
+
+.pet .name {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  translate: -50% 5px;
+  padding: 2px 8px;
+  border-radius: 9px;
+  background: rgba(22, 24, 32, 0.72);
+  color: #f4f2ee;
+  font-size: 11px;
+  line-height: 1.35;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* El hueco de las mascotas que vendrán: no se puede pulsar y deja pasar los clics. */
+.pets.open .pet.soon {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.pet.soon .track {
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+}
+
+.pet.soon .plus {
+  position: absolute;
+  inset: 0;
+  /* Una cruz fina hecha con dos degradados. */
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.75) 0 0) center / 14px 1.5px no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.75) 0 0) center / 1.5px 14px no-repeat;
 }
 
 .bubble[hidden],

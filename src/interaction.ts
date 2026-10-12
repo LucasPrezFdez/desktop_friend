@@ -5,6 +5,8 @@ export interface InteractionHandlers {
   /** El cursor ha frotado al perro `pixels` píxeles sin pulsar ningún botón, y está en `point`. */
   onStroke(pixels: number, point: Point): void;
   onClick(): void;
+  /** Clic con el botón derecho sobre el perro. */
+  onMenu(): void;
   onGrab(): void;
   /** Posición a la que hay que llevar la ventana mientras se arrastra al perro (píxeles físicos). */
   onDrag(windowPosition: Point): void;
@@ -19,7 +21,8 @@ const STROKE_PAUSE_MS = 250;
 
 /**
  * Traduce el ratón en gestos sobre la mascota:
- * frotar sin pulsar es acariciar, pulsar y mover es cogerla, y un clic abre el panel.
+ * frotar sin pulsar es acariciar, pulsar y mover es cogerla, un clic abre el panel
+ * y el botón derecho, el menú.
  */
 export class Interaction {
   private pressedAt: Point | null = null;
@@ -42,7 +45,7 @@ export class Interaction {
     canvas.addEventListener('pointercancel', (event) => this.release(event));
     canvas.addEventListener('contextmenu', (event) => {
       event.preventDefault();
-      if (this.isOverPet()) this.handlers.onClick();
+      if (this.isOverPet()) this.handlers.onMenu();
     });
   }
 

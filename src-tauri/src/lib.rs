@@ -99,6 +99,7 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
 
     let feed = MenuItem::with_id(app, "feed", "Dar de comer", true, None::<&str>)?;
     let come = MenuItem::with_id(app, "come", "Traer aquí", true, None::<&str>)?;
+    let pets = MenuItem::with_id(app, "pets", "Cambiar de mascota", true, None::<&str>)?;
     let toggle = MenuItem::with_id(app, "toggle", "Mostrar u ocultar", true, None::<&str>)?;
     let autostart = CheckMenuItem::with_id(
         app,
@@ -114,6 +115,7 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
         &[
             &feed,
             &come,
+            &pets,
             &toggle,
             &PredefinedMenuItem::separator(app)?,
             &autostart,
@@ -146,7 +148,7 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
                 }
             }
             // El frontend guarda el estado antes de pedir la salida con `quit_app`.
-            "feed" | "come" | "quit" => {
+            "feed" | "come" | "pets" | "quit" => {
                 if event.id.as_ref() != "quit" {
                     show_window(app);
                 }

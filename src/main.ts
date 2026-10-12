@@ -2,16 +2,20 @@ import { Vector3 } from 'three';
 import { Behavior } from './behavior';
 import { createLights } from './blackFur';
 import { ClickThrough } from './clickThrough';
-import { createDesktop } from './desktop';
+import { createDesktop, type Point } from './desktop';
 import { Dog } from './dog';
 import { Interaction } from './interaction';
 import { advance, canEat, catchUp, initialState, parseState, type PetState } from './needs';
+import { PetMenu } from './petMenu';
+import { PETS, resolvePet } from './pets';
+import { takePortrait } from './portrait';
 import { Bed, Bowl, createShadow, Hand } from './props';
 import { Stage } from './scene';
 import { Hud } from './ui';
 
 const STATE_KEY = 'pet';
 const WINDOW_KEY = 'windowX';
+const CHOICE_KEY = 'chosenPet';
 const SAVE_EVERY_MS = 20_000;
 // Por encima de esta opacidad el píxel bajo el cursor es perro (o cuenco, o cama), no sombra ni borde.
 const SOLID_ALPHA = 128;
@@ -23,22 +27,36 @@ async function main(): Promise<void> {
   const stage = new Stage(document.querySelector<HTMLCanvasElement>('#stage')!);
   stage.scene.add(createLights(), createShadow());
 
+  const chosen = resolvePet(await desktop.loadState<unknown>(CHOICE_KEY));
   const [dog, bed] = await Promise.all([Dog.load(), Bed.load()]);
+  stage.scene.add(dog.root);
+  // El retrato se saca ahora, con el perro solo en la escena y antes de que empiece a moverse.
+  const portrait = takePortrait(stage, dog);
   const bowl = new Bowl();
   const hand = new Hand();
-  stage.scene.add(dog.root, bowl.group, hand.group, bed.group);
+  stage.scene.add(bowl.group, hand.group, bed.group);
 
   // Lo primero es ponerse al día con el tiempo que la app ha estado cerrada.
   const saved = parseState(await desktop.loadState<unknown>(STATE_KEY));
   const start = saved ? catchUp(saved, Date.now()) : initialState(Date.now());
 
+  const ui = document.querySelector<HTMLElement>('#ui')!;
+  const bodyOnScreen = (): Point => stage.project(BODY_CENTER);
   const hud = new Hud(
-    document.querySelector<HTMLElement>('#ui')!,
+    ui,
     () => {
       if (behavior.feed()) void save();
     },
-    () => stage.project(BODY_CENTER),
+    bodyOnScreen,
   );
+  const petMenu = new PetMenu(ui, PETS, chosen.id, bodyOnScreen, (pet) => {
+    if (pet.id === chosen.id) return;
+    // Cambiar de mascota es arrancar de nuevo con la otra: se guarda todo y se recarga la ventana.
+    void save()
+      .then(() => desktop.saveState(CHOICE_KEY, pet.id))
+      .then(() => location.reload());
+  });
+  petMenu.setPortrait(chosen.id, portrait);
   const behavior = new Behavior(dog, desktop, stage, bowl, hand, bed, hud, start.needs);
   window.addEventListener('resize', () => void behavior.relayout());
   await behavior.init(await desktop.loadState<number>(WINDOW_KEY));
@@ -56,8 +74,19 @@ async function main(): Promise<void> {
     clickThrough,
     {
       onStroke: (pixels, point) => behavior.stroke(pixels, point),
-      onClick: () => hud.togglePanel(),
-      onGrab: () => behavior.grab(),
+      // Los círculos de estado y el menú salen del mismo sitio: abrir uno cierra el otro.
+      onClick: () => {
+        petMenu.close();
+        hud.togglePanel();
+      },
+      onMenu: () => {
+        hud.closePanel();
+        petMenu.toggle();
+      },
+      onGrab: () => {
+        petMenu.close();
+        behavior.grab();
+      },
       onDrag: (position) => behavior.drag(position),
       onDrop: () => void behavior.drop().then(save),
     },
@@ -69,6 +98,9 @@ async function main(): Promise<void> {
       if (behavior.feed()) void save();
     } else if (command === 'come') {
       void behavior.come().then(save);
+    } else if (command === 'pets') {
+      hud.closePanel();
+      petMenu.open();
     } else {
       void save().finally(() => desktop.quit());
     }
@@ -105,7 +137,7 @@ async function main(): Promise<void> {
 
   if (import.meta.env.DEV) {
     // Acceso desde las herramientas de verificación (tools/verify/cdp.mjs).
-    Object.assign(window, { pet: { behavior, dog, bed, hud, stage, save } });
+    Object.assign(window, { pet: { behavior, dog, bed, hud, petMenu, stage, save } });
   }
 }
 

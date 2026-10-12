@@ -440,3 +440,33 @@ Hora comprobada: 20:10, modelo regenerado y pruebas unitarias en verde con esta 
 | 243 | Rehacer las capturas | `docs/capturas/cama-secuencia.png`, `cama-escritorio.png` (con `screenshot.ps1`, llevando al perro por depuración) y `cama-modelo.png` | Las tres son ya de la revisión 2 | Decisión 0019, revisión 2 |
 | 244 | Dejar al perro despierto y con su energía | `cdp.mjs` | Energía en 95, como al empezar | |
 | 245 | Documentar | Revisión 2 de la decisión 0019, "La pose de dormir" en la investigación y estas filas | Un primer intento de escribirlo todo en una sola orden de consola falló al interpretarla, sin cambiar nada; se hizo con las herramientas de edición | Decisión 0019, revisión 2 |
+
+### Propuesta: menú para cambiar de mascota (rama `menu-de-mascotas`)
+
+Horas comprobadas en las salidas de las herramientas:
+
+| Hora | Hecho |
+|---|---|
+| 21:37 | Creada la rama, con el código ya leído (salida de `date`) |
+| 21:40 | 39 pruebas unitarias en verde con el menú escrito (salida de `vitest`) |
+| 21:41 | La app de desarrollo en marcha y primera captura del menú (salida de `date`) |
+| 21:46 | La prueba del menú, completa y correcta (salida de `date`) |
+| 21:49 | Mosaico de capturas guardado (salida de `date`) |
+| 21:50 | Todas las pruebas repetidas con la versión final (salida de `date`) |
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 246 | Crear la rama | `git checkout -b menu-de-mascotas` desde `cama-del-perro` | Parte del commit `6e8e0f8`. Sale de la rama de la cama, que aún no está aprobada, porque toca los mismos ficheros | Decisión 0020 |
+| 247 | Escribir el menú | Nuevos `src/pets.ts`, `src/petMenu.ts` y `src/portrait.ts`; estilos en `src/style.css`; `onMenu` en `src/interaction.ts`; orden `pets` en `src/desktop.ts`, `src/main.ts` y `src-tauri/src/lib.rs` | `npx tsc --noEmit` sin errores | Decisión 0020 |
+| 248 | Añadir pruebas unitarias | `tests/pets.test.ts` | A la primera falla una: comparaba `0` con `-0`, que para la prueba no son iguales. Era la prueba, no el código. Corregida: 39 en verde, 7 nuevas | |
+| 249 | Arrancar la app | `npm run tauri dev` con el puerto de depuración 9223 | No había ninguna copia abierta. Compila el lado nativo con la entrada nueva de la bandeja y arranca | |
+| 250 | Primera captura | `cdp.mjs` con `pet.petMenu.open()`, sobre tres fondos | El menú sale del perro y se lee sobre los tres. El retrato, pequeño y descentrado | Decisión 0020 |
+| 251 | Afinar el retrato y el tamaño | Tres rondas: cámara de 2,6 a 2,1 de distancia y encuadre centrado en la cabeza; círculos de 60 a 72 px y más separados (`FAN_STEP` de 0,6 a 0,68) | La cabeza llena el círculo, con el collar asomando | Decisión 0020 |
+| 252 | La app se recarga con un fichero a medias | Dos ediciones seguidas de `src/portrait.ts` | Error "aim is not defined" en pantalla, y el servidor de desarrollo sigue sirviendo esa versión aunque el fichero ya esté bien. Se arregla tocando el fichero (`touch`). Pasó dos veces | `investigacion.md`, parte 5 |
+| 253 | Escribir la prueba del menú | `tools/verify/menu.mjs`, con cursor virtual | Primera pasada: 18 de 19. La que falla mide el anillo antes de que termine de llenarse: era la prueba. Con la espera, 19 correctas | Decisión 0020 |
+| 254 | Probar el cambio de mascota | "Gato" y "Zorro" añadidas a mano a `PETS`; se eligen con `cdp.mjs` | Elegir "Gato" guarda, recarga la ventana y lo deja marcado; volver a "Perro", igual. Quitadas las dos: `"chosenPet": "dog"` en `pet.json` | Decisión 0020 |
+| 255 | Probar con el ratón real | `tools/verify/input.ps1`, con la acción nueva `menu` (clic derecho), y `screenshot.ps1` | Primera pasada incoherente: el clic derecho no se da y aun así el menú aparece abierto; en la captura hay un corazón de caricia. Probablemente el ratón se estaba usando; sin confirmar. Repetida dos veces con el cursor quieto: el clic derecho abre el menú, el hueco de "Pronto" deja pasar el clic y el círculo del perro lo recibe y cierra el menú | Decisión 0020, incidencias |
+| 256 | Guardar capturas | `docs/capturas/menu-mascotas.png`, con `cdp.mjs` y `sheet.ps1` | La del escritorio real no se guarda: sale el navegador que el usuario tenía abierto | Decisión 0020, incidencias |
+| 257 | Comprobar que no se ha roto lo anterior | `npx tsc --noEmit`, `npx vitest run`, `menu.mjs`, `bed.mjs`, `carry.mjs`, `npm run build` | Sin errores; 39 pruebas; 19 y 15 comprobaciones correctas; balanceo máximo de 11,4°; las dos páginas | |
+| 258 | Estado del perro tras las pruebas | `cdp.mjs` | Felicidad de 92,6 a 96,7 por las caricias de prueba. Saciedad y energía, solo lo que baja el tiempo | Decisión 0020, incidencias |
+| 259 | Documentar | Decisión 0020, parte 5 de la investigación, `README.md` y estas filas | Sin regenerar el instalador ni tocar la app instalada: queda para cuando el usuario apruebe la propuesta. La app de desarrollo se deja en marcha para que pueda probarlo | Decisión 0020 |
