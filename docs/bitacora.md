@@ -306,3 +306,13 @@ Hora comprobada: 17:16, pruebas unitarias en verde con esta versión.
 | 181 | Adaptar la app | `src/blackFur.ts` (colores de los ojos), `src/dog.ts` (el parpadeo pinta también `EyeWhite`) | | Decisión 0018, revisión 5 |
 | 182 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 152 504 bytes, 11 106 vértices, 12 materiales; 26 pruebas en verde | Decisión 0018, revisión 5 |
 | 183 | Rehacer las capturas | `docs/capturas/nuevo-modelo-*.png` | `nuevo-modelo-cara.png` incluye ahora el ojo cerrado | Decisión 0018, revisión 5 |
+
+### Modelo nuevo, revisión 6: menos frente
+
+Hora comprobada: 17:21, pruebas unitarias en verde con esta versión.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 184 | Rebajar la frente | `tools/model/build_dog.py`: cráneo más bajo, menos fondo hacia delante que hacia atrás e inclinado hacia atrás (`SKULL_RADII`, `SKULL_FRONT`, `SKULL_TILT`) | Primer intento (18°) con poco efecto de frente; con 24° la frente sube tendida y lo más alto queda entre las orejas | Decisión 0018, revisión 6 |
+| 185 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 141 500 bytes, 10 890 vértices; 26 pruebas en verde | Decisión 0018, revisión 6 |
+| 186 | Rehacer las capturas | `docs/capturas/nuevo-modelo-*.png` | `nuevo-modelo-union-orejas.png` incluye ahora una vista de perfil | Decisión 0018, revisión 6 |

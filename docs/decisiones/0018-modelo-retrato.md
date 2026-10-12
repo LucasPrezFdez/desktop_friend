@@ -1,7 +1,7 @@
 # 0018. Modelo nuevo: un retrato del perro del usuario, con collar lila
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta en su quinta versión (ver las revisiones 2 a 5 al final; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
+- **Estado:** propuesta en su sexta versión (ver las revisiones 2 a 6 al final; la 6 cambia el alto y la inclinación del cráneo de la 4; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
 - **Decide:** el usuario pide el cambio; el diseño lo propone el agente
 - **Relación con otras decisiones:** mantiene la 0005 y la 0009 (se sigue partiendo del Husky de Quaternius y de Blender en modo script) y sustituye, de la 0010, la tabla de colores y la lista de piezas añadidas. El resto de la 0010 (cinemática propia, poses en coordenadas de mundo, clips) sigue en vigor
 
@@ -320,3 +320,36 @@ En la app, el parpadeo pinta también `EyeWhite` (`src/dog.ts`).
 | `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
 
 Esta revisión no ha pasado por el segundo agente: el tamaño de la cabeza y el aspecto de los ojos son juicio del usuario.
+
+## Revisión 6: menos frente
+El usuario pidió quitarle un poco de la parte superior de la cabeza y darle una forma más realista, porque el modelo quedaba **muy frentón**.
+
+### Qué estaba mal
+El cráneo era un elipsoide derecho y simétrico de delante a atrás: la frente salía tan abultada como la nuca, subía casi vertical desde los ojos y lo más alto de la cabeza quedaba justo encima de ellos. El segundo agente ya lo había anotado en la revisión 4 como algo que no podía comprobar por falta de una foto de perfil ("frente muy abombada en perfil: sube a 73° desde el stop"); el usuario, que conoce al perro, lo confirma.
+
+### Cambios (`tools/model/build_dog.py`)
+| Parámetro | Antes | Ahora | Efecto |
+|---|---|---|---|
+| Alto del cráneo (`SKULL_RADII.z`) | 0,45 | 0,35 | Coronilla más baja |
+| Fondo hacia delante (`SKULL_FRONT`) | 0,46, igual que hacia atrás | 0,34 (hacia atrás, 0,50) | La frente abulta menos que la nuca |
+| Inclinación (`SKULL_TILT`) | 0° | 24° hacia atrás | La frente sube tendida desde los ojos y lo más alto queda entre las orejas |
+
+La coronilla queda 0,38 por encima del centro del cráneo (antes 0,45): la parte de la cabeza que hay por encima de los ojos baja en torno a una cuarta parte. Las orejas siguen naciendo a la misma distancia por debajo de la coronilla, así que bajan con ella.
+
+### Lo que se probó
+Una primera versión más tímida (alto 0,37, fondo delantero 0,40, 18°) cambiaba poco la silueta de frente; se pasó a los valores de la tabla.
+
+### Efecto sobre las medidas de la revisión 4
+- El ancho del cráneo y su perfil de frente no cambian (a 0,13 bajo la coronilla, 0,88 anchos de cráneo; antes 0,90).
+- La altura de la coronilla sobre la línea de los ojos baja de unos 0,50 anchos de cráneo a unos 0,39. La medida de las fotos era 0,50, pero el agente la dio como aproximada y tomada en un primer plano; aquí manda lo que ve el usuario.
+
+### Verificación de esta versión
+| Comprobación | Resultado |
+|---|---|
+| Renders en seis vistas, comparados con los de la revisión 5 (`docs/capturas/nuevo-modelo-cabeza.png`) | De perfil, la frente sube tendida y lo más alto queda detrás de los ojos; de frente, la coronilla baja |
+| App en desarrollo, perfil andando, de frente y en tres cuartos sobre fucsia (`docs/capturas/nuevo-modelo-union-orejas.png`) | Misma lectura que en los renders; sin huecos entre cráneo y orejas |
+| App en desarrollo, actividades (`docs/capturas/nuevo-modelo-app.png`) | Reposo, sentado, tumbado, andando, comiendo y en brazos |
+| `npm run model` | 14 clips, sin errores de validación. 1 141 500 bytes, 10 890 vértices |
+| `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
+
+Sigue sin haber una foto de perfil con la que comparar la frente.

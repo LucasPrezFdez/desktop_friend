@@ -193,8 +193,17 @@ SKULL_WIDTH = 0.90
 # llenas. Se modela como un elipsoide de sección cuadrada redondeada; cuanto mayor es
 # SKULL_SQUARENESS, más llenas las esquinas (2 sería una elipse).
 SKULL_CENTER = Vector((0.0, -1.78, 2.72))
-SKULL_RADII = Vector((SKULL_WIDTH / 2, 0.46, SKULL_WIDTH / 2))
+# Semiejes: medio ancho, fondo y alto. El fondo es distinto hacia delante (la frente) que hacia
+# atrás (la nuca): con una frente tan abultada como la nuca, el perro salía frentón.
+SKULL_RADII = Vector((SKULL_WIDTH / 2, 0.50, 0.35))
+SKULL_FRONT = 0.34
 SKULL_SQUARENESS = 4.0
+# El cráneo va inclinado hacia atrás: la frente sube tendida desde los ojos y lo más alto de la
+# cabeza queda entre las orejas, no encima de los ojos.
+SKULL_TILT = math.radians(24)
+SKULL_TO_LOCAL = Matrix.Rotation(SKULL_TILT, 3, "X")
+# Altura de la coronilla sobre el centro del cráneo, ya con la inclinación.
+SKULL_TOP = math.hypot(SKULL_RADII.z * math.cos(SKULL_TILT), SKULL_RADII.y * math.sin(SKULL_TILT))
 # Arista más larga que se admite en el cráneo antes de darle forma, en unidades del Husky.
 SKULL_EDGE = 0.07
 # Los ojos quedan poco por encima del centro del cráneo; entre sus centros hay 0,67 anchos de cráneo.
@@ -210,7 +219,7 @@ EYE_OPEN_DOWN = 0.72
 # Las orejas nacen en las esquinas de arriba, 0,22 anchos de cráneo por debajo de la coronilla
 # (medido en el render, con el grosor de la propia oreja, quedan a unos 0,15).
 EAR_SET_Y = -1.73
-EAR_SET_Z = SKULL_CENTER.z + SKULL_RADII.z - 0.22 * SKULL_WIDTH
+EAR_SET_Z = SKULL_CENTER.z + SKULL_TOP - 0.22 * SKULL_WIDTH
 # La trufa mide 0,31 anchos de cráneo.
 NOSE_WIDTH = 0.31 * SKULL_WIDTH
 NOSE_STRETCH = 1.3
@@ -249,9 +258,11 @@ def head_point(x, y, z):
 
 def skull_reach(rel):
     """Cuánto se aleja un punto del centro del cráneo: 1 en su superficie, menos por dentro."""
+    local = SKULL_TO_LOCAL @ rel
     n = SKULL_SQUARENESS
-    front = (abs(rel.x / SKULL_RADII.x) ** n + abs(rel.z / SKULL_RADII.z) ** n) ** (2 / n)
-    return math.sqrt(front + (rel.y / SKULL_RADII.y) ** 2)
+    section = (abs(local.x / SKULL_RADII.x) ** n + abs(local.z / SKULL_RADII.z) ** n) ** (2 / n)
+    depth = SKULL_FRONT if local.y < 0 else SKULL_RADII.y
+    return math.sqrt(section + (local.y / depth) ** 2)
 
 
 def headness(point):
@@ -789,7 +800,7 @@ def report_skull(skin):
                 hits.append(hit.x / HEAD_SIZE)
         return max(hits, default=0.0)
 
-    crown = SKULL_CENTER.z + SKULL_RADII.z
+    crown = SKULL_CENTER.z + SKULL_TOP
     profile = ", ".join(
         f"{depth:.2f}: {2 * half_width(crown - depth * SKULL_WIDTH) / SKULL_WIDTH:.2f}"
         for depth in (0.05, 0.13, 0.20, 0.27, 0.37, 0.50)
