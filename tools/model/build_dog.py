@@ -263,6 +263,12 @@ def reshape(dog):
             dome = head * smoothstep(-0.08, 0.12, p.z - SKULL_CENTER.z) * smoothstep(-0.05, 0.12, p.y - STOP_Y)
             radial = p - SKULL_CENTER
             p += (SKULL_CENTER + radial.normalized() * SKULL_RADIUS - p) * 0.55 * dome
+            # Detrás de los ojos, lo que aún queda por dentro de la esfera sale hasta su superficie:
+            # si no, donde estaban las orejas tiesas se ve una hendidura.
+            radial = p - SKULL_CENTER
+            if radial.length < SKULL_RADIUS:
+                fill = head * smoothstep(-0.16, 0.06, p.z - SKULL_CENTER.z) * smoothstep(0.02, 0.18, p.y - STOP_Y)
+                p += (SKULL_CENTER + radial.normalized() * SKULL_RADIUS - p) * fill
             p.z = HEAD_PIVOT.z + (p.z - HEAD_PIVOT.z) * (1 + (1 / SQUASH - 1) * head)
 
         # Tronco más hondo y más ancho: el pelo de la barriga acorta las patas a la vista.
@@ -422,14 +428,14 @@ def catmull_rom(points, steps):
 
 
 # Oreja izquierda desde su arranque en el cráneo: (hacia fuera, hacia atrás, hacia arriba) y ancho.
-# Sale hacia fuera, hace un pliegue y cuelga hasta por debajo de la mandíbula.
+# Sale hacia fuera, hace un pliegue y cuelga hasta la altura de la mandíbula.
 EAR_PATH = [
     ((-0.08, 0.00, 0.00), 0.22),
     ((0.04, 0.00, 0.03), 0.28),
-    ((0.10, 0.00, -0.11), 0.38),
-    ((0.12, -0.02, -0.34), 0.45),
-    ((0.11, -0.05, -0.58), 0.44),
-    ((0.09, -0.07, -0.78), 0.26),
+    ((0.10, 0.00, -0.10), 0.38),
+    ((0.12, -0.02, -0.29), 0.45),
+    ((0.11, -0.04, -0.47), 0.43),
+    ((0.09, -0.06, -0.62), 0.26),
 ]
 # La oreja no cuelga de canto: su cara ancha mira hacia fuera y algo hacia delante, así se ve
 # tanto de frente como de perfil. Este es el eje de su ancho para la oreja izquierda.

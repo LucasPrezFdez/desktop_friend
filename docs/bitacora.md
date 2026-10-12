@@ -249,3 +249,15 @@ Horas comprobadas en las salidas de las herramientas: 15:46 primer intento de co
 | 152 | Comprobar tipos y pruebas | `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde | |
 | 153 | Guardar capturas | `docs/capturas/nuevo-modelo-app.png`, `-cara.png`, `-poses.png` y `-cabeza.png` | | Decisión 0018 |
 | 154 | Documentar | Decisión 0018, parte 3 de la investigación y estas filas | Primer intento fallido: al añadir el texto desde la línea de comandos, el intérprete ejecutó como órdenes los fragmentos entre comillas invertidas. Todas fallaron sin cambiar nada, pero el texto quedó estropeado; se deshizo y se volvió a escribir desde ficheros | |
+
+### Modelo nuevo, revisión 2: hendidura de la cabeza y orejas más cortas
+
+Hora comprobada: 16:12, pruebas unitarias en verde con esta versión.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 155 | Localizar la hendidura que señaló el usuario | Renders de la cabeza en grande, en tres vistas | Está entre la cúpula del cráneo y el arranque de la oreja: es el relleno hundido del hueco de la oreja tiesa | Decisión 0018, revisión 2 |
+| 156 | Rellenar la hendidura | `reshape` en `tools/model/build_dog.py`: lo que queda por dentro de la esfera del cráneo sale hasta su superficie | Primer intento descartado: aplicado también a la altura de los ojos, los dejaba saltones y borraba las canas. Limitado a detrás de los ojos, el cráneo queda redondo y la cara igual | Decisión 0018, revisión 2 |
+| 157 | Acortar las orejas | `EAR_PATH`: el recorrido baja 0,62 en vez de 0,78 | Acaban a la altura de la mandíbula | Decisión 0018, revisión 2 |
+| 158 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; sin hendidura en la app; 26 pruebas en verde. Las pruebas le dieron de comer una vez más | Decisión 0018, revisión 2 |
+| 159 | Rehacer las capturas | `docs/capturas/nuevo-modelo-*.png` | Las cuatro corresponden ya a la revisión 2 | Decisión 0018, revisión 2 |

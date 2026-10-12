@@ -1,7 +1,7 @@
 # 0018. Modelo nuevo: un retrato del perro del usuario, con collar lila
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta, pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
+- **Estado:** propuesta en su segunda versión (ver "Revisión 2" al final), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
 - **Decide:** el usuario pide el cambio; el diseño lo propone el agente
 - **Relación con otras decisiones:** mantiene la 0005 y la 0009 (se sigue partiendo del Husky de Quaternius y de Blender en modo script) y sustituye, de la 0010, la tabla de colores y la lista de piezas añadidas. El resto de la 0010 (cinemática propia, poses en coordenadas de mundo, clips) sigue en vigor
 
@@ -58,7 +58,7 @@ Al final se aplasta el modelo entero al 82 % en vertical desde su nodo raíz. Co
 ### Piezas añadidas (`build_extras`)
 | Pieza | Cómo |
 |---|---|
-| Orejas | Lámina con grosor que sigue una curva: sale del cráneo, hace un pliegue y cuelga hasta por debajo de la mandíbula. Su cara ancha mira hacia fuera y algo hacia delante. Cinco flecos en el borde. Los huesos `Ear1` a `Ear4` se trasladan a la oreja nueva y pasan a colgar de `Head` |
+| Orejas | Lámina con grosor que sigue una curva: sale del cráneo, hace un pliegue y cuelga hasta la mandíbula (más corta desde la revisión 2). Su cara ancha mira hacia fuera y algo hacia delante. Cinco flecos en el borde. Los huesos `Ear1` a `Ear4` se trasladan a la oreja nueva y pasan a colgar de `Head` |
 | Ojos | Disco abombado: cerco negro, iris marrón oscuro, pupila azul grisácea y un brillo |
 | Canas | Material `Muzzle` (casi blanco) en labios, barbilla y lados del hocico; `FurGrey` en la franja de transición y alrededor de los ojos. La caña del hocico queda negra |
 | Pecho | Cinco mechones blancos y grises bajo el collar y seis negros alrededor |
@@ -136,3 +136,30 @@ Desaparecen `EyeWhite` y el `EyePupil` marrón del pack.
 
 ## Pendiente de la opinión del usuario
 Si se parece lo bastante es un juicio suyo. Cosas fáciles de retocar, todas en `tools/model/build_dog.py` o en la paleta de `src/blackFur.ts`: tono del lila, tamaño y color de los ojos (incluida la pupila velada), cuánto blanco lleva el hocico, largo de las orejas, largo de las patas (`SQUASH`), tamaño de la cabeza y cuánta mancha tiene el pecho.
+
+## Revisión 2: retoques pedidos por el usuario
+Al ver la primera versión en la app, el usuario dijo que estaba muy bien y pidió dos retoques, con una captura:
+
+1. Una **hendidura en la cabeza**, entre lo alto del cráneo y el arranque de la oreja.
+2. Las **orejas un poco más cortas**.
+
+### La hendidura
+| | |
+|---|---|
+| Causa | Al borrar las orejas tiesas se borra también parte del costado del cráneo, y el relleno del hueco queda plano y hundido. El abombado del cráneo solo acercaba cada vértice un 55 % a la esfera, así que el hundimiento seguía ahí |
+| Arreglo | Detrás de los ojos, todo vértice que quede por dentro de la esfera del cráneo sale hasta su superficie (`reshape`) |
+| Lo que se descartó | Aplicarlo también a la altura de los ojos: la zona se abultaba, el ojo quedaba saltón y desaparecían las canas de alrededor |
+
+### Las orejas
+El recorrido de la oreja baja 0,62 en vez de 0,78 (un 20 % menos): ahora acaba a la altura de la mandíbula, con los flecos por debajo.
+
+### Verificación de esta versión
+| Comprobación | Resultado |
+|---|---|
+| Renders de la cabeza en seis vistas | Cráneo redondo, sin escalón entre la cúpula y la oreja; ojos y canas como antes |
+| `npm run model` | 14 clips, sin errores de validación. 1 101 948 bytes, 10 056 vértices |
+| App en desarrollo, primer plano sobre el mismo fondo que la captura del usuario | Sin hendidura, de pie y sentado |
+| App en desarrollo, resto de actividades | Reposo, sentado, tumbado, andando, comiendo y en brazos; la mano sigue viéndose junto a la oreja |
+| `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
+
+Las cuatro capturas `docs/capturas/nuevo-modelo-*.png` se han rehecho con esta versión.
