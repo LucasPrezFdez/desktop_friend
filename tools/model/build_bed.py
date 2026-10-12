@@ -18,8 +18,8 @@ from mathutils import Vector
 UP = Vector((0.0, 0.0, 1.0))
 
 # El reborde es un tubo que recorre una elipse. Estos son los radios de su línea central.
-RIM_X = 0.78
-RIM_Y = 0.45
+RIM_X = 0.88
+RIM_Y = 0.46
 # Medio ancho y media altura del tubo. La app mira la cama casi a ras de suelo: para que se vea
 # por dentro, el reborde es alto por detrás, como un respaldo, y se aplasta hacia el frente.
 RIM_WIDE = 0.14

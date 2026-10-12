@@ -114,7 +114,7 @@ export class Bed {
       if (material) node.material = material;
     });
     const shadow = createShadow();
-    shadow.scale.set(2.5, 1.9, 1);
+    shadow.scale.set(2.8, 1.9, 1);
     this.group.add(model, shadow);
     this.group.visible = false;
   }

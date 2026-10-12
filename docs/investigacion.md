@@ -290,6 +290,11 @@ Hechos comprobados al añadir la cama (decisión 0019). No hubo búsqueda en la 
 ## La cámara y la forma de la cama
 - La cámara de la app está a 1,5 de altura y a 5,4 de distancia, mirando a 1,2: ve el suelo casi de canto. Un objeto bajo y ancho, como una cama en forma de rosquilla, se ve como una franja. [V] Captura de la primera versión de la cama en la app.
 
+## La pose de dormir
+- La página de Dreamstime que el usuario dio como referencia (`es.dreamstime.com/photos-images/dibujo-animado-de-perro-durmiendo.html`) no se puede leer sin navegador: responde HTTP 403 con un captcha de PerimeterX. [V] `curl` con tres agentes de usuario distintos y la herramienta de lectura web, el 12 de octubre de 2026.
+- Un perro con el pecho a 0,68 unidades del suelo se ve agachado aunque tenga las patas dobladas debajo; con el pecho a 0,37, las patas delanteras estiradas y la cabeza horizontal, se ve tumbado. De pie lo tiene a 1,56. [V] Renders de las dos versiones del clip `Nap` y alturas del hueso `FrontUpperLeg.L` que imprime `DOG_DEBUG=1`.
+- Para bajar la cabeza hasta el suelo hay que doblar el cuello unos 100° y enderezar después la cabeza casi 80°. [V] Valores de `NAP` en `tools/model/build_dog.py`.
+
 # Fuentes
 
 ## Tauri

@@ -1308,19 +1308,20 @@ SLEEP = {**LIE, **expand({
     "Tail1.pitch": 40.0, "Tail2.pitch": 20.0,
 })}
 
-# Dormido en su cama, hecho un ovillo. En la app se le ve desde su lado derecho, así que el lomo,
-# el cuello y la cola se curvan hacia ese lado: la cabeza queda vuelta hacia quien mira, apoyada
-# en el borde de la cama, y la cola recogida por delante.
+# Dormido en su cama, como en los dibujos de perros durmiendo: echado del todo, con las patas
+# delanteras estiradas y la barbilla apoyada. En la app se le ve desde su lado derecho, así que el
+# lomo, el cuello y la cola se curvan hacia ese lado: la cabeza queda vuelta hacia quien mira,
+# sobre el borde delantero de la cama, y la cola recogida por delante.
 NAP = {**LIE, **expand({
-    # La grupa baja hasta el colchón (tumbado sin más queda en alto, como si fuera a levantarse)
-    # y el pecho se hunde un poco en él.
-    "body.pitch": 11.0, "body.dz": -0.88,
-    # Las patas delanteras, recogidas bajo el pecho en vez de estiradas.
-    "FL.dy": -0.10, "FR.dy": -0.10,
+    # Echado del todo: el pecho y la barriga bajan hasta hundirse un poco en el colchón, y la grupa
+    # con ellos. Con el pecho en alto, aunque fuera poco, parecía medio de pie.
+    "body.pitch": 9.0, "body.dz": -1.05,
+    # Las patas delanteras, estiradas por delante y hacia su derecha, para que la cabeza caiga encima.
+    "FL.dy": -0.85, "FR.dy": -0.85, "FL.dx": -0.40, "FR.dx": -0.40,
     "Torso.yaw": -6.0, "Torso2.yaw": -8.0, "Torso3.yaw": -10.0,
-    "Neck1.pitch": -38.0, "Neck1.yaw": -18.0, "Neck2.yaw": -24.0, "Neck3.yaw": -24.0, "Head.yaw": -18.0,
-    # Con el cuello ya girado, bajar la cabeza es en parte cabecear y en parte ladearse.
-    "Neck2.pitch": -15.0, "Neck2.roll": -13.0, "Neck3.pitch": -6.0, "Neck3.roll": -14.0, "Head.roll": -18.0,
+    # El cuello baja hasta el suelo y la cabeza se endereza: queda horizontal, con la barbilla apoyada.
+    "Neck1.pitch": -60.0, "Neck1.yaw": -12.0, "Neck2.pitch": -30.0, "Neck2.yaw": -12.0,
+    "Neck3.pitch": -10.0, "Neck3.yaw": -10.0, "Head.pitch": 78.0, "Head.roll": 8.0,
     "Ear1.*.pitch": 15.0,
     "Tail1.pitch": 35.0, "Tail1.yaw": 45.0, "Tail2.yaw": 40.0, "Tail3.yaw": 35.0, "Tail4.yaw": 30.0, "Tail5.yaw": 25.0,
 })}
@@ -1421,7 +1422,7 @@ def bake_clip(rig, clip, fps):
         samples.append(rig.snapshot())
         if os.environ.get("DOG_DEBUG") and frame == frames:
             for name in ("Back", "BackLeg.L", "BackUpperLeg.L", "BackLowerLeg.L", "IKBackLeg.L",
-                         "FrontUpperLeg.L", "FrontLowerLeg.L", "IKFrontLeg.L", "Head"):
+                         "FrontUpperLeg.L", "FrontLowerLeg.L", "IKFrontLeg.L", "Neck1", "Head"):
                 p = rig.position(rig.bones[name])
                 print(f"[debug] {clip['name']:8s} {name:16s} y={p.y:6.2f} z={p.z:6.2f}")
 

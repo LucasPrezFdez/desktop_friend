@@ -46,9 +46,9 @@ const SIDE = Math.PI / 2;
 /** Tumbado se le ve más de perfil: de frente, las patas estiradas se salían por debajo de la ventana. */
 const LYING_FACING = 1.0;
 /** En la cama va casi de perfil, a lo largo de ella, con la cabeza vuelta hacia quien mira. */
-const NAP_FACING = 1.3;
+const NAP_FACING = 1.4;
 /** Cuánto retrocede dentro de la cama, en unidades de la escena, para que quede centrado en ella. */
-const NAP_BACK = 0.2;
+const NAP_BACK = 0.36;
 const BOWL_X = 0.98;
 const EAT_SECONDS = 5.3;
 const HAPPY_SECONDS = 1.6;
@@ -467,7 +467,7 @@ export class Behavior {
   private fallAsleep(): void {
     this.posture = 'lie';
     this.phase = 1;
-    // En la cama duerme hecho un ovillo; en el suelo, estirado.
+    // En la cama duerme echado del todo, con la barbilla apoyada; el clip del suelo no cabe en ella.
     this.dog.play(this.activity === 'nap' ? 'Nap' : 'Sleep', { fade: 0.9 });
     // Dormido casi no se mueve: con menos fotogramas por segundo gasta menos.
     this.stage.setFps(FPS_ASLEEP);

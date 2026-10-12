@@ -425,3 +425,18 @@ Horas comprobadas en las salidas de las herramientas:
 | 235 | Guardar capturas | `docs/capturas/cama-secuencia.png`, `cama-escritorio.png` y `cama-modelo.png` | | Decisión 0019 |
 | 236 | Dejar la energía del perro como estaba | `cdp.mjs` | 95, como al empezar. Las pruebas también lo acariciaron: la felicidad pasó de 99,2 a 100 | Decisión 0019, incidencias |
 | 237 | Documentar | Decisión 0019, parte 4 de la investigación, `README.md`, `CLAUDE.md` y estas filas | Sin regenerar el instalador ni tocar la app instalada: queda para cuando el usuario apruebe la propuesta | Decisión 0019 |
+
+### La cama, revisión 2: dormir echado del todo
+
+Hora comprobada: 20:10, modelo regenerado y pruebas unitarias en verde con esta versión (salidas de `date` y de `vitest`).
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 238 | Intentar ver la imagen de referencia del usuario | `curl` con tres agentes de usuario, la herramienta de lectura web y una búsqueda | HTTP 403 con captcha; la búsqueda solo devuelve títulos. No se ha visto ninguna imagen. Se toma la postura habitual de esos dibujos: echado, con la barbilla sobre las patas | Decisión 0019, revisión 2 |
+| 239 | Rehacer la pose `Nap` | `NAP` en `tools/model/build_dog.py`: pecho al suelo, patas delanteras estiradas, cuello abajo y cabeza enderezada; tres rondas de render | A la primera ya se lee como un perro tumbado; después se le baja la cabeza hasta apoyarla. Un `sed` dejó el script sin finales de línea de Windows; se restauraron | Decisión 0019, revisión 2 |
+| 240 | Probarla en la cama | Recarga de las dos ventanas y capturas con `cdp.mjs`, también de cerca y desde arriba | Estirado no cabe: la cabeza y las patas atraviesan el reborde | Decisión 0019, revisión 2 |
+| 241 | Alargar la cama y recolocar al perro | `RIM_X` de 0,78 a 0,88 en `build_bed.py`; `NAP_FACING` 1,4 y `NAP_BACK` 0,36 en `src/behavior.ts`; patas algo menos estiradas y cabeza más girada | Cabe entero, con la barbilla sobre el borde delantero | Decisión 0019, revisión 2 |
+| 242 | Regenerar, validar y probar | `npm run model:bed`, `npm run model`, `npx tsc --noEmit`, `npx vitest run`, `tools/verify/bed.mjs`, `carry.mjs` | Sin errores de validación; cama de 102 504 bytes (2,02 × 1,20 × 0,42), perro de 1 288 704; 32 pruebas en verde; 15 comprobaciones de la cama correctas | Decisión 0019, revisión 2 |
+| 243 | Rehacer las capturas | `docs/capturas/cama-secuencia.png`, `cama-escritorio.png` (con `screenshot.ps1`, llevando al perro por depuración) y `cama-modelo.png` | Las tres son ya de la revisión 2 | Decisión 0019, revisión 2 |
+| 244 | Dejar al perro despierto y con su energía | `cdp.mjs` | Energía en 95, como al empezar | |
+| 245 | Documentar | Revisión 2 de la decisión 0019, "La pose de dormir" en la investigación y estas filas | Un primer intento de escribirlo todo en una sola orden de consola falló al interpretarla, sin cambiar nada; se hizo con las herramientas de edición | Decisión 0019, revisión 2 |
