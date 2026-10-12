@@ -4,16 +4,22 @@ import * as THREE from 'three';
 // las bandas del sombreado desaparecen y el perro se queda en una silueta plana.
 export const PALETTE: Record<string, number> = {
   Fur: 0x1b1b21,
-  FurLight: 0x2b2b33,
+  // Flecos de las orejas, el pecho y las patas, y las zonas que en el Husky eran blancas.
+  FurLight: 0x27272e,
   Nose: 0x111116,
-  EyeWhite: 0xf3f0e8,
-  EyePupil: 0x3d2414,
-  Collar: 0xe2322f,
+  // Canas: el hocico casi blanco y una franja gris de transición, también alrededor de los ojos.
+  Muzzle: 0xb9b6b1,
+  FurGrey: 0x5c5b63,
+  EyeIris: 0x2c1a0e,
+  // Pupila velada, azul grisáceo.
+  EyePupil: 0x7590b0,
+  EyeShine: 0xffffff,
+  Collar: 0xb58be8,
   Tag: 0xf4b830,
   Tongue: 0xf27d90,
 };
 
-const FUR = new Set(['Fur', 'FurLight', 'Nose']);
+const FUR = new Set(['Fur', 'FurLight', 'Nose', 'Muzzle', 'FurGrey']);
 
 /** Rampa de tres tonos para el sombreado. El más oscuro no llega a cero: las sombras no se aplastan. */
 function toonRamp(): THREE.DataTexture {

@@ -18,10 +18,10 @@ export interface PlayOptions {
 }
 
 const MODEL_URL = '/models/dog.glb';
-/** Altura del modelo en sus propias unidades, hasta la punta de las orejas. */
-const MODEL_HEIGHT = 3.2;
+/** Altura del modelo en sus propias unidades, hasta lo alto de la cabeza. */
+const MODEL_HEIGHT = 2.67;
 /** Altura del perro en la escena. */
-export const DOG_HEIGHT = 1.25;
+export const DOG_HEIGHT = 1.12;
 
 const TAIL_BONES = ['Tail1', 'Tail2', 'Tail3', 'Tail4', 'Tail5', 'Tail6'];
 const UP = new THREE.Vector3(0, 1, 0);
@@ -81,7 +81,7 @@ export class Dog {
     });
     this.tongue = tongue;
     this.tongueOut = false;
-    this.eyes = ['EyeWhite', 'EyePupil'].map((name) => {
+    this.eyes = ['EyeIris', 'EyePupil', 'EyeShine'].map((name) => {
       const material = materials.get(name)!;
       return { material, open: material.color.clone() };
     });

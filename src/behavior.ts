@@ -27,7 +27,9 @@ export function pickActivity(current: Mood, roll: number): Choice {
 }
 
 const SIDE = Math.PI / 2;
-const BOWL_X = 0.86;
+/** Tumbado se le ve más de perfil: de frente, las patas estiradas se salían por debajo de la ventana. */
+const LYING_FACING = 1.0;
+const BOWL_X = 0.98;
 const EAT_SECONDS = 5.3;
 const HAPPY_SECONDS = 1.6;
 /** Píxeles lógicos por segundo al caminar. */
@@ -39,7 +41,7 @@ const CARRY_LIFT = 0.7;
 // La mano entra en diagonal desde un lado y agarra el collar por detrás del cuello. Encima de la
 // cabeza parecía un gorro; así se ve la palma junto al cuello, a la altura del collar.
 /** Dónde quedan las puntas de los dedos respecto a la nuca, vistas desde la cámara. */
-const HAND_GRIP = new THREE.Vector3(0.085, 0.04, -0.05);
+const HAND_GRIP = new THREE.Vector3(0.2, 0.03, -0.05);
 /** Inclinación de la mano, en radianes: los dedos apuntan hacia el cuello. */
 const HAND_TILT = -0.8;
 // Balanceo al llevarlo: un péndulo amortiguado que cuelga de la nuca. Tiene que ser leve.
@@ -302,7 +304,7 @@ export class Behavior {
         break;
       case 'lie':
         this.duration = random(14, 34);
-        this.facing = this.side * 0.6;
+        this.facing = this.side * LYING_FACING;
         if (this.posture === 'lie') {
           this.dog.play('Lie', { fade: 0.6 });
           this.phase = 1;
@@ -311,7 +313,7 @@ export class Behavior {
         }
         break;
       case 'sleep':
-        this.facing = this.side * 0.6;
+        this.facing = this.side * LYING_FACING;
         if (this.posture === 'lie') this.fallAsleep();
         else this.dog.play('LieDown', { once: true });
         break;

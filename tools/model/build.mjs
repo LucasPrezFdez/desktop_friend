@@ -15,6 +15,7 @@ if (!existsSync(blender)) {
 const source = resolve(root, 'assets/source/quaternius/Husky.glb');
 const built = resolve(root, 'tools/model/out/dog.glb');
 const sheet = resolve(root, 'tools/model/out/dog_sheet.png');
+const headSheet = resolve(root, 'tools/model/out/dog_head.png');
 const target = resolve(root, 'public/models/dog.glb');
 
 const EXPECTED_CLIPS = [
@@ -53,9 +54,16 @@ execFileSync(process.execPath, [resolve(root, 'node_modules/@gltf-transform/cli/
   stdio: 'inherit',
 });
 
-runBlender('tools/model/preview.py', ['--in', built, '--out', sheet, '--shots', SHOTS, '--size', '300', '--cols', '4']);
+// La lengua se oculta en las hojas: la app solo la enseña cuando está contento.
+runBlender('tools/model/preview.py', [
+  '--in', built, '--out', sheet, '--shots', SHOTS, '--size', '300', '--cols', '4', '--hide', 'Tongue', '--floor',
+]);
+runBlender('tools/model/preview.py', [
+  '--in', built, '--out', headSheet, '--shots', 'rest@front,rest@three,rest@side', '--size', '360', '--cols', '3',
+  '--frame', '0,-1.95,2.2,1.25', '--hide', 'Tongue',
+]);
 
 mkdirSync(dirname(target), { recursive: true });
 copyFileSync(built, target);
 console.log(`Modelo listo: ${target}`);
-console.log(`Hoja de revisión: ${sheet}`);
+console.log(`Hojas de revisión: ${sheet} y ${headSheet}`);

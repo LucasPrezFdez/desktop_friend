@@ -204,6 +204,39 @@ La página de licencia de Quaternius muestra ahora una "Quaternius Asset License
 
 ---
 
+# Parte 3. El modelo nuevo (12 de octubre de 2026)
+
+Datos reunidos para la decisión 0018. Aquí [V] significa medido con una herramienta o visto directamente en las fotos.
+
+## El perro de las fotos
+Cuatro fotos del usuario, que no se guardan en el repositorio.
+
+- Perro pequeño de pelo negro, de tipo spaniel. [V] La raza o mezcla exacta no se conoce. [NV]
+- Orejas caídas, largas y anchas, con flecos ondulados; arrancan a los lados del cráneo, por debajo de su punto más alto. [V]
+- Hocico corto y ancho con canas: casi blanco en labios y barbilla, gris hacia los ojos; la caña sigue negra. Canas también alrededor de los ojos. [V]
+- Ojos grandes y redondos, marrón oscuro, con el centro velado de azul grisáceo en las cuatro fotos. [V] La causa no se conoce y no hace falta para el modelo. [NV]
+- Mancha blanca y gris pequeña en el pecho; pelo ondulado en cuello y pecho. [V]
+- Cola con flecos largos; en la foto en que se le ve sentado desde arriba la lleva levantada. [V]
+- Flecos detrás de las patas. [V]
+- De pie (foto 2), el hueco entre la barriga y el suelo es bastante menos de la mitad de su altura. [I] Las fotos están tomadas desde arriba y no permiten medirlo.
+
+## La malla del Husky
+Medido con scripts de Blender sobre `assets/source/quaternius/Husky.glb`.
+
+- 3900 vértices y 1920 caras tal como se importa; soldando los vértices coincidentes quedan 955 vértices y 1906 triángulos, en una sola isla y sin bordes abiertos. [V]
+- Mira hacia -Y; mide 3,89 de largo y 3,19 de alto hasta la punta de las orejas; el lomo queda a 2,3 y la barriga a 1,2. [V]
+- Los ojos son caras diminutas dentro de la propia malla; su contorno usa el material de la trufa. [V]
+- El cráneo no pesa solo sobre `Head`: los lados y la parte de arriba pesan sobre `Ear1` y la nuca sobre `Neck3`. [V]
+- Los huesos de las orejas cuelgan de `Neck3`, no de `Head`. [V]
+- El grupo `Tail1` incluye la grupa, no solo el arranque de la cola. [V]
+
+## Cómo cambiar la malla sin romper los clips
+- Los clips guardan, para cada hueso, un giro respecto a su postura de reposo. Si un hueso solo se traslada en reposo, o se gira junto con su malla, los clips siguen valiendo. [V] Comprobado con las orejas (trasladadas y colgadas de otro hueso) y la cola (girada 38°).
+- Un escalado no uniforme del nodo raíz afecta por igual a la malla, al esqueleto y a los clips: los pies siguen coincidiendo con sus huesos de control. [V] Comprobado en la hoja de poses con suelo.
+- Cambiar la longitud de los huesos de las patas rompería esa coincidencia, porque los pies cuelgan de huesos de control que no dependen del cuerpo. [I] No se llegó a probar.
+- `bmesh.ops.holes_fill` rellena el hueco de cada oreja; un abanico desde el centro (`poke`) deja un pico en la nuca porque el hueco no es plano. [V]
+- El cálculo automático de normales puede dejar del revés una pieza abierta, y Blender la dibuja igual por las dos caras. Activando el descarte de caras traseras en el render se ve como en la app. [V]
+
 # Fuentes
 
 ## Tauri

@@ -219,3 +219,33 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 136 | Comprobar el arrastre en la app instalada | `input.ps1 -Action drag -HoldMs 3000` y captura | Parcial: la captura muestra al perro ya soltado, de frente; el arrastre se cortó antes, probablemente por el ratón del usuario. No se repite para no interferir | Decisión 0017, resolución |
 | 137 | Actualizar el README | Fila "Moverlo" | | Decisión 0017 |
 | 138 | Fusionar y subir | `git merge --ff-only` en `desarrollo` y `main`, `git push` | | Decisión 0017, resolución |
+
+## 2026-10-12
+
+### Consulta: cuánto ocupa la app
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 139 | Medir lo que ocupa en disco la carpeta del proyecto | Suma de tamaños por carpeta en PowerShell | 6,6 GB en total, de los que 6,4 GB son `src-tauri/target` (caché de compilación de Rust: `debug\deps` 2,6 GB, `release\deps` 1,3 GB, `debug\incremental` 0,7 GB). `node_modules` 166 MB. Ambas están en `.gitignore` y se regeneran | |
+| 140 | Medir lo que ocupa la app instalada | Tamaño de `AppData\Local\DesktopFriend` y de `AppData\Local\dev.desktopfriend.pet`; memoria privada de `desktopfriend.exe` y sus procesos de WebView2 | Programa 9,8 MB; datos de WebView2 67,5 MB; instalador 2,4 MB; 204 MB de memoria privada con la app en marcha | Decisión 0013 |
+
+### Modelo nuevo: retrato del perro del usuario (rama `nuevo-modelo-3d`)
+
+Horas comprobadas en las salidas de las herramientas: 15:46 primer intento de construcción en Blender (falló al medir la oreja); 16:03 pruebas unitarias en verde; 16:04 capturas finales guardadas en `docs/capturas/`.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 141 | Crear la rama | `git switch -c nuevo-modelo-3d` desde `desarrollo` | Creada; arrastra las filas 139 y 140, que estaban sin confirmar | Decisión 0018 |
+| 142 | Estudiar las cuatro fotos del perro | Lectura de las imágenes adjuntas | Lista de rasgos: spaniel pequeño negro, orejas caídas con flecos, hocico cano, ojos grandes con la pupila velada, mancha en el pecho, cola de plumero | Decisión 0018; `investigacion.md`, parte 3 |
+| 143 | Medir la malla y el esqueleto del Husky | Dos scripts de Blender desechables: huesos, grupos de vértices, islas, perfiles y caras de ojos y trufa | 955 vértices una vez soldados, 1906 triángulos, una sola isla; el cráneo reparte sus pesos entre `Head`, `Ear1` y `Neck3` | `investigacion.md`, parte 3 |
+| 144 | Reescribir la construcción del modelo | `tools/model/build_dog.py`: `reshape`, clase `Extras`, `lower_tail_bones`, `move_ear_bones`, `squash` | Construye y exporta los 14 clips. Primer intento fallido: la ventana de medida de la oreja no encontraba vértices; se amplió | Decisión 0018 |
+| 145 | Iterar la forma con renders | Siete rondas de construir y renderizar cabeza, cuerpo y poses | Corregidos: orejas de canto, ojos saltones, canas como gafas, mechones como colmillos, pico en la nuca | Decisión 0018, "Lo que se probó y se descartó" |
+| 146 | Acortar las patas | Aplastamiento vertical al 82 % desde el nodo raíz, compensado en cabeza y tronco | Silueta de perro pequeño; los pies siguen en el suelo en todos los clips | Decisión 0018 |
+| 147 | Mejorar la herramienta de render | `tools/model/preview.py`: caras traseras sin dibujar, `--hide` y `--floor`; `build.mjs` genera también `dog_head.png` | Las hojas muestran el suelo y la cabeza en tres vistas | Decisión 0018 |
+| 148 | Adaptar la app | `src/blackFur.ts` (paleta, collar lila), `src/dog.ts` (ojos, tamaño), `src/behavior.ts` (cuenco, mano, tumbado de perfil) | | Decisión 0018 |
+| 149 | Ajustar la postura de tumbado | `LIE`: `body.dz` de -0,95 a -0,70 y patas delanteras de -0,75 a -0,55 | La barriga ya no se hunde en el suelo | Decisión 0018 |
+| 150 | Regenerar y validar el modelo | `npm run model` | 14 clips, sin errores de validación, un aviso conocido. 1 101 364 bytes, 10 056 vértices, 11 materiales, 50 huesos | Decisión 0018 |
+| 151 | Probar en la app en desarrollo | `npm run tauri dev` con el puerto de depuración y `tools/verify/cdp.mjs` | Reposo, sentado, tumbado, dormido, andando, triste, feliz, comiendo y en brazos, sobre tres fondos. Las pruebas le dieron de comer tres veces: la saciedad guardada subió de unos 9 a unos 75 puntos | Decisión 0018 |
+| 152 | Comprobar tipos y pruebas | `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde | |
+| 153 | Guardar capturas | `docs/capturas/nuevo-modelo-app.png`, `-cara.png`, `-poses.png` y `-cabeza.png` | | Decisión 0018 |
+| 154 | Documentar | Decisión 0018, parte 3 de la investigación y estas filas | Primer intento fallido: al añadir el texto desde la línea de comandos, el intérprete ejecutó como órdenes los fragmentos entre comillas invertidas. Todas fallaron sin cambiar nada, pero el texto quedó estropeado; se deshizo y se volvió a escribir desde ficheros | |

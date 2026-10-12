@@ -12,6 +12,7 @@ import os
 import sys
 import tempfile
 
+import bmesh
 import bpy
 import numpy as np
 from mathutils import Vector
@@ -39,6 +40,10 @@ def parse_args():
     parser.add_argument("--frame", default="")
     # Recorta cada toma en círculo con fondo transparente (para el icono de la app).
     parser.add_argument("--round", action="store_true")
+    # Materiales que no se dibujan, separados por comas (la lengua, que la app solo enseña a ratos).
+    parser.add_argument("--hide", default="")
+    # Dibuja el suelo, para ver si alguna pose lo atraviesa.
+    parser.add_argument("--floor", action="store_true")
     return parser.parse_args(argv)
 
 
@@ -147,9 +152,30 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=os.path.abspath(args.src))
 
+    # Como en la app: una cara vista por detrás no se dibuja. Así una pieza del revés se nota aquí.
+    for material in bpy.data.materials:
+        material.use_backface_culling = True
+
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    hidden = {name for name in args.hide.split(",") if name}
+    for obj in meshes:
+        slots = {i for i, m in enumerate(obj.data.materials) if m and m.name in hidden}
+        if slots:
+            bm = bmesh.new()
+            bm.from_mesh(obj.data)
+            bmesh.ops.delete(bm, geom=[f for f in bm.faces if f.material_index in slots], context="FACES")
+            bm.to_mesh(obj.data)
+            bm.free()
     armature = next((o for o in bpy.context.scene.objects if o.type == "ARMATURE"), None)
     scene, camera = setup_scene(args.size, bg)
+    if args.floor:
+        bpy.ops.mesh.primitive_plane_add(size=12.0, location=(0.0, 0.0, 0.0))
+        ground = bpy.data.materials.new("PreviewFloor")
+        ground.use_nodes = True
+        shader = next(n for n in ground.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+        shader.inputs["Base Color"].default_value = (bg[0] * 0.3, bg[1] * 0.3, bg[2] * 0.3, 1.0)
+        shader.inputs["Roughness"].default_value = 1.0
+        bpy.context.object.data.materials.append(ground)
 
     set_clip(armature, "rest", 0.0, scene)
     bpy.context.view_layer.update()
