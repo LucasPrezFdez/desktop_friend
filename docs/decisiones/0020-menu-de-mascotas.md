@@ -90,3 +90,10 @@ Con la app de desarrollo y las herramientas de `tools/verify/`:
 - `src/main.ts`, `src/desktop.ts`, `src-tauri/src/lib.rs`: la orden "pets" y la entrada **Cambiar de mascota** en la bandeja.
 - `tools/verify/input.ps1`: acción `menu` (clic derecho).
 - No cambia nada del comportamiento del perro, del modelo ni de la cama.
+
+## Resolución
+Al ver la propuesta, el usuario contestó "vale" y pidió confirmarla y fusionarla en la rama de la cama, sin pedir retoques.
+
+- `menu-de-mascotas` se fusiona en `cama-del-perro` con un avance rápido (commit `16e8c51`). Desde aquí el menú y la cama van juntos en esa rama.
+- No se ha fusionado en `desarrollo` ni en `main`, ni se ha subido a GitHub, ni se ha regenerado el instalador: el usuario no lo ha pedido. La cama (decisión 0019) sigue pendiente de su opinión.
+- Las decisiones que no había especificado (botón derecho, hueco de "Pronto", nombre "Perro", recarga al cambiar, cierre a los 10 segundos) quedan como están; no las ha comentado una a una.
