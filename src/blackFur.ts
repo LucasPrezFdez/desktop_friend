@@ -12,7 +12,7 @@ export const PALETTE: Record<string, number> = {
   FurGrey: 0x5c5b63,
   EyeIris: 0x2c1a0e,
   // Pupila velada, azul grisáceo.
-  EyePupil: 0x7590b0,
+  EyePupil: 0x6a86a8,
   EyeShine: 0xffffff,
   Collar: 0xb58be8,
   Tag: 0xf4b830,

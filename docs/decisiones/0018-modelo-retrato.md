@@ -1,7 +1,7 @@
 # 0018. Modelo nuevo: un retrato del perro del usuario, con collar lila
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta en su tercera versión (ver "Revisión 2" y "Revisión 3" al final), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
+- **Estado:** propuesta en su cuarta versión (ver las revisiones 2, 3 y 4 al final; la 4 sustituye a lo dicho antes sobre el cráneo, los ojos, las orejas y la trufa), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
 - **Decide:** el usuario pide el cambio; el diseño lo propone el agente
 - **Relación con otras decisiones:** mantiene la 0005 y la 0009 (se sigue partiendo del Husky de Quaternius y de Blender en modo script) y sustituye, de la 0010, la tabla de colores y la lista de piezas añadidas. El resto de la 0010 (cinemática propia, poses en coordenadas de mundo, clips) sigue en vigor
 
@@ -196,3 +196,85 @@ El largo que cuelga es el de la revisión 2.
 | `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
 
 Las capturas `docs/capturas/nuevo-modelo-*.png` se han rehecho con esta versión.
+
+## Revisión 4: la forma de la cabeza, medida sobre las fotos
+El usuario confirmó que estaba viendo la revisión 3 y dijo que seguía mal. Pidió crear **un agente en paralelo** para hacer el trabajo con precisión y fijó el criterio: la forma de la cabeza ha de ser la del perro de las fotos.
+
+### Método
+Hasta aquí el agente principal había decidido a ojo qué era la hendidura, y había fallado dos veces. En esta revisión:
+
+1. Un segundo agente, sin conocer las hipótesis anteriores, midió la cabeza en las cuatro fotos y en el render del modelo, píxel a píxel, y lo expresó todo en **anchos de cráneo** (AC). También superpuso el contorno de la foto 1 sobre la vista de frente del modelo.
+2. El agente principal rehízo la cabeza para que se construya a partir de esas medidas.
+3. El segundo agente volvió a medir cada versión (tres rondas) y señaló lo que no coincidía, incluidas dos regresiones que el principal no había visto.
+
+### Diagnóstico del segundo agente
+La hendidura es **el ángulo entrante de la silueta donde la oreja se une al cráneo**. El modelo tenía una cúpula alta y estrecha, con las orejas colgando a la altura de los ojos. El perro tiene un arco ancho y rebajado, y las orejas salen de sus esquinas de arriba sin escalón: en ninguna de las cuatro fotos hay entrante entre la coronilla y la oreja. La revisión 3 había tapado la costura, pero el defecto era de silueta.
+
+### Medidas (en anchos de cráneo, vista de frente)
+"Real" son las medidas de las fotos, con su margen; la foto 1, un primer plano, agranda hocico y barbilla un 10–15 %, y el valor entre paréntesis lo descuenta.
+
+| Medida | Real | Revisión 3 | Revisión 4 |
+|---|---|---|---|
+| Coronilla sobre los arranques de oreja | 0,15 (0,10–0,25) | 0,36 | 0,08 en la última medición; después se bajó el arranque |
+| Arranque de la oreja sobre la línea de ojos | 0,37 (0,25–0,48) | 0,15 | 0,46 |
+| Punta de la oreja bajo la línea de ojos | 0,47–0,52 | 0,84 | 0,52 |
+| Ancho de la silueta a 0,13 / 0,27 / 0,48 bajo la coronilla | 0,94 / 1,26 / 1,63 | 0,78 / 0,94 / 1,54 | 0,98 / 1,30 / 1,67 |
+| Ancho total con orejas | 1,71 | 1,79 | 1,74 |
+| Separación entre ojos | 0,67 (0,57–0,71) | 0,72 | 0,68 |
+| Diámetro del ojo | 0,15 | 0,26 | 0,15–0,16 |
+| Línea de ojos, fracción del alto de la cabeza | 0,39–0,47 | 0,43 | 0,44 |
+| Alto de la cabeza | 1,27 (≈1,15) | 1,18 | 1,17 |
+| Ancho del hocico | 0,60–0,67 (≈0,55–0,60) | 0,59 | 0,56 |
+| Línea de ojos a barbilla | 0,77 (≈0,67) | 0,67 | 0,65 |
+| Ancho de la trufa | ≈0,31 | 0,46 | 0,33 |
+| Alto de la trufa | ≈0,20 | 0,17 | 0,145 en la última medición; después se estiró un 30 % |
+
+Las cifras de la columna "Revisión 4" son de la tercera ronda del agente. Los últimos retoques (ver más abajo) se hicieron después y **no han pasado por una cuarta medición**.
+
+### Cómo está hecho ahora (`tools/model/build_dog.py`)
+| Parte | Antes | Ahora |
+|---|---|---|
+| Cráneo | Esfera a la que cada vértice se acercaba a medias, más rellenos | Elipsoide de sección cuadrada redondeada (`SKULL_WIDTH`, `SKULL_RADII`, `SKULL_SQUARENESS`): casi plano arriba y con las esquinas llenas. Todo vértice del cráneo va a su superficie |
+| Malla del cráneo | Una subdivisión | Se corta toda arista de más de 0,07 y se regularizan los triángulos. Con la malla anterior no había ni un vértice entre 30° y 82° de la sección y la curva se quedaba en una recta |
+| Ojos | Donde los tenía el Husky | Donde digan `EYE_X` y `EYE_Z`, buscando la piel con un rayo; tamaño `EYE_RADIUS` |
+| Canas de los ojos | Caras de la cabeza pintadas | Un aro propio pegado a la piel (pintadas, con la malla fina salían en picos) |
+| Orejas | Nacían en lo alto de la cúpula y bajaban pegadas | Nacen en la esquina de arriba (`EAR_SET_Z`), salen hacia fuera y cuelgan hasta la boca; su cara ancha mira más al frente. El borde de delante sigue pegado a la sien y a la mejilla casi hasta la punta |
+| Hocico y mandíbula | | Un 15 % más grandes en las tres direcciones |
+| Trufa | La del Husky, ensanchada con el hocico | Limitada a 0,31 anchos de cráneo y estirada un 30 % hacia abajo |
+
+El script imprime al construir el perfil del cráneo en anchos de cráneo, para cotejarlo sin renderizar.
+
+### Lo que encontró el segundo agente por el camino
+| Ronda | Hallazgo | Arreglo |
+|---|---|---|
+| 2 | Regresión: al crecer el cráneo, hocico y mandíbula quedaron pequeños (0,50 de ancho; ojos a barbilla 0,53) | Hocico y mandíbula ×1,15; ojos algo más altos |
+| 2 | Rayas oscuras finas en la unión oreja–cráneo | Triángulos del cráneo regularizados; el borde delantero de la oreja, pegado a la piel |
+| 3 | Defecto nuevo: una rendija entre oreja y mejilla por la que se veía el fondo | El borde delantero sigue pegado casi hasta la punta |
+| 3 | Un triángulo oscuro en la sien | Se disuelven los triángulos casi sin área |
+| 3 | Trufa plana; arranque de las orejas algo alto | Trufa estirada; arranque bajado de 0,18 a 0,22 |
+
+### Lo que se probó y se descartó
+| Intento | Por qué no |
+|---|---|
+| Alargar la trufa pintando de negro las caras de debajo | Borde en picos; parecía una boca abierta |
+| Aro de canas ancho (1,6 radios) | A tamaño de la app el ojo parecía un agujero con un aro; se dejó en 1,42 |
+
+### Verificación de esta versión
+| Comprobación | Resultado |
+|---|---|
+| Medición independiente del segundo agente, ronda 3 | "La forma de la cabeza coincide ya con la del perro de las fotos dentro del margen de mis medidas" |
+| Entrantes de coronilla a oreja, ronda 3 | Ninguno de frente, en tres cuartos ni en perfil. Desde arriba y de frente queda un escalón de 0,03 anchos de cráneo, sin valle |
+| Renders en seis vistas tras los últimos retoques (`docs/capturas/nuevo-modelo-cabeza.png`) | Sin rendija entre oreja y mejilla; trufa más alta. Revisado por el agente principal, no medido |
+| App en desarrollo, primeros planos sobre fucsia (`docs/capturas/nuevo-modelo-union-orejas.png`) | Sin fondo a la vista entre cráneo, orejas y mejillas en seis ángulos |
+| App en desarrollo, actividades (`docs/capturas/nuevo-modelo-app.png`) | Reposo, sentado, tumbado, andando, comiendo y en brazos |
+| `npm run model` | 14 clips, sin errores de validación. 1 153 836 bytes, 11 200 vértices |
+| `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
+
+### Lo que no se puede comprobar con estas fotos
+- El perfil: la inclinación de la frente y el largo exacto del hocico. No hay foto de lado.
+- El ancho del cráneo no se ve limpio en ninguna (las orejas lo tapan): se dedujo de la separación entre ojos, con un margen de 1,4 a 1,75.
+
+### Diferencias que quedan
+- El perro tiene dos abultamientos de ceja y un surco en medio de la frente; el modelo tiene la frente lisa.
+- Vistas desde arriba, las orejas del modelo salen como alas rígidas; las del perro caen más pegadas.
+- El escalón de 0,03 anchos de cráneo donde la oreja se separa del cráneo, visto desde arriba y de frente.

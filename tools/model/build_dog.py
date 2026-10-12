@@ -53,7 +53,7 @@ COLORS = {
     "FurGrey": (0.100, 0.099, 0.110),
     "EyeIris": (0.025, 0.011, 0.005),
     # Pupila velada, azul grisáceo, como en las fotos.
-    "EyePupil": (0.180, 0.280, 0.430),
+    "EyePupil": (0.145, 0.238, 0.392),
     "EyeShine": (0.900, 0.900, 0.900),
     "Collar": (0.462, 0.258, 0.807),
     "Tag": (0.900, 0.580, 0.080),
@@ -177,10 +177,33 @@ HEAD_PIVOT = Vector((0.0, -1.62, 2.48))
 HEAD_SCALE = 1.32
 # Donde acaba la frente y empieza el hocico, ya con la cabeza agrandada.
 STOP_Y = -2.05
-MUZZLE_LENGTH = 0.72
-MUZZLE_WIDTH = 1.28
-SKULL_CENTER = Vector((0.0, -1.80, 2.72))
-SKULL_RADIUS = 0.43
+MUZZLE_LENGTH = 0.83
+MUZZLE_WIDTH = 1.47
+# El hocico y la mandíbula también crecen hacia abajo, desde la altura de la caña.
+MUZZLE_DEPTH = 1.15
+MUZZLE_TOP_Z = 2.78
+# Medidas de la cabeza, sacadas de las fotos (docs/decisiones/0018, revisión 4) y expresadas
+# respecto al ancho del cráneo. Son las de la forma final, la que queda después de squash().
+SKULL_WIDTH = 0.90
+# El cráneo, visto de frente, es un arco ancho y rebajado: casi plano arriba y con las esquinas
+# llenas. Se modela como un elipsoide de sección cuadrada redondeada; cuanto mayor es
+# SKULL_SQUARENESS, más llenas las esquinas (2 sería una elipse).
+SKULL_CENTER = Vector((0.0, -1.78, 2.72))
+SKULL_RADII = Vector((SKULL_WIDTH / 2, 0.46, SKULL_WIDTH / 2))
+SKULL_SQUARENESS = 4.0
+# Arista más larga que se admite en el cráneo antes de darle forma, en unidades del Husky.
+SKULL_EDGE = 0.07
+# Los ojos quedan poco por encima del centro del cráneo; entre sus centros hay 0,67 anchos de cráneo.
+EYE_X = 0.67 * SKULL_WIDTH / 2
+EYE_Z = SKULL_CENTER.z + 0.025
+EYE_RADIUS = 0.17 * SKULL_WIDTH / 2
+# Las orejas nacen en las esquinas de arriba, 0,22 anchos de cráneo por debajo de la coronilla
+# (medido en el render, con el grosor de la propia oreja, quedan a unos 0,15).
+EAR_SET_Y = -1.73
+EAR_SET_Z = SKULL_CENTER.z + SKULL_RADII.z - 0.22 * SKULL_WIDTH
+# La trufa mide 0,31 anchos de cráneo.
+NOSE_WIDTH = 0.31 * SKULL_WIDTH
+NOSE_STRETCH = 1.3
 BELLY_DROP = 0.25
 # El perro retratado es pequeño y el Husky es alto de patas. Al final se aplasta el modelo entero
 # en vertical (ver squash()): las patas se acortan y, como el aplastamiento afecta por igual a la
@@ -202,6 +225,18 @@ LEG_GROUPS = [
     (("FrontUpperLeg", "FrontLowerLeg"), ("IKFrontLeg", "FF"), 0.30, -1.13),
     (("BackUpperLeg", "BackLowerLeg"), ("IKBackLeg", "FFB"), 0.37, 0.93),
 ]
+
+
+def lift(z, amount=1.0):
+    """Estira en vertical lo que squash() aplastará después, para que conserve su forma."""
+    return HEAD_PIVOT.z + (z - HEAD_PIVOT.z) * (1 + (1 / SQUASH - 1) * amount)
+
+
+def skull_reach(rel):
+    """Cuánto se aleja un punto del centro del cráneo: 1 en su superficie, menos por dentro."""
+    n = SKULL_SQUARENESS
+    front = (abs(rel.x / SKULL_RADII.x) ** n + abs(rel.z / SKULL_RADII.z) ** n) ** (2 / n)
+    return math.sqrt(front + (rel.y / SKULL_RADII.y) ** 2)
 
 
 def headness(point):
@@ -246,6 +281,25 @@ def reshape(dog):
     head_edges = [e for e in bm.edges if all(headness(v.co) > 0.05 for v in e.verts)]
     bmesh.ops.subdivide_edges(bm, edges=head_edges, cuts=1, use_grid_fill=True)
     bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])
+    # En el cráneo (por detrás y por encima de los ojos del pack) se sigue cortando toda arista
+    # larga. El relleno de las orejas deja triángulos enormes y, con pocos vértices, la curva del
+    # cráneo se quedaría en una línea recta de esquina a esquina.
+    for _ in range(6):
+        long_edges = [
+            e for e in bm.edges
+            if e.calc_length() > SKULL_EDGE
+            and all(headness(v.co) > 0.6 and v.co.y > -1.93 and v.co.z > 2.55 for v in e.verts)
+        ]
+        if not long_edges:
+            break
+        bmesh.ops.subdivide_edges(bm, edges=long_edges, cuts=1, use_grid_fill=True)
+        bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])
+    # Reparte mejor los triángulos: los muy afilados se sombrean como rayas oscuras.
+    skull_faces = [
+        f for f in bm.faces if all(headness(v.co) > 0.6 and v.co.y > -1.93 and v.co.z > 2.55 for v in f.verts)
+    ]
+    skull_edges = {e for f in skull_faces for e in f.edges if all(face in skull_faces for face in e.link_faces)}
+    bmesh.ops.beautify_fill(bm, faces=skull_faces, edges=list(skull_edges))
 
     for vert in bm.verts:
         p = vert.co.copy()
@@ -259,17 +313,15 @@ def reshape(dog):
             if p.y < STOP_Y:
                 p.y = STOP_Y + (p.y - STOP_Y) * MUZZLE_LENGTH
             p.x *= 1 + (MUZZLE_WIDTH - 1) * muzzle
-            # Cráneo abombado: la parte de arriba se acerca a una esfera.
-            dome = head * smoothstep(-0.08, 0.12, p.z - SKULL_CENTER.z) * smoothstep(-0.05, 0.12, p.y - STOP_Y)
-            radial = p - SKULL_CENTER
-            p += (SKULL_CENTER + radial.normalized() * SKULL_RADIUS - p) * 0.55 * dome
-            # Detrás de los ojos, lo que aún queda por dentro de la esfera sale hasta su superficie:
-            # si no, donde estaban las orejas tiesas se ve una hendidura.
-            radial = p - SKULL_CENTER
-            if radial.length < SKULL_RADIUS:
-                fill = head * smoothstep(-0.16, 0.06, p.z - SKULL_CENTER.z) * smoothstep(0.02, 0.18, p.y - STOP_Y)
-                p += (SKULL_CENTER + radial.normalized() * SKULL_RADIUS - p) * fill
-            p.z = HEAD_PIVOT.z + (p.z - HEAD_PIVOT.z) * (1 + (1 / SQUASH - 1) * head)
+            p.z = MUZZLE_TOP_Z + (p.z - MUZZLE_TOP_Z) * (1 + (MUZZLE_DEPTH - 1) * muzzle)
+            # Cráneo: todo lo que queda detrás de los ojos y por encima de las mejillas se lleva a la
+            # superficie del elipsoide. Así no queda ni el pico del Husky ni el hueco de sus orejas.
+            rel = p - SKULL_CENTER
+            reach = skull_reach(rel)
+            cranium = head * smoothstep(-0.20, -0.04, rel.z) * smoothstep(-0.02, 0.16, p.y - STOP_Y)
+            if reach > 1e-6:
+                p = p.lerp(SKULL_CENTER + rel / reach, cranium)
+            p.z = lift(p.z, head)
 
         # Tronco más hondo y más ancho: el pelo de la barriga acorta las patas a la vista.
         torso = weight(vert, TORSO_BONES)
@@ -297,13 +349,14 @@ def reshape(dog):
     muzzle_slot, grey = slot(dog, "Muzzle"), slot(dog, "FurGrey")
     old_eyes = (slot(dog, "PackEyeWhite"), slot(dog, "PackEyePupil"))
 
-    # Los ojos del pack marcan dónde van los nuevos; después se tapan con pelo.
+    # Los ojos van donde digan EYE_X y EYE_Z, sobre la piel: se busca lanzando un rayo desde delante.
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    skin = bvhtree.BVHTree.FromBMesh(bm)
     eyes = {}
     for sign in (1, -1):
-        faces = [f for f in bm.faces if f.material_index in old_eyes and f.calc_center_median().x * sign > 0]
-        area = sum(f.calc_area() for f in faces)
-        center = sum((f.calc_center_median() * f.calc_area() for f in faces), Vector()) / area
-        normal = sum((f.normal * f.calc_area() for f in faces), Vector()).normalized()
+        center, normal, _index, _distance = skin.ray_cast(Vector((sign * EYE_X, -5.0, lift(EYE_Z))), Vector((0.0, 1.0, 0.0)))
+        if center is None:
+            raise SystemExit("No se encontró la piel donde va el ojo")
         eyes[sign] = (center, normal)
     eye_y = eyes[1][0].y
     tip_y = min(v.co.y for f in bm.faces if f.material_index == nose for v in f.verts)
@@ -314,6 +367,8 @@ def reshape(dog):
             continue
         if face.material_index in old_eyes or (face.material_index == nose and center.y > (eye_y + tip_y) / 2):
             face.material_index = fur  # ojos del pack y su contorno
+        if face.material_index == nose and abs(center.x) > NOSE_WIDTH / 2:
+            face.material_index = muzzle_slot  # la trufa del Husky es más ancha que la del retrato
         if face.material_index == nose:
             continue
         # 0 a la altura de los ojos, 1 en la punta del hocico.
@@ -324,10 +379,17 @@ def reshape(dog):
             face.material_index = muzzle_slot
         elif along > 0.36 and not bridge:
             face.material_index = grey
-        elif min((center - eyes[sign][0]).length for sign in (1, -1)) < 0.14:
-            face.material_index = grey  # canas alrededor de los ojos
         else:
             face.material_index = fur
+
+    # La trufa del retrato es más alta que la del Husky: se estira hacia abajo desde su borde de arriba.
+    nose_verts = {v for f in bm.faces if f.material_index == nose for v in f.verts}
+    nose_top = max(v.co.z for v in nose_verts)
+    for vert in nose_verts:
+        vert.co.z = nose_top - (nose_top - vert.co.z) * NOSE_STRETCH
+    # Los triángulos casi sin área se sombrean como manchas oscuras.
+    bmesh.ops.dissolve_degenerate(bm, dist=0.012, edges=[e for e in bm.edges if all(headness(v.co) > 0.3 for v in e.verts)])
+    bmesh.ops.triangulate(bm, faces=[f for f in bm.faces if len(f.verts) > 3])
 
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
     for face in bm.faces:
@@ -428,24 +490,26 @@ def catmull_rom(points, steps):
 
 
 # Oreja izquierda desde su arranque en el cráneo: (hacia fuera, hacia atrás, hacia arriba) y ancho.
-# Nace arriba, dentro de la cúpula del cráneo, baja pegada a ella y cuelga hasta la altura de la
-# mandíbula. Si saliera de golpe por el costado, entre la cúpula y la oreja quedaría una hendidura.
+# Nace dentro de la esquina de arriba del cráneo, sale hacia fuera y hacia abajo siguiendo su curva
+# y cuelga hasta la altura de la boca. Vista de frente, la línea de la coronilla a la oreja es un
+# solo arco, sin entrante; lo más ancho queda poco por debajo de los ojos.
 EAR_PATH = [
-    ((-0.19, 0.00, 0.205), 0.22),
-    ((-0.07, 0.00, 0.112), 0.30),
-    ((0.02, 0.00, -0.012), 0.38),
-    ((0.09, 0.00, -0.14), 0.42),
-    ((0.12, -0.02, -0.31), 0.45),
-    ((0.11, -0.04, -0.48), 0.43),
-    ((0.09, -0.06, -0.62), 0.26),
+    ((-0.10, 0.00, 0.06), 0.16),
+    ((0.00, 0.00, 0.00), 0.20),
+    ((0.06, 0.00, -0.09), 0.24),
+    ((0.10, 0.00, -0.18), 0.34),
+    ((0.16, -0.01, -0.29), 0.40),
+    ((0.18, -0.02, -0.42), 0.42),
+    ((0.16, -0.04, -0.56), 0.36),
+    ((0.13, -0.05, -0.68), 0.16),
 ]
 # La oreja no cuelga de canto: su cara ancha mira hacia fuera y algo hacia delante, así se ve
 # tanto de frente como de perfil. Este es el eje de su ancho para la oreja izquierda.
-EAR_ACROSS = Vector((0.6, 0.8, 0.0))
+EAR_ACROSS = Vector((0.8, 0.6, 0.0))
 # En qué punto del recorrido (0 a 1) queda cada hueso de la oreja.
-EAR_BONES_AT = (0.32, 0.52, 0.70, 0.87)
+EAR_BONES_AT = (0.22, 0.45, 0.66, 0.85)
 # Hasta aquí la oreja es raíz: va fija al cráneo y no se mueve con sus huesos.
-EAR_ROOT = 0.20
+EAR_ROOT = 0.12
 
 
 class Extras:
@@ -520,21 +584,25 @@ class Extras:
             fraction = i / (len(path) - 1)
             # La raíz va tumbada sobre el cráneo, de delante a atrás y casi sin grosor; al colgar
             # gira hacia fuera y engorda.
-            free = smoothstep(EAR_ROOT, 0.5, fraction)
+            free = smoothstep(0.05, 0.32, fraction)
             back = Vector((0.0, 1.0, 0.0)).lerp(hanging, free).normalized()
             tangent = (path[min(i + 1, len(path) - 1)] - path[max(i - 1, 0)]).normalized()
             normal = tangent.cross(back).normalized() * sign  # hacia fuera
             half = widths[i].x / 2
-            thickness = 0.09 * smoothstep(0.0, 0.4, fraction)
+            thickness = 0.09 * smoothstep(-0.10, 0.25, fraction)
             # (posición, altura sobre la piel) de los cuatro vértices de la sección.
             section = [
                 (center - back * half, -0.02), (center + normal * thickness, thickness),
                 (center + back * half, -0.02), (center - normal * 0.03, -0.03),
             ]
-            # La raíz se ciñe a la piel del cráneo: nace a ras de ella y se va despegando.
-            hug = 1 - free
+            # La raíz se ciñe a la piel del cráneo: nace a ras de ella y se va despegando. El borde de
+            # delante y la cara de dentro siguen pegados casi hasta la punta, a lo largo de la sien
+            # y la mejilla: si se despegan, entre la oreja y la cara queda una rendija por la que
+            # se ve el fondo.
+            loose = 1 - free
+            held = 1 - smoothstep(0.72, 0.96, fraction)
             row = []
-            for point, height in section:
+            for (point, height), hug in zip(section, (held, loose, loose, held)):
                 if hug > 0:
                     on_skin, skin_normal, _index, _distance = self.skin.find_nearest(point)
                     point = point.lerp(on_skin + skin_normal * height, hug)
@@ -551,8 +619,8 @@ class Extras:
         # Flecos: el pelo largo y ondulado que cuelga del borde.
         side = ".L" if sign > 0 else ".R"
         down = Vector((0.0, 0.0, -1.0))
-        for row_index, shift, lean, length in ((-4, 0.9, 0.5, 0.14), (-3, -0.9, -0.35, 0.13), (-2, 0.8, 0.4, 0.16),
-                                               (-1, -0.5, -0.2, 0.17), (-1, 0.5, 0.25, 0.15)):
+        for row_index, shift, lean, length in ((-4, 0.9, 0.5, 0.10), (-3, -0.9, -0.35, 0.09), (-2, 0.8, 0.4, 0.11),
+                                               (-1, -0.5, -0.2, 0.11), (-1, 0.5, 0.25, 0.10)):
             row = rows[row_index]
             center = (row[0].co + row[2].co) / 2 + (row[1].co - row[3].co) * 0.3
             half = (row[2].co - row[0].co).length / 2
@@ -601,10 +669,20 @@ class Extras:
                 for i in range(segments)
             ]
 
-        skirt, rim, iris = ring(1.16, -0.06), ring(1.0, 0.0), ring(0.45, 0.014)
+        skirt, rim, iris = ring(1.16, -0.06), ring(1.0, 0.0), ring(0.70, 0.010)
         top = self.bm.verts.new(center + normal * 0.02)
         pupil = [self.bm.faces.new((iris[i], iris[(i + 1) % segments], top)) for i in range(segments)]
         lid, brown = band(rim, skirt), band(iris, rim)
+        # Canas alrededor del ojo: un aro pegado a la piel. Pintando las caras de la cabeza el borde
+        # salía en picos, como pestañas.
+        inner, outer = ring(1.10, 0.004), ring(1.42, 0.0)
+        for vert in outer:
+            on_skin, skin_normal, _index, _distance = self.skin.find_nearest(vert.co)
+            vert.co = on_skin + skin_normal * 0.006
+        halo = band(inner, outer)
+        self.paint(halo, "FurGrey")
+        self.bind([*inner, *outer], "Head")
+        self.outward.append((halo, normal))
         spot = center + (right * 0.30 + up * 0.38) * radius + normal * 0.028
         shine_verts = [
             self.bm.verts.new(spot + (right * dx + up * dy) * radius * 0.2)
@@ -652,6 +730,25 @@ class Extras:
             bpy.ops.object.material_slot_remove_unused()
 
 
+def report_skull(skin):
+    """Imprime el perfil del cráneo visto de frente, en anchos de cráneo, para cotejarlo con las fotos."""
+    def half_width(z):
+        hits = []
+        for step in range(15):
+            y = SKULL_CENTER.y - 0.35 + 0.05 * step
+            hit, _normal, _index, _distance = skin.ray_cast(Vector((3.0, y, lift(z))), Vector((-1.0, 0.0, 0.0)))
+            if hit is not None:
+                hits.append(hit.x)
+        return max(hits, default=0.0)
+
+    crown = SKULL_CENTER.z + SKULL_RADII.z
+    profile = ", ".join(
+        f"{depth:.2f}: {2 * half_width(crown - depth * SKULL_WIDTH) / SKULL_WIDTH:.2f}"
+        for depth in (0.05, 0.13, 0.20, 0.27, 0.37, 0.50)
+    )
+    print(f"[build] cabeza, ancho del cráneo según la profundidad bajo la coronilla: {profile}")
+
+
 def build_extras(armature, dog, section, eyes):
     """Orejas, ojos, mechones, collar, chapa y lengua. Devuelve dónde van los huesos de las orejas."""
     center, axis, side, front, radius_side, radius_front = section
@@ -697,20 +794,25 @@ def build_extras(armature, dog, section, eyes):
     extras.paint(tongue_faces, "Tongue")
     extras.bind([v for layer in tongue_verts for v in layer], "Head")
 
+    report_skull(extras.skin)
+
     ear_bones = {}
     for sign in (1, -1):
         eye_center, eye_normal = eyes[sign]
         # Mira un poco más al frente que el ojo del pack: de cara se le ven los dos ojos enteros.
         gaze = (eye_normal + Vector((0.0, -0.45, 0.0))).normalized()
-        extras.eye(eye_center + Vector((-0.035 * sign, -0.025, 0.0)), gaze, 0.115)
+        extras.eye(eye_center, gaze, EYE_RADIUS)
 
-        # La oreja arranca detrás del ojo y algo por encima, en el costado del cráneo.
-        attach_y, attach_z = eye_center.y + 0.31, eye_center.z + 0.05
-        attach_x = max(
-            abs(p.x) for p in extras.points if abs(p.y - attach_y) < 0.20 and abs(p.z - attach_z) < 0.16
+        # La oreja arranca en la esquina de arriba del cráneo: se busca la piel lanzando un rayo
+        # desde el costado.
+        attach, _normal, _index, _distance = extras.skin.ray_cast(
+            Vector((sign * 3.0, EAR_SET_Y, lift(EAR_SET_Z))), Vector((-sign, 0.0, 0.0))
         )
-        ear_bones.update(extras.ear(Vector((sign * attach_x, attach_y, attach_z)), sign))
-        print(f"[build] ojo {sign:+d}: {tuple(round(v, 2) for v in eye_center)}, oreja en x={attach_x:.2f} y={attach_y:.2f} z={attach_z:.2f}")
+        if attach is None:
+            raise SystemExit("No se encontró el cráneo donde nace la oreja")
+        ear_bones.update(extras.ear(attach, sign))
+        print(f"[build] ojo {sign:+d}: {tuple(round(v, 2) for v in eye_center)}, "
+              f"oreja en {tuple(round(v, 2) for v in attach)}")
 
     # Mancha blanca del pecho y el pelo ondulado de alrededor.
     for x, z, length, name in (

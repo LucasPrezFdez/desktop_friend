@@ -274,3 +274,21 @@ Hora comprobada: 16:21, pruebas unitarias en verde con esta versión.
 | 163 | Añadir una vista desde arriba a los renders | `above` en `tools/model/preview.py` | | Decisión 0018, revisión 3 |
 | 164 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs` con la cámara acercada a la cabeza, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; sin hueco entre cráneo y orejas en seis ángulos; 26 pruebas en verde. Las pruebas le dieron de comer una vez más | Decisión 0018, revisión 3 |
 | 165 | Rehacer las capturas | `docs/capturas/nuevo-modelo-*.png` y la nueva `nuevo-modelo-union-orejas.png` | | Decisión 0018, revisión 3 |
+
+### Modelo nuevo, revisión 4: la cabeza, medida sobre las fotos con un segundo agente
+
+Horas comprobadas: 16:57 y 17:01, pruebas unitarias en verde con las dos últimas versiones del modelo.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 166 | Confirmar qué versión veía el usuario | Consulta a la app en marcha por el puerto de depuración | Una sola copia en marcha, la de desarrollo, con 10 120 vértices cargados: era la revisión 3 | |
+| 167 | Lanzar un segundo agente para medir | Encargo sin hipótesis previas: medir la cabeza en las cuatro fotos y en el render, en anchos de cráneo, y diagnosticar la hendidura | La hendidura es el ángulo entrante donde la oreja se une al cráneo; orejas implantadas 0,22 demasiado bajas; cráneo estrecho y picudo; ojos un 70 % grandes; trufa un 45 % ancha | Decisión 0018, revisión 4 |
+| 168 | Rehacer el cráneo a partir de medidas | `reshape` en `tools/model/build_dog.py`: elipsoide de sección cuadrada redondeada, ojos colocados por coordenadas | Primer intento: el cráneo salía estrecho (0,71 a 0,13 bajo la coronilla, objetivo 0,94) | Decisión 0018, revisión 4 |
+| 169 | Averiguar por qué salía estrecho | Volcado de los vértices del cráneo por ángulo | Ningún vértice entre 30° y 82°: el relleno de las orejas deja triángulos enormes. Cortando toda arista de más de 0,07 el perfil pasa a 0,90 | Decisión 0018, revisión 4 |
+| 170 | Orejas desde las esquinas del cráneo, ojos y trufa a medida | `EAR_PATH`, `EAR_SET_Z`, `EAR_ACROSS`, `EYE_RADIUS`, `NOSE_WIDTH` | | Decisión 0018, revisión 4 |
+| 171 | Segunda medición del agente | Mismo método sobre el render nuevo | Hendidura resuelta de frente, en tres cuartos y en perfil. Regresión: hocico y mandíbula pequeños | Decisión 0018, revisión 4 |
+| 172 | Corregir hocico, ojos y costura | Hocico y mandíbula ×1,15; triángulos regularizados; aro de canas propio en los ojos | Descartado por el camino: alargar la trufa pintando caras (parecía una boca) | Decisión 0018, revisión 4 |
+| 173 | Tercera medición del agente | Mismo método | La forma coincide con la de las fotos dentro del margen. Defecto nuevo: rendija entre oreja y mejilla; un triángulo oscuro en la sien; trufa plana | Decisión 0018, revisión 4 |
+| 174 | Últimos retoques | Borde delantero de la oreja pegado a la mejilla; triángulos degenerados disueltos; trufa estirada; arranque de la oreja algo más bajo | Revisado en renders y en la app por el agente principal; sin cuarta medición | Decisión 0018, revisión 4 |
+| 175 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 153 836 bytes, 11 200 vértices; 26 pruebas en verde. Las pruebas le dieron de comer varias veces más | Decisión 0018, revisión 4 |
+| 176 | Rehacer las capturas | `docs/capturas/nuevo-modelo-*.png` | `nuevo-modelo-cabeza.png` pasa a ser la hoja de seis vistas | Decisión 0018, revisión 4 |

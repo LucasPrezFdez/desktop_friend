@@ -230,6 +230,23 @@ Medido con scripts de Blender sobre `assets/source/quaternius/Husky.glb`.
 - Los huesos de las orejas cuelgan de `Neck3`, no de `Head`. [V]
 - El grupo `Tail1` incluye la grupa, no solo el arranque de la cola. [V]
 
+## La cabeza del perro, medida
+Medido por un segundo agente sobre las cuatro fotos (1536 × 2048 píxeles), para la revisión 4 de la decisión 0018. Todo en anchos de cráneo (el ancho de costado a costado donde nacen las orejas).
+
+- El ancho del cráneo no se ve limpio en ninguna foto: las orejas lo tapan. Se toma como 1,5 veces la separación entre los centros de los ojos, con un margen de 1,4 a 1,75. [I]
+- No hay foto de perfil ni de frente sin perspectiva. La foto 1 es la única con la cámara casi a la altura de la cabeza, y al ser un primer plano agranda hocico y barbilla un 10–15 %. [I]
+- Separación entre los centros de los ojos: 0,67. [V]
+- Diámetro del ojo visible: 0,15; disco azulado: 0,12. [V]
+- La línea de los ojos cae entre el 39 % y el 47 % del alto de la cabeza, contando desde arriba. [V]
+- Visto de frente, lo alto del cráneo es un arco ancho y rebajado: en la foto 1 la pendiente no pasa de 10° en los 0,9 anchos centrales. [V]
+- Las orejas nacen unos 0,15 por debajo de la coronilla (entre 0,10 y 0,25) y 0,37 por encima de la línea de los ojos. [V]
+- De la coronilla a la oreja la silueta es un solo arco convexo; no hay entrante en ninguna de las cuatro fotos. [V]
+- Las orejas miden de 0,97 a 1,01 de largo con flecos; la punta queda de 0,47 a 0,52 por debajo de la línea de los ojos, a la altura de la boca; lo más ancho está poco por debajo de los ojos. [V]
+- Ancho total de la cabeza con orejas: 1,71 en reposo y de 1,9 a 2,1 con las orejas abiertas. [V]
+- Ancho de la trufa: 0,31; proporción ancho/alto de 1,6 a 1. [V]
+- Ancho del hocico: de 0,60 a 0,67 en las fotos, unos 0,55 a 0,60 descontando la perspectiva. [I]
+- El largo del hocico y la inclinación de la frente no se pueden determinar con estas fotos. [NV]
+
 ## Cómo cambiar la malla sin romper los clips
 - Los clips guardan, para cada hueso, un giro respecto a su postura de reposo. Si un hueso solo se traslada en reposo, o se gira junto con su malla, los clips siguen valiendo. [V] Comprobado con las orejas (trasladadas y colgadas de otro hueso) y la cola (girada 38°).
 - Un escalado no uniforme del nodo raíz afecta por igual a la malla, al esqueleto y a los clips: los pies siguen coincidiendo con sus huesos de control. [V] Comprobado en la hoja de poses con suelo.
