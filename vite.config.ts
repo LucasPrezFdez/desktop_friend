@@ -8,6 +8,7 @@ export default defineConfig({
     strictPort: true,
     watch: { ignored: ['**/src-tauri/**', '**/tools/**', '**/assets/**'] },
   },
-  build: { target: 'es2022' },
+  // Dos páginas: la ventana del perro y la de la cama.
+  build: { target: 'es2022', rolldownOptions: { input: ['index.html', 'bed.html'] } },
   test: { include: ['tests/**/*.test.ts'] },
 });

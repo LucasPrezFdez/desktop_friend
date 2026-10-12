@@ -7,22 +7,24 @@
 // Uso (los pasos se ejecutan en orden):
 //   node tools/verify/cdp.mjs --eval "pet.behavior.force('sit')" --wait 1500 --shot sentado.png
 //   node tools/verify/cdp.mjs --bg ffffff --shot claro.png --bg 101418 --shot oscuro.png
+//   node tools/verify/cdp.mjs --page bed --shot cama.png      (la ventana de la cama)
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { findPage } from './cdp-client.mjs';
 
 const args = process.argv.slice(2);
 let port = 9223;
+let pageName = 'main';
 const steps = [];
 for (let i = 0; i < args.length; i += 2) {
   const [flag, value] = [args[i], args[i + 1]];
   if (flag === '--port') port = Number(value);
+  else if (flag === '--page') pageName = value;
   else if (['--eval', '--wait', '--shot', '--bg'].includes(flag)) steps.push([flag.slice(2), value]);
   else throw new Error(`Opción desconocida: ${flag}`);
 }
 
-const targets = await (await fetch(`http://127.0.0.1:${port}/json`)).json();
-const page = targets.find((target) => target.type === 'page');
-if (!page) throw new Error('No hay ninguna página abierta en ese puerto');
+const page = await findPage(port, pageName);
 
 const socket = new WebSocket(page.webSocketDebuggerUrl);
 await new Promise((ok, fail) => {

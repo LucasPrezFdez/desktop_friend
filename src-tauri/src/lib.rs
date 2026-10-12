@@ -21,6 +21,79 @@ fn quit_app(app: AppHandle) {
     app.exit(0);
 }
 
+/// La ventana de la cama se maneja con la API de Windows y no con la de Tauri, cuyo `show()`
+/// activa la ventana: le quitaría el foco a la del perro en pleno arrastre y quedaría por delante.
+mod bed {
+    use tauri::{AppHandle, Manager};
+    use windows::Win32::Foundation::HWND;
+    use windows::Win32::UI::WindowsAndMessaging::{
+        GetWindowLongPtrW, SetWindowLongPtrW, SetWindowPos, ShowWindow, GWL_EXSTYLE,
+        SWP_NOACTIVATE, SWP_NOSIZE, SWP_SHOWWINDOW, SW_HIDE, WS_EX_APPWINDOW, WS_EX_TOOLWINDOW,
+    };
+
+    fn handle(app: &AppHandle, label: &str) -> Result<HWND, String> {
+        app.get_webview_window(label)
+            .ok_or(format!("no existe la ventana {label}"))?
+            .hwnd()
+            .map_err(|error| error.to_string())
+    }
+
+    /// Es solo un dibujo sobre el escritorio: el ratón la atraviesa siempre y, como ventana de
+    /// herramientas, no sale en la barra de tareas ni al cambiar de ventana con Alt+Tab.
+    pub fn prepare(app: &AppHandle) -> Result<(), String> {
+        let window = app
+            .get_webview_window("bed")
+            .ok_or("no existe la ventana bed")?;
+        window
+            .set_ignore_cursor_events(true)
+            .map_err(|error| error.to_string())?;
+        let bed = handle(app, "bed")?;
+        unsafe {
+            let style = GetWindowLongPtrW(bed, GWL_EXSTYLE) as u32;
+            let style = (style & !WS_EX_APPWINDOW.0) | WS_EX_TOOLWINDOW.0;
+            SetWindowLongPtrW(bed, GWL_EXSTYLE, style as isize);
+        }
+        Ok(())
+    }
+
+    /// La muestra en `x`, `y` (píxeles físicos), sin activarla y justo debajo de la del perro.
+    pub fn place(app: &AppHandle, x: i32, y: i32) -> Result<(), String> {
+        let (bed, dog) = (handle(app, "bed")?, handle(app, "main")?);
+        unsafe {
+            SetWindowPos(
+                bed,
+                Some(dog),
+                x,
+                y,
+                0,
+                0,
+                SWP_NOACTIVATE | SWP_NOSIZE | SWP_SHOWWINDOW,
+            )
+        }
+        .map_err(|error| error.to_string())
+    }
+
+    pub fn stow(app: &AppHandle) -> Result<(), String> {
+        let bed = handle(app, "bed")?;
+        unsafe {
+            let _ = ShowWindow(bed, SW_HIDE);
+        }
+        Ok(())
+    }
+}
+
+/// Saca la cama al escritorio (ver `showBed` en `src/desktop.ts`).
+#[tauri::command]
+fn place_bed(app: AppHandle, x: i32, y: i32) -> Result<(), String> {
+    bed::place(&app, x, y)
+}
+
+/// Retira la cama del escritorio.
+#[tauri::command]
+fn stow_bed(app: AppHandle) -> Result<(), String> {
+    bed::stow(&app)
+}
+
 fn build_tray(app: &AppHandle) -> tauri::Result<()> {
     let autostart_on = app.autolaunch().is_enabled().unwrap_or(false);
 
@@ -108,9 +181,10 @@ pub fn run() {
         }))
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, None))
-        .invoke_handler(tauri::generate_handler![quit_app])
+        .invoke_handler(tauri::generate_handler![quit_app, place_bed, stow_bed])
         .setup(|app| {
             build_tray(app.handle())?;
+            bed::prepare(app.handle())?;
             Ok(())
         })
         .run(tauri::generate_context!())

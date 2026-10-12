@@ -3,11 +3,11 @@
 # Mueve el cursor un instante a dos puntos de la ventana y pregunta a Windows qué ventana
 # recibiría un clic en cada uno. Al terminar devuelve el cursor a su sitio.
 #
-# Uso: powershell -File tools/verify/clickthrough.ps1 [-SolidX 0.5 -SolidY 0.5 -EmptyX 0.06 -EmptyY 0.06]
+# Uso: powershell -File tools/verify/clickthrough.ps1 [-SolidX 0.5 -SolidY 0.78 -EmptyX 0.06 -EmptyY 0.06]
 param(
     [string]$Title = 'DesktopFriend',
     [double]$SolidX = 0.5,
-    [double]$SolidY = 0.5,
+    [double]$SolidY = 0.78,
     [double]$EmptyX = 0.06,
     [double]$EmptyY = 0.06,
     [int]$SettleMs = 1000

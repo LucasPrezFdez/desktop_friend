@@ -80,9 +80,14 @@ export class Stage {
       const delta = Math.min(this.elapsedSinceFrame, MAX_DELTA);
       this.elapsedSinceFrame = 0;
       this.onUpdate(delta);
-      this.renderer.render(this.scene, this.camera);
+      this.draw();
       this.sampleProbe();
     });
+  }
+
+  /** Dibuja un fotograma suelto, para quien no necesita el bucle (la ventana de la cama). */
+  draw(): void {
+    this.renderer.render(this.scene, this.camera);
   }
 
   /** Tiene que ejecutarse justo después de dibujar: el buffer no se conserva entre frames. */

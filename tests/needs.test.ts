@@ -23,25 +23,30 @@ const state = (n: Needs, lastSeen: number): PetState => ({ version: 1, needs: n,
 
 describe('decay', () => {
   it('despierto baja saciedad, felicidad y energía', () => {
-    expect(decay(needs(80, 80, 80), HOUR, false)).toEqual(needs(68, 72, 74));
+    expect(decay(needs(80, 80, 80), HOUR, 'awake')).toEqual(needs(68, 72, 74));
   });
 
   it('dormido recupera energía y gasta menos', () => {
-    expect(decay(needs(80, 80, 40), HOUR, true)).toEqual(needs(74, 78, 70));
+    expect(decay(needs(80, 80, 40), HOUR, 'asleep')).toEqual(needs(74, 78, 70));
+  });
+
+  it('en su cama recupera el triple que dormido en el suelo, sin entristecerse', () => {
+    expect(decay(needs(80, 80, 5), HOUR, 'bed')).toEqual(needs(74, 80, 95));
+    expect(decay(needs(80, 80, 5), HOUR, 'bed').energy - 5).toBe(3 * (decay(needs(80, 80, 5), HOUR, 'asleep').energy - 5));
   });
 
   it('no sale del rango 0-100', () => {
-    expect(decay(needs(1, 1, 1), 100 * HOUR, false)).toEqual(needs(0, 0, 0));
-    expect(decay(needs(50, 50, 99), 100 * HOUR, true).energy).toBe(100);
+    expect(decay(needs(1, 1, 1), 100 * HOUR, 'awake')).toEqual(needs(0, 0, 0));
+    expect(decay(needs(50, 50, 99), 100 * HOUR, 'asleep').energy).toBe(100);
   });
 
   it('ignora un tiempo negativo', () => {
-    expect(decay(needs(50, 50, 50), -HOUR, false)).toEqual(needs(50, 50, 50));
+    expect(decay(needs(50, 50, 50), -HOUR, 'awake')).toEqual(needs(50, 50, 50));
   });
 
   it('es proporcional al tiempo: dos medias horas equivalen a una hora', () => {
-    const once = decay(needs(80, 80, 80), HOUR, false);
-    const twice = decay(decay(needs(80, 80, 80), HOUR / 2, false), HOUR / 2, false);
+    const once = decay(needs(80, 80, 80), HOUR, 'awake');
+    const twice = decay(decay(needs(80, 80, 80), HOUR / 2, 'awake'), HOUR / 2, 'awake');
     expect(twice.fullness).toBeCloseTo(once.fullness);
     expect(twice.happiness).toBeCloseTo(once.happiness);
     expect(twice.energy).toBeCloseTo(once.energy);
@@ -82,12 +87,13 @@ describe('catchUp (tiempo con la app cerrada)', () => {
 
 describe('advance (app abierta)', () => {
   it('un paso normal aplica el desgaste de estar despierto o dormido', () => {
-    expect(advance(needs(80, 80, 80), 0, 1000, false)).toEqual(decay(needs(80, 80, 80), 1000, false));
-    expect(advance(needs(80, 80, 40), 0, 1000, true)).toEqual(decay(needs(80, 80, 40), 1000, true));
+    expect(advance(needs(80, 80, 80), 0, 1000, 'awake')).toEqual(decay(needs(80, 80, 80), 1000, 'awake'));
+    expect(advance(needs(80, 80, 40), 0, 1000, 'asleep')).toEqual(decay(needs(80, 80, 40), 1000, 'asleep'));
+    expect(advance(needs(80, 80, 40), 0, 1000, 'bed')).toEqual(decay(needs(80, 80, 40), 1000, 'bed'));
   });
 
   it('tras una suspensión del equipo cuenta como app cerrada, no como horas despierto', () => {
-    const after = advance(needs(80, 80, 50), 0, 8 * HOUR, false);
+    const after = advance(needs(80, 80, 50), 0, 8 * HOUR, 'awake');
     expect(after).toEqual(catchUp(state(needs(80, 80, 50), 0), 8 * HOUR).needs);
     // Despierto ocho horas habría quedado sin comida: 80 - 12 * 8 < 0.
     expect(after.fullness).toBeGreaterThan(0);

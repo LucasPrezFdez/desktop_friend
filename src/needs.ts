@@ -18,12 +18,17 @@ export interface PetState {
 
 export type Mood = 'sleepy' | 'hungry' | 'sad' | 'content' | 'happy';
 
+/** Cómo está descansando: despierto, dormido en el suelo o dormido en su cama. */
+export type Rest = 'awake' | 'asleep' | 'bed';
+
 const HOUR = 3_600_000;
 
 /** Puntos por hora. Despierto tarda unas 8 horas en pasar de lleno a hambriento. */
 export const RATES = {
   awake: { fullness: -12, happiness: -8, energy: -6 },
   asleep: { fullness: -6, happiness: -2, energy: 30 },
+  // En su cama descansa el triple que en el suelo y, además, está a gusto: no se entristece.
+  bed: { fullness: -6, happiness: 0, energy: 90 },
 } as const;
 
 /** Con la app cerrada se supone que el perro ha estado tranquilo, descansando a ratos. */
@@ -44,6 +49,8 @@ export const PIXELS_PER_HAPPINESS = 120;
 export const LOW = 25;
 export const SLEEPY = 20;
 export const RESTED = 85;
+/** En la cama no se levanta hasta estar descansado del todo. */
+export const FULLY_RESTED = 100;
 
 const clamp = (value: number, min = 0, max = 100): number => Math.min(max, Math.max(min, value));
 
@@ -52,9 +59,9 @@ export function initialState(now: number): PetState {
 }
 
 /** Evolución de las necesidades con la app abierta. */
-export function decay(needs: Needs, elapsedMs: number, asleep: boolean): Needs {
+export function decay(needs: Needs, elapsedMs: number, rest: Rest): Needs {
   const hours = Math.max(0, elapsedMs) / HOUR;
-  const rate = asleep ? RATES.asleep : RATES.awake;
+  const rate = RATES[rest];
   return {
     fullness: clamp(needs.fullness + rate.fullness * hours),
     happiness: clamp(needs.happiness + rate.happiness * hours),
@@ -66,11 +73,11 @@ export function decay(needs: Needs, elapsedMs: number, asleep: boolean): Needs {
  * Avanza las necesidades con la app abierta. Si entre un paso y el siguiente ha pasado mucho
  * tiempo, el equipo estuvo suspendido: ese rato cuenta como app cerrada, no como horas despierto.
  */
-export function advance(needs: Needs, lastTick: number, now: number, asleep: boolean): Needs {
+export function advance(needs: Needs, lastTick: number, now: number, rest: Rest): Needs {
   if (now - lastTick > SUSPEND_GAP) {
     return catchUp({ version: 1, needs, lastSeen: lastTick }, now).needs;
   }
-  return decay(needs, now - lastTick, asleep);
+  return decay(needs, now - lastTick, rest);
 }
 
 /** Aplica el tiempo que la app ha estado cerrada. Un reloj atrasado (tiempo negativo) no cambia nada. */

@@ -16,3 +16,6 @@ tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-autostart = "2"
 tauri-plugin-single-instance = "2"
 tauri-plugin-store = "2"
+# Para mostrar la ventana de la cama sin activarla (ver `bed` en src/lib.rs). Es el mismo crate
+# que ya usa Tauri, así que no añade nada que compilar. La app es solo para Windows (decisión 0002).
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging"] }

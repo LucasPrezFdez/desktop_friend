@@ -23,7 +23,7 @@ export const PALETTE: Record<string, number> = {
 const FUR = new Set(['Fur', 'FurLight', 'Nose', 'Muzzle', 'FurGrey']);
 
 /** Rampa de tres tonos para el sombreado. El más oscuro no llega a cero: las sombras no se aplastan. */
-function toonRamp(): THREE.DataTexture {
+export function toonRamp(): THREE.DataTexture {
   const ramp = new THREE.DataTexture(new Uint8Array([140, 200, 255]), 3, 1, THREE.RedFormat);
   // Sin NearestFilter la rampa se interpolaría y el resultado ya no sería "toon".
   ramp.minFilter = THREE.NearestFilter;

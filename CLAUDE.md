@@ -1,6 +1,6 @@
 # DesktopFriend
 
-Mascota de escritorio 3D (perro mediano negro) para Windows 11. Tauri 2 + Three.js + TypeScript + Vite. El modelo se genera con Blender en modo script (`tools/model/build_dog.py`).
+Mascota de escritorio 3D (perro mediano negro) para Windows 11. Tauri 2 + Three.js + TypeScript + Vite. Los modelos se generan con Blender en modo script (`tools/model/build_dog.py` y `tools/model/build_bed.py`).
 
 ## Regla de documentación (obligatoria)
 
@@ -23,5 +23,6 @@ Toda decisión y toda acción se documentan, en español, antes de cerrar el tra
 - `npm run tauri dev`: app real.
 - `npx vitest run`: pruebas unitarias.
 - `npm run model`: regenera `public/models/dog.glb` con Blender.
+- `npm run model:bed`: regenera `public/models/bed.glb` (la cama) con Blender.
 - `npm run installer`: compila y deja el instalador NSIS en la carpeta raíz.
 - `tools/verify/`: verificación de la app en marcha (ver `docs/decisiones/0012-como-se-verifica.md`).

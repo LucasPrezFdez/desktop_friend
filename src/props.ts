@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { toonRamp } from './blackFur';
 
 /** Sombra de contacto bajo el perro. Es tan tenue que no cuenta como "mascota" para los clics. */
 export function createShadow(): THREE.Mesh {
@@ -76,6 +78,83 @@ export class Bowl {
     this.shown += (this.target - this.shown) * Math.min(1, deltaSeconds * 10);
     this.group.visible = this.shown > 0.02;
     const bounce = 1 + 0.15 * Math.sin(Math.min(this.shown, 1) * Math.PI);
+    this.group.scale.setScalar(this.shown * bounce);
+  }
+}
+
+const BED_URL = '/models/bed.glb';
+/** Colores de los materiales que trae el GLB de la cama (ver tools/model/build_bed.py). */
+const BED_PALETTE: Record<string, number> = {
+  BedRim: 0xe2a63c,
+  BedCushion: 0xf4ead6,
+  BedPiping: 0x9c5a1e,
+};
+/** Altura del colchón donde se tumba el perro, en unidades de la escena. */
+export const BED_MATTRESS = 0.08;
+
+/**
+ * Cama del perro. Se dibuja en dos sitios: en su propia ventana mientras se lleva al perro
+ * (src/bedWindow.ts) y en la del perro cuando este duerme dentro. Las dos usan esta clase y la
+ * misma cámara, así que al relevarse una a otra la cama no se mueve ni un píxel.
+ */
+export class Bed {
+  readonly group = new THREE.Group();
+  private target = 0;
+  private shown = 0;
+
+  private constructor(model: THREE.Object3D) {
+    const ramp = toonRamp();
+    const materials = new Map<string, THREE.MeshToonMaterial>();
+    for (const [name, color] of Object.entries(BED_PALETTE)) {
+      materials.set(name, new THREE.MeshToonMaterial({ color, gradientMap: ramp }));
+    }
+    model.traverse((node) => {
+      if (!(node instanceof THREE.Mesh)) return;
+      const material = materials.get((node.material as THREE.Material).name);
+      if (material) node.material = material;
+    });
+    const shadow = createShadow();
+    shadow.scale.set(2.5, 1.9, 1);
+    this.group.add(model, shadow);
+    this.group.visible = false;
+  }
+
+  static async load(): Promise<Bed> {
+    return new Bed((await new GLTFLoader().loadAsync(BED_URL)).scene);
+  }
+
+  /** Con `instant` aparece ya entera: para relevar a la cama de la otra ventana. */
+  show(instant = false): void {
+    this.target = 1;
+    if (instant) this.settle();
+  }
+
+  hide(instant = false): void {
+    this.target = 0;
+    if (instant) this.settle();
+  }
+
+  /** true cuando ya ha terminado de aparecer o de desaparecer. */
+  get settled(): boolean {
+    return this.shown === this.target;
+  }
+
+  private settle(): void {
+    this.shown = this.target;
+    this.apply();
+  }
+
+  /** Aparece y desaparece creciendo, con un pequeño rebote, como el cuenco. */
+  update(deltaSeconds: number): void {
+    if (this.settled) return;
+    this.shown += (this.target - this.shown) * Math.min(1, deltaSeconds * 10);
+    if (Math.abs(this.target - this.shown) < 0.004) this.shown = this.target;
+    this.apply();
+  }
+
+  private apply(): void {
+    this.group.visible = this.shown > 0.02;
+    const bounce = 1 + 0.12 * Math.sin(this.shown * Math.PI);
     this.group.scale.setScalar(this.shown * bounce);
   }
 }

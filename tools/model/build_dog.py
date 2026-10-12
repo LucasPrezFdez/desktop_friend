@@ -1308,6 +1308,23 @@ SLEEP = {**LIE, **expand({
     "Tail1.pitch": 40.0, "Tail2.pitch": 20.0,
 })}
 
+# Dormido en su cama, hecho un ovillo. En la app se le ve desde su lado derecho, así que el lomo,
+# el cuello y la cola se curvan hacia ese lado: la cabeza queda vuelta hacia quien mira, apoyada
+# en el borde de la cama, y la cola recogida por delante.
+NAP = {**LIE, **expand({
+    # La grupa baja hasta el colchón (tumbado sin más queda en alto, como si fuera a levantarse)
+    # y el pecho se hunde un poco en él.
+    "body.pitch": 11.0, "body.dz": -0.88,
+    # Las patas delanteras, recogidas bajo el pecho en vez de estiradas.
+    "FL.dy": -0.10, "FR.dy": -0.10,
+    "Torso.yaw": -6.0, "Torso2.yaw": -8.0, "Torso3.yaw": -10.0,
+    "Neck1.pitch": -38.0, "Neck1.yaw": -18.0, "Neck2.yaw": -24.0, "Neck3.yaw": -24.0, "Head.yaw": -18.0,
+    # Con el cuello ya girado, bajar la cabeza es en parte cabecear y en parte ladearse.
+    "Neck2.pitch": -15.0, "Neck2.roll": -13.0, "Neck3.pitch": -6.0, "Neck3.roll": -14.0, "Head.roll": -18.0,
+    "Ear1.*.pitch": 15.0,
+    "Tail1.pitch": 35.0, "Tail1.yaw": 45.0, "Tail2.yaw": 40.0, "Tail3.yaw": 35.0, "Tail4.yaw": 30.0, "Tail5.yaw": 25.0,
+})}
+
 SAD = expand({
     "body.dz": -0.08,
     "Neck1.pitch": -14.0, "Neck2.pitch": -12.0, "Neck3.pitch": -10.0, "Head.pitch": -10.0,
@@ -1376,6 +1393,7 @@ CLIPS = [
     {"name": "LieDown", "duration": 1.0, "pivot": "shoulders", "keys": [(0.0, STAND), (1.0, LIE)]},
     {"name": "Lie", "duration": 3.0, "pivot": "shoulders", "keys": [(0.0, LIE)], "overlay": breathing(3.0, 0.010, 1.0)},
     {"name": "Sleep", "duration": 4.0, "pivot": "shoulders", "keys": [(0.0, SLEEP)], "overlay": breathing(4.0, 0.018, 1.5)},
+    {"name": "Nap", "duration": 4.0, "pivot": "shoulders", "keys": [(0.0, NAP)], "overlay": breathing(4.0, 0.018, 1.5)},
     {"name": "Happy", "duration": 0.8, "pivot": "hips", "keys": [
         (0.0, STAND), (0.2, HAPPY_CROUCH), (0.4, HAPPY_HOP), (0.6, HAPPY_LAND), (0.8, STAND),
     ]},

@@ -266,6 +266,30 @@ Medido por el agente principal sobre recortes de las mismas fotos, para la revis
 - `bmesh.ops.holes_fill` rellena el hueco de cada oreja; un abanico desde el centro (`poke`) deja un pico en la nuca porque el hueco no es plano. [V]
 - El cálculo automático de normales puede dejar del revés una pieza abierta, y Blender la dibuja igual por las dos caras. Activando el descarte de caras traseras en el render se ve como en la app. [V]
 
+# Parte 4. La cama y su ventana (12 de octubre de 2026)
+
+Hechos comprobados al añadir la cama (decisión 0019). No hubo búsqueda en la web: salen del código de las dependencias instaladas en este equipo y de medidas sobre la app en marcha.
+
+## Ventanas en Windows con Tauri 2.12 y tao 0.37
+- Una ventana ya creada que se muestra con `show()` se **activa**: tao llama a `ShowWindow` con `SW_SHOW`, y solo usa `SW_SHOWNOACTIVATE` en la primera aparición de una ventana creada con `focus: false`. [V] Fuente: `tao-0.37.1/src/platform_impl/windows/window_state.rs` y `window.rs`, en el registro de Cargo de este equipo.
+- `focusable: false` añade el estilo `WS_EX_NOACTIVATE`, que impide activar la ventana con un clic, pero no que `SW_SHOW` la active. [V] Medido: con esa opción, la ventana de la cama pasó a ser la ventana en primer plano al mostrarla durante un arrastre (`GetForegroundWindow`), y quedó por encima de la del perro.
+- `SetWindowPos` con `SWP_SHOWWINDOW | SWP_NOACTIVATE` y la ventana del perro como "insertar después de" la muestra sin activarla y justo debajo. [V] Medido con la misma prueba: el perro por delante y la cama sin el foco.
+- tao recuerda por su cuenta si una ventana está visible y solo actúa cuando ese dato cambia. Una ventana mostrada por fuera de tao no se oculta con su `hide()`: hay que ocultarla también por fuera. [V] Fuente: `set_visible` y `apply_diff` en los mismos ficheros. [I] No se llegó a probar el fallo; se evitó.
+- `skipTaskbar` quita el botón de la barra de tareas con `ITaskbarList::DeleteTab`, pero deja el estilo `WS_EX_APPWINDOW`. [V] Fuente: `set_skip_taskbar` en `window.rs`; estilo extendido de la ventana del perro, `0x000C0138`.
+- Una ventana con `WS_EX_TOOLWINDOW` y sin `WS_EX_APPWINDOW` no sale en la barra de tareas ni en Alt+Tab. [NV] Es el comportamiento documentado de Windows; aquí solo se ha comprobado que la ventana de la cama queda con ese estilo (`0x080801B8`).
+- Los permisos de eventos (`core:event:default`) bastan para que una ventana reciba órdenes de otra y conteste. Los comandos propios de la app no necesitan permiso. [V] Probado.
+- Tauri 2.12.3 depende del crate `windows` 0.62.2 con `Win32_UI_WindowsAndMessaging` activado. [V] Fuente: `src-tauri/Cargo.lock` y el `Cargo.toml` de `tauri`.
+
+## Dos páginas con Vite 8
+- Con `build.rolldownOptions.input` y una lista de ficheros HTML, Vite genera las dos páginas y un trozo de código común. [V] `npm run build`: `index.html`, `bed.html` y `scene-*.js` de 659 kB, que comparten.
+
+## Coste de la segunda ventana
+- En desarrollo, con la cama guardada: 47 MB de memoria privada en su proceso y 0,0 % de procesador. El total de la app, 290 MB y 19,6 % de un núcleo con el perro sentado. [V] `tools/verify/usage.ps1`, 15 segundos, a las 19:57.
+- En la versión empaquetada no se ha medido. [NV]
+
+## La cámara y la forma de la cama
+- La cámara de la app está a 1,5 de altura y a 5,4 de distancia, mirando a 1,2: ve el suelo casi de canto. Un objeto bajo y ancho, como una cama en forma de rosquilla, se ve como una franja. [V] Captura de la primera versión de la cama en la app.
+
 # Fuentes
 
 ## Tauri

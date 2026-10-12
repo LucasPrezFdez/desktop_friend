@@ -1,14 +1,15 @@
 import * as THREE from 'three';
 import type { Desktop, Point, Rect } from './desktop';
 import type { ClipName, Dog } from './dog';
-import { canEat, feed, mood, pet, RESTED, type Mood, type Needs } from './needs';
-import type { Bowl, Hand } from './props';
+import { canEat, feed, FULLY_RESTED, mood, pet, RESTED, type Mood, type Needs, type Rest } from './needs';
+import { BED_MATTRESS, type Bed, type Bowl, type Hand } from './props';
 import type { Stage } from './scene';
 import type { Hud } from './ui';
 
 /** Lo que el perro puede decidir hacer por su cuenta. */
 export type Choice = 'idle' | 'walk' | 'sit' | 'lie' | 'sad' | 'sleep';
-type Activity = Choice | 'eat' | 'happy' | 'held' | 'fall' | 'rise';
+/** `nap` es dormir en la cama, que solo ocurre cuando el usuario lo deja en ella. */
+type Activity = Choice | 'eat' | 'happy' | 'held' | 'fall' | 'rise' | 'nap';
 type Posture = 'stand' | 'sit' | 'lie';
 
 /** Elige la siguiente actividad según el ánimo. `roll` es un número al azar entre 0 y 1. */
@@ -26,9 +27,28 @@ export function pickActivity(current: Mood, roll: number): Choice {
   return 'lie';
 }
 
+/**
+ * Dónde aparece la cama al coger al perro: a un lado, hacia donde haya más sitio, y lo bastante
+ * lejos como para que soltarlo donde estaba no lo meta en ella. Todo en píxeles físicos:
+ * `x` es la posición de la ventana del perro y `min` y `max` los límites entre los que puede estar.
+ */
+export function bedSpotX(x: number, min: number, max: number, distance: number): number {
+  const target = x - min > max - x ? x - distance : x + distance;
+  return Math.min(Math.max(target, min), max);
+}
+
+/** true si, al soltarlo con la ventana en `x`, el perro cae dentro de la cama que hay en `bedX`. */
+export function landsInBed(x: number, bedX: number, reach: number): boolean {
+  return Math.abs(x - bedX) <= reach;
+}
+
 const SIDE = Math.PI / 2;
 /** Tumbado se le ve más de perfil: de frente, las patas estiradas se salían por debajo de la ventana. */
 const LYING_FACING = 1.0;
+/** En la cama va casi de perfil, a lo largo de ella, con la cabeza vuelta hacia quien mira. */
+const NAP_FACING = 1.3;
+/** Cuánto retrocede dentro de la cama, en unidades de la escena, para que quede centrado en ella. */
+const NAP_BACK = 0.2;
 const BOWL_X = 0.98;
 const EAT_SECONDS = 5.3;
 const HAPPY_SECONDS = 1.6;
@@ -53,6 +73,14 @@ const SWAY_MAX = 0.2;
 const SWAY_PER_SPEED = 0.00035;
 /** Vaivén suave cuando se le sostiene quieto, en radianes (unos 2 grados). */
 const SWAY_IDLE = 0.035;
+/** A qué distancia del perro aparece la cama, en píxeles lógicos. */
+const BED_DISTANCE = 300;
+/** Cuánto puede desviarse del centro de la cama al soltarlo y aun así caer dentro, en píxeles lógicos. */
+const BED_REACH = 105;
+/** Lo mínimo que duerme en la cama, aunque ya esté descansado: si no, se levantaría nada más dejarlo. */
+const NAP_MIN_SECONDS = 20;
+/** Fotogramas en los que conviven la cama de esta ventana y la de la otra al relevarse. */
+const BED_HANDOVER_FRAMES = 3;
 const UP = new THREE.Vector3(0, 1, 0);
 const TOWARD_CAMERA = new THREE.Vector3(0, 0, 1);
 /** Fotogramas por segundo: los justos para cada actividad, porque la app está abierta todo el día. */
@@ -60,6 +88,7 @@ const FPS_ACTIVE = 30;
 const FPS_CALM = 20;
 const FPS_ASLEEP = 10;
 const CALM: ReadonlySet<string> = new Set(['idle', 'sit', 'lie', 'sad']);
+const STAYS_IN_BED: ReadonlySet<string> = new Set(['nap', 'lie', 'sleep', 'rise']);
 /** Píxeles frotados por cada corazón. */
 const PIXELS_PER_HEART = 90;
 /** Radio en píxeles alrededor de la cabeza dentro del cual la caricia es "en la cabeza". */
@@ -111,12 +140,25 @@ export class Behavior {
   private ready = false;
   private fallSpeed = 0;
 
+  // La cama está en uno de tres sitios: guardada, fuera en su propia ventana mientras se lleva al
+  // perro (`bedSpot`), o dibujada en esta, debajo de él, cuando duerme dentro (`inBed`).
+  /** Posición en el escritorio de la ventana de la cama mientras está fuera. */
+  private bedSpot: Point | null = null;
+  private inBed = false;
+  /** La caída en curso termina dentro de la cama. */
+  private intoBed = false;
+  /** 0 en el suelo, 1 subido al colchón. */
+  private nest = 0;
+  /** Fotogramas que faltan para retirar la cama de la otra ventana tras meterse en ella. */
+  private handover = 0;
+
   constructor(
     private readonly dog: Dog,
     private readonly desktop: Desktop,
     private readonly stage: Stage,
     private readonly bowl: Bowl,
     private readonly hand: Hand,
+    private readonly bed: Bed,
     private readonly hud: Hud,
     needs: Needs,
   ) {
@@ -145,7 +187,13 @@ export class Behavior {
   }
 
   get asleep(): boolean {
-    return this.activity === 'sleep' && this.phase === 1;
+    return (this.activity === 'sleep' || this.activity === 'nap') && this.phase === 1;
+  }
+
+  /** Cómo está descansando ahora: de ello depende cuánta energía recupera. */
+  get rest(): Rest {
+    if (!this.asleep) return 'awake';
+    return this.inBed ? 'bed' : 'asleep';
   }
 
   get windowX(): number {
@@ -179,14 +227,16 @@ export class Behavior {
     if (this.activity === 'held' || this.activity === 'fall') return;
     this.needs = pet(this.needs, pixels);
     const head = this.headOnScreen();
-    const onHead = !point || Math.hypot(point.x - head.x, point.y - head.y) < HEAD_RADIUS;
-    this.petLevel = Math.max(this.petLevel, onHead ? 1 : 0.45);
-    this.stage.setFps(FPS_ACTIVE);
     this.heartMeter += pixels;
     if (this.heartMeter >= PIXELS_PER_HEART) {
       this.heartMeter = 0;
       this.hud.emote('❤️', head);
     }
+    // En la cama las caricias le gustan pero no lo despiertan: lo han dejado ahí para que descanse.
+    if (this.activity === 'nap') return;
+    const onHead = !point || Math.hypot(point.x - head.x, point.y - head.y) < HEAD_RADIUS;
+    this.petLevel = Math.max(this.petLevel, onHead ? 1 : 0.45);
+    this.stage.setFps(FPS_ACTIVE);
     if (this.asleep) this.begin('lie');
     else if (this.activity === 'walk') this.begin('idle');
     else if (this.activity === 'sad' && !this.lowSpirits) this.begin('happy');
@@ -208,6 +258,10 @@ export class Behavior {
   /** Trae al perro junto a la bandeja del sistema. */
   async come(): Promise<void> {
     await this.measureDesktop();
+    // La cama no viaja con él, ni la de esta ventana ni la que esté fuera.
+    this.leaveBed(true);
+    this.intoBed = false;
+    this.putAwayBed();
     this.windowPosition = { x: this.homeX, y: this.floorY };
     void this.desktop.moveWindow(this.windowPosition);
     if (this.activity !== 'eat') this.start('happy');
@@ -216,6 +270,7 @@ export class Behavior {
   grab(): void {
     this.bowl.hide();
     this.hud.closePanel();
+    this.putOutBed();
     this.posture = 'stand';
     this.pending = null;
     this.lastDrag = null;
@@ -236,11 +291,67 @@ export class Behavior {
     void this.desktop.moveWindow(position);
   }
 
-  /** Al soltarlo cae hasta el suelo del monitor en el que esté. */
+  /** Al soltarlo cae hasta el suelo del monitor en el que esté, o dentro de la cama si la tiene debajo. */
   async drop(): Promise<void> {
     await this.measureDesktop();
     this.windowPosition.x = this.clampX(this.windowPosition.x);
+    const spot = this.bedSpot;
+    // La cama está en el suelo del monitor donde se cogió al perro: en otro monitor no cuenta.
+    this.intoBed =
+      spot !== null &&
+      spot.y === this.floorY &&
+      landsInBed(this.windowPosition.x, spot.x, BED_REACH * window.devicePixelRatio);
+    if (!this.intoBed) this.putAwayBed();
     this.begin('fall');
+  }
+
+  // ------------------------------------------------------------------ la cama
+
+  /** Al coger al perro la cama sale al escritorio, en su propia ventana, y se queda quieta. */
+  private putOutBed(): void {
+    // Si se le vuelve a coger mientras cae, la cama ya está fuera.
+    if (this.bedSpot) return;
+    if (this.inBed) {
+      // Estaba durmiendo en ella: la cama se queda donde está y pasa a dibujarla la otra ventana.
+      this.inBed = false;
+      this.handover = 0;
+      this.bedSpot = { ...this.windowPosition };
+      void this.desktop.showBed(this.bedSpot, true).then(() => {
+        if (!this.inBed) this.bed.hide(true);
+      });
+      return;
+    }
+    const min = this.work.x;
+    const max = this.work.x + this.work.width - this.windowSize.x;
+    const x = bedSpotX(this.windowPosition.x, min, max, BED_DISTANCE * window.devicePixelRatio);
+    this.bedSpot = { x, y: this.floorY };
+    void this.desktop.showBed(this.bedSpot, false);
+  }
+
+  /** Se suelta al perro fuera de la cama: ya no hace falta. */
+  private putAwayBed(): void {
+    if (!this.bedSpot) return;
+    this.bedSpot = null;
+    void this.desktop.hideBed(false);
+  }
+
+  /** El perro acaba de caer en la cama: esta ventana se coloca justo donde está y pasa a dibujarla. */
+  private enterBed(): void {
+    this.windowPosition = { ...this.bedSpot! };
+    this.bedSpot = null;
+    this.intoBed = false;
+    this.inBed = true;
+    this.bed.show(true);
+    // La otra ventana se retira unos fotogramas después, cuando esta ya ha dibujado la cama.
+    this.handover = BED_HANDOVER_FRAMES;
+    this.begin('nap');
+  }
+
+  /** El perro sale de la cama por su cuenta: la cama se guarda. */
+  private leaveBed(instant = false): void {
+    if (!this.inBed) return;
+    this.inBed = false;
+    this.bed.hide(instant);
   }
 
   /** Fuerza una actividad. Solo para pruebas y depuración. */
@@ -272,6 +383,8 @@ export class Behavior {
     this.clock = 0;
     this.phase = 0;
     this.dog.tongueOut = activity === 'happy' || activity === 'held';
+    // En la cama solo se está tumbado, o levantándose de ella: empezar otra cosa es haber salido.
+    if (!STAYS_IN_BED.has(activity)) this.leaveBed();
     this.stage.setFps(CALM.has(activity) ? FPS_CALM : FPS_ACTIVE);
 
     switch (activity) {
@@ -317,6 +430,12 @@ export class Behavior {
         if (this.posture === 'lie') this.fallAsleep();
         else this.dog.play('LieDown', { once: true });
         break;
+      case 'nap':
+        // Cae de pie sobre el colchón y se tumba. El clip `Nap` está hecho para verse desde su derecha.
+        this.side = 1;
+        this.facing = NAP_FACING;
+        this.dog.play('LieDown', { once: true, fade: 0.25 });
+        break;
       case 'sad':
         this.duration = random(7, 13);
         this.facing = this.side * 0.65;
@@ -348,7 +467,8 @@ export class Behavior {
   private fallAsleep(): void {
     this.posture = 'lie';
     this.phase = 1;
-    this.dog.play('Sleep', { fade: 0.9 });
+    // En la cama duerme hecho un ovillo; en el suelo, estirado.
+    this.dog.play(this.activity === 'nap' ? 'Nap' : 'Sleep', { fade: 0.9 });
     // Dormido casi no se mueve: con menos fotogramas por segundo gasta menos.
     this.stage.setFps(FPS_ASLEEP);
   }
@@ -364,6 +484,7 @@ export class Behavior {
 
   update(delta: number): void {
     this.clock += delta;
+    if (this.handover > 0 && --this.handover === 0) void this.desktop.hideBed(true);
 
     switch (this.activity) {
       case 'idle':
@@ -391,6 +512,14 @@ export class Behavior {
           if (this.dog.finished) this.fallAsleep();
         } else if (this.needs.energy >= RESTED) {
           this.start('idle');
+        }
+        break;
+      case 'nap':
+        if (this.phase === 0) {
+          if (this.dog.finished) this.fallAsleep();
+        } else if (this.clock > NAP_MIN_SECONDS && this.needs.energy >= FULLY_RESTED) {
+          // Descansado del todo: se levanta de un salto y la cama se guarda.
+          this.start('happy');
         }
         break;
       case 'happy':
@@ -446,10 +575,15 @@ export class Behavior {
     const floor = this.floorY;
     this.fallSpeed += GRAVITY * window.devicePixelRatio * delta;
     this.windowPosition.y += this.fallSpeed * delta;
+    // Si va a caer en la cama, se centra sobre ella mientras baja.
+    if (this.intoBed && this.bedSpot) {
+      this.windowPosition.x += (this.bedSpot.x - this.windowPosition.x) * Math.min(1, delta * 12);
+    }
     // Si lo soltaron por debajo del suelo (sobre la barra de tareas) vuelve a él directamente.
     if (this.windowPosition.y >= floor) {
       this.windowPosition.y = floor;
-      this.begin('happy');
+      if (this.intoBed && this.bedSpot) this.enterBed();
+      else this.begin('happy');
     }
     void this.desktop.moveWindow(this.windowPosition);
   }
@@ -502,8 +636,14 @@ export class Behavior {
     const root = this.dog.root;
     // La nuca en coordenadas del propio perro: no depende de dónde esté colocado ahora.
     root.worldToLocal(this.dog.napePosition(nape));
-    // Primero baja la mano y después lo levanta.
-    base.set(0, CARRY_LIFT * THREE.MathUtils.smoothstep(this.carry, 0.3, 1), 0);
+    this.nest += ((this.inBed ? 1 : 0) - this.nest) * Math.min(1, delta * 8);
+    // Primero baja la mano y después lo levanta. En la cama se apoya en el colchón, no en el suelo.
+    const back = NAP_BACK * this.nest;
+    base.set(
+      -Math.sin(this.yaw) * back,
+      CARRY_LIFT * THREE.MathUtils.smoothstep(this.carry, 0.3, 1) + BED_MATTRESS * this.nest,
+      -Math.cos(this.yaw) * back,
+    );
     yawTurn.setFromAxisAngle(UP, this.yaw);
     swayTurn.setFromAxisAngle(TOWARD_CAMERA, this.sway);
     pivot.copy(nape).applyQuaternion(yawTurn).add(base);
@@ -525,6 +665,7 @@ export class Behavior {
         // Va encantado: que se note.
         return 0.9;
       case 'sleep':
+      case 'nap':
       case 'sad':
       case 'fall':
         return 0;

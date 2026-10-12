@@ -3,13 +3,17 @@
 #
 # Uso: powershell -File tools/verify/input.ps1 -Action rub|click|drag [-X 0.5 -Y 0.66]
 # X e Y son la posición dentro de la ventana, de 0 a 1.
+# Para soltarlo en la cama, que sale a 300 px hacia el lado con más sitio: -Action drag -DX -300 -DY -150
 param(
     [Parameter(Mandatory = $true)][ValidateSet('rub', 'click', 'drag')][string]$Action,
     [string]$Title = 'DesktopFriend',
     [double]$X = 0.5,
     [double]$Y = 0.66,
     # Solo para 'drag': cuánto se sostiene al perro en el aire antes de soltarlo.
-    [int]$HoldMs = 400
+    [int]$HoldMs = 400,
+    # Solo para 'drag': hasta dónde se lleva el cursor, en píxeles desde donde se pulsa.
+    [int]$DX = -150,
+    [int]$DY = -200
 )
 
 Add-Type @'
@@ -26,6 +30,9 @@ public static class In {
     [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint dx, uint dy, uint data, UIntPtr extra);
     [DllImport("user32.dll")] public static extern IntPtr WindowFromPoint(POINT p);
     [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr hwnd, uint flags);
+    [DllImport("user32.dll")] public static extern IntPtr GetWindow(IntPtr hwnd, uint command);
+    [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr hwnd);
+    [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
 }
 '@
 
@@ -76,12 +83,27 @@ try {
         'drag' {
             [In]::mouse_event($LEFT_DOWN, 0, 0, 0, [UIntPtr]::Zero)
             for ($i = 1; $i -le 25; $i++) {
-                [void][In]::SetCursorPos($px - $i * 6, $py - $i * 8)
+                [void][In]::SetCursorPos($px + [int]($DX * $i / 25), $py + [int]($DY * $i / 25))
                 Start-Sleep -Milliseconds 25
             }
             Start-Sleep -Milliseconds $HoldMs
             [void][In]::GetWindowRect($hwnd, [ref]$rect)
             Write-Output "en el aire: ventana en ($($rect.Left), $($rect.Top))"
+            # La cama sale en otra ventana: el perro tiene que pasar por delante de ella, y sacarla
+            # no debe quitarle el foco a la ventana que se está arrastrando.
+            $bed = [In]::FindWindowW([NullString]::Value, "$Title (cama)")
+            if ($bed -ne [IntPtr]::Zero -and [In]::IsWindowVisible($bed)) {
+                $bedRect = New-Object In+RECT
+                [void][In]::GetWindowRect($bed, [ref]$bedRect)
+                $above = $false
+                # GW_HWNDNEXT (2) recorre las ventanas de arriba abajo.
+                for ($next = [In]::GetWindow($hwnd, 2); $next -ne [IntPtr]::Zero; $next = [In]::GetWindow($next, 2)) {
+                    if ($next -eq $bed) { $above = $true; break }
+                }
+                Write-Output "cama en ($($bedRect.Left), $($bedRect.Top)); el perro por delante de la cama: $above; la cama tiene el foco: $([In]::GetForegroundWindow() -eq $bed)"
+            } else {
+                Write-Output 'la ventana de la cama no está a la vista'
+            }
             [In]::mouse_event($LEFT_UP, 0, 0, 0, [UIntPtr]::Zero)
             Start-Sleep -Milliseconds 1500
         }

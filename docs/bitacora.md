@@ -384,3 +384,44 @@ Hora comprobada: 19:21, salida de `date` antes de la fusión.
 | 210 | El usuario pide confirmar y fusionar en `main` | Petición directa | "haz commit de los cambios y mergea en main". El árbol estaba limpio: la revisión 9 ya estaba en el commit `24001d0` | Decisión 0018, resolución |
 | 211 | Cerrar la decisión | `docs/decisiones/0018-modelo-retrato.md` pasa a aceptada; la 0010 enlaza a la 0018 | | Decisión 0018, resolución |
 | 212 | Fusionar | Avance rápido de `main` y `desarrollo` hasta `nuevo-modelo-3d` | Sin subir a GitHub; sin regenerar el instalador | Decisión 0018, resolución |
+
+### Propuesta: la cama del perro (rama `cama-del-perro`)
+
+Horas comprobadas en las salidas de las herramientas:
+
+| Hora | Hecho |
+|---|---|
+| 19:28 | Leído el código que se iba a tocar (salida de `date`) |
+| 19:36 | La app de desarrollo arranca con las dos ventanas (inicio del proceso `desktopfriend.exe`) |
+| 19:49 | La app arranca con la ventana de la cama manejada por la API de Windows (inicio del proceso) |
+| 19:56 | 32 pruebas unitarias en verde (salida de `vitest`) |
+| 19:57 | Consumo medido (salida de `date` tras `usage.ps1`) |
+| 20:01 | Pruebas repetidas con la documentación ya escrita: 32 en verde (salida de `vitest`) |
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 213 | Crear la rama | `git switch -c cama-del-perro` desde `desarrollo` | Parte del commit `d4d48c7` | Decisión 0019 |
+| 214 | Leer cómo son las ventanas de la app en Windows | Estilos de la ventana del perro con `GetWindowLong`; lectura del código de tao 0.37.1 en el registro de Cargo | Lleva `WS_EX_APPWINDOW`; `focusable: false` da `WS_EX_NOACTIVATE` | `investigacion.md`, parte 4 |
+| 215 | Modelar la cama | `tools/model/build_bed.py` (Blender sin interfaz, 3,5 s) y render con `preview.py` | A la primera: una rosquilla ovalada de 2785 vértices, con costuras y vivo | Decisión 0019 |
+| 216 | Escribir la segunda ventana | `bed.html`, `src/bedWindow.ts`, `showBed`, `hideBed` y `onBedOrder` en `src/desktop.ts`, ventana `bed` en `tauri.conf.json`, `capabilities/bed.json`, `vite.config.ts` con dos páginas | Un primer intento de editar con un script de Python falló: Python no está instalado. No cambió nada; se editó con las herramientas de edición | Decisión 0019 |
+| 217 | Escribir la cama en la app y el comportamiento | `Bed` en `src/props.ts`; actividad `nap`, `bedSpotX` y `landsInBed` en `src/behavior.ts`; tres estados de descanso en `src/needs.ts`; `src/main.ts`, `src/scene.ts` | `npx tsc --noEmit` sin errores; las 26 pruebas, adaptadas, en verde | Decisión 0019 |
+| 218 | Adaptar las herramientas de depuración a dos páginas | `tools/verify/cdp-client.mjs` y `cdp.mjs`: opción `--page bed` | Antes cogían la primera página que encontraban | Decisión 0012 |
+| 219 | Primera prueba en la app | `npm run tauri dev` recompila solo al cambiar `src-tauri`; `cdp.mjs` y `screenshot.ps1` | La cama sale en su ventana a 300 px del perro y se ve en el escritorio real, sobre la barra de tareas. Desde la cámara de la app parecía un aro plano | Decisión 0019 |
+| 220 | Subir el reborde por detrás | `RIM_HIGH`, `RIM_LOW`, `RISE_FROM` y `RISE_TO` en `build_bed.py` | Se le ve el interior | Decisión 0019 |
+| 221 | Soltar al perro encima, por depuración | `cdp.mjs` (`grab`, `drag`, `drop`) | Cae dentro, se tumba y duerme con 💤. Con el clip `Sleep`, estirado, no cabe: patas y cabeza por fuera | Decisión 0019 |
+| 222 | Añadir el clip `Nap` | `NAP` en `tools/model/build_dog.py`; varias rondas de render y de captura en la app | Corregidos: grupa en alto, cabeza sin apoyar, una pata y el morro atravesando el reborde, la cola asomando por detrás. La cama crece un 10 % y el perro se coloca 0,2 más atrás (`NAP_BACK`) | Decisión 0019 |
+| 223 | El perro se despierta en mitad de una captura | Lectura del estado con `cdp.mjs` | Energía en 99,97 y el perro paseando: tras varias siestas de prueba había llegado a 100 y se levantó, como está previsto. Desde ahí las pruebas le bajan antes la energía | Decisión 0019 |
+| 224 | Comando para la cama | `tools/model/build-bed.mjs`, `npm run model:bed`; lo común con `build.mjs` pasa a `tools/model/blender.mjs` | Un primer intento de editar `build.mjs` por script no encontró el texto y no cambió nada; se hizo con la herramienta de edición | Decisión 0019 |
+| 225 | Regenerar y validar los modelos | `npm run model:bed`, `npm run model` | Cama: sin errores ni avisos, 102 508 bytes, 2785 vértices, 3 materiales. Perro: 15 clips, sin errores, un aviso conocido, 1 288 260 bytes, 13 071 vértices | Decisión 0019 |
+| 226 | Escribir la prueba de la cama | `tools/verify/bed.mjs` | 15 comprobaciones correctas, sin tocar el ratón real | Decisión 0019 |
+| 227 | Probar con el ratón real | `tools/verify/input.ps1`, con `-DX` y `-DY` nuevos y un aviso del orden de las ventanas | El perro acaba dormido en la cama. **Fallo**: al salir, la ventana de la cama tenía el foco y estaba por delante del perro | Decisión 0019, "Lo que se probó y se descartó" |
+| 228 | Mostrar la ventana de la cama con la API de Windows | Antes, lectura de `set_visible` en tao: una ventana ya creada se muestra con `SW_SHOW`, que la activa. Módulo `bed` en `src-tauri/src/lib.rs` (`SetWindowPos`, `ShowWindow`, estilo de ventana de herramientas), crate `windows` 0.62 en `Cargo.toml`, comandos `place_bed` y `stow_bed` | Compila a la primera; la app se reinicia sola | `investigacion.md`, parte 4 |
+| 229 | Repetir las dos pruebas | `bed.mjs` e `input.ps1 -Action drag -DX -300 -DY -160 -HoldMs 1200` | 15 correctas. Con el ratón real: perro por delante de la cama, la cama sin el foco, y el perro dormido en ella con su ventana en (1760, 1052) | Decisión 0019 |
+| 230 | Cogerlo de la cama con el ratón real | `input.ps1 -X 0.5 -Y 0.85 -DX 30 -DY -170 -HoldMs 2600` y `screenshot.ps1` a la vez | Primer intento: no llegó a pulsar, porque el clic habría atravesado al perro dormido. Repetido: la cama se queda en su sitio y el perro vuelve a dormirse | Decisión 0019, incidencias |
+| 231 | Añadir pruebas unitarias | `tests/behavior.test.ts`, `tests/needs.test.ts` | 32 pruebas en verde, 6 nuevas | |
+| 232 | Compilar el frontend | `npm run build` | Dos páginas: `index.html` y `bed.html` | |
+| 233 | Medir el consumo | `tools/verify/usage.ps1`, 15 s, perro sentado y cama guardada | 290 MB y 19,6 % de un núcleo en desarrollo; el proceso de la ventana de la cama, 47 MB y 0,0 % | Decisión 0019, consecuencias |
+| 234 | Comprobar que no se ha roto lo anterior | `tools/verify/carry.mjs`, `clickthrough.ps1` | Arrastre sin cambios (balanceo máximo de 11,1°). Clics: una pasada anulada por el ratón del usuario y otra fallida, porque el punto de prueba por defecto, el centro de la ventana, ya no cae sobre el perro desde el modelo nuevo. Apuntando al cuerpo (`-SolidY 0.78`): correcto dos veces, y una tercera con el ratón en movimiento. Se cambia el valor por defecto | Decisiones 0012 y 0018 |
+| 235 | Guardar capturas | `docs/capturas/cama-secuencia.png`, `cama-escritorio.png` y `cama-modelo.png` | | Decisión 0019 |
+| 236 | Dejar la energía del perro como estaba | `cdp.mjs` | 95, como al empezar. Las pruebas también lo acariciaron: la felicidad pasó de 99,2 a 100 | Decisión 0019, incidencias |
+| 237 | Documentar | Decisión 0019, parte 4 de la investigación, `README.md`, `CLAUDE.md` y estas filas | Sin regenerar el instalador ni tocar la app instalada: queda para cuando el usuario apruebe la propuesta | Decisión 0019 |

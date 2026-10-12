@@ -26,6 +26,24 @@
         "minimizable": false,
         "visible": false,
         "focus": false
+      },
+      {
+        "label": "bed",
+        "title": "DesktopFriend (cama)",
+        "url": "bed.html",
+        "width": 420,
+        "height": 340,
+        "transparent": true,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "shadow": false,
+        "resizable": false,
+        "maximizable": false,
+        "minimizable": false,
+        "visible": false,
+        "focus": false,
+        "focusable": false
       }
     ],
     "security": {

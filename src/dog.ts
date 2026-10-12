@@ -5,7 +5,7 @@ import { createDogMaterials, PALETTE } from './blackFur';
 /** Clips que trae public/models/dog.glb (ver docs/decisiones/0010-construccion-del-modelo.md). */
 export type ClipName =
   | 'Idle' | 'IdleLook' | 'Sniff' | 'Walk' | 'Run' | 'Eat'
-  | 'SitDown' | 'Sit' | 'LieDown' | 'Lie' | 'Sleep' | 'Happy' | 'Sad' | 'Carry';
+  | 'SitDown' | 'Sit' | 'LieDown' | 'Lie' | 'Sleep' | 'Nap' | 'Happy' | 'Sad' | 'Carry';
 
 export interface PlayOptions {
   /** Segundos de fundido con el clip anterior. */

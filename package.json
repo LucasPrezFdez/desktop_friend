@@ -10,6 +10,7 @@
     "tauri": "tauri",
     "test": "vitest run",
     "model": "node tools/model/build.mjs",
+    "model:bed": "node tools/model/build-bed.mjs",
     "installer": "tauri build && node tools/copy-installer.mjs"
   },
   "dependencies": {

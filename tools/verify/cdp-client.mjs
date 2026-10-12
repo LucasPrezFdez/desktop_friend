@@ -1,8 +1,16 @@
 // Cliente mínimo del protocolo DevTools para hablar con la app en marcha (ver cdp.mjs).
-export async function connect(port = 9223) {
+
+/** La app tiene dos páginas: la ventana del perro ('main') y la de la cama ('bed'). */
+export async function findPage(port = 9223, name = 'main') {
   const targets = await (await fetch(`http://127.0.0.1:${port}/json`)).json();
-  const page = targets.find((target) => target.type === 'page');
-  if (!page) throw new Error('No hay ninguna página abierta en ese puerto');
+  const isBed = (target) => new URL(target.url).pathname.endsWith('/bed.html');
+  const page = targets.find((target) => target.type === 'page' && isBed(target) === (name === 'bed'));
+  if (!page) throw new Error(`No hay ninguna página '${name}' abierta en ese puerto`);
+  return page;
+}
+
+export async function connect(port = 9223, name = 'main') {
+  const page = await findPage(port, name);
 
   const socket = new WebSocket(page.webSocketDebuggerUrl);
   await new Promise((ok, fail) => {
