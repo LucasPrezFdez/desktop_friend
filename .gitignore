@@ -11,5 +11,10 @@ tools/model/out/
 *.blend1
 tools/verify/out/
 
+# Wingman es de Riot Games: ni el modelo extraído del juego ni el que se genera con él se versionan
+# (ver docs/decisiones/0021-mascota-wingman.md)
+assets/source/riot/*.glb
+public/models/wingman.glb
+
 # Instalador copiado a la raíz por `npm run installer` (se genera, no se versiona)
 /*-setup.exe

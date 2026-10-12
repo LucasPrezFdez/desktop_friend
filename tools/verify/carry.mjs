@@ -22,7 +22,7 @@ const shot = async (name) => {
   writeFileSync(file, Buffer.from(data, 'base64'));
 };
 const state = () =>
-  app.evaluate(`({ sway: pet.behavior.sway, carry: pet.behavior.carry, y: pet.dog.root.position.y, clip: pet.dog.clip, activity: pet.behavior.activity, wag: pet.dog.wag })`);
+  app.evaluate(`({ sway: pet.behavior.sway, carry: pet.behavior.carry, y: pet.animal.root.position.y, clip: pet.animal.clip, activity: pet.behavior.activity, wag: pet.animal.wag })`);
 
 /** Arrastra la ventana a velocidad constante durante un rato y devuelve el balanceo máximo. */
 async function drag(from, pixelsPerSecond, seconds, y) {

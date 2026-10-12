@@ -471,3 +471,42 @@ Horas comprobadas en las salidas de las herramientas:
 | 258 | Estado del perro tras las pruebas | `cdp.mjs` | Felicidad de 92,6 a 96,7 por las caricias de prueba. Saciedad y energía, solo lo que baja el tiempo | Decisión 0020, incidencias |
 | 259 | Documentar | Decisión 0020, parte 5 de la investigación, `README.md` y estas filas | Sin regenerar el instalador ni tocar la app instalada: queda para cuando el usuario apruebe la propuesta. La app de desarrollo se deja en marcha para que pueda probarlo | Decisión 0020 |
 | 260 | Fusionar el menú en la rama de la cama, a petición del usuario | `git merge --ff-only menu-de-mascotas` en `cama-del-perro`, a las 21:54 (salida de `date`) | Avance rápido hasta `16e8c51`; no había cambios sin confirmar. Sin tocar `desarrollo` ni `main`, sin subir a GitHub y sin regenerar el instalador | Decisión 0020, resolución |
+
+### Propuesta: Wingman, la segunda mascota (rama `mascota-wingman`)
+
+Horas comprobadas en las salidas de las herramientas:
+
+| Hora | Hecho |
+|---|---|
+| 22:07 | Creada la rama y copiado el modelo de origen (salida de `date`) |
+| 22:16 | 40 pruebas unitarias en verde con la app ya adaptada (salida de `vitest`) |
+| 22:17 | Última construcción de `public/models/wingman.glb` (fecha del fichero) |
+| 22:20 | Captura de Wingman dormido en la app (fecha del fichero) |
+| 22:27 | Comprobaciones finales: tipos, pruebas y compilación (salida de `date`) |
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 261 | Mirar qué hay en la carpeta del usuario | Listado de `C:\Users\lucas\valorant-extract` e `inspect.mjs` sobre `Wingman\Wingman.glb` | Malla de 3649 vértices, 21 huesos, 2 materiales con 3 texturas y 0 animaciones. El resto son las herramientas de extracción | Decisión 0021 |
+| 262 | Buscar la clave para extraer las animaciones del juego | Una orden que miraba, entre otras cosas, el historial de la consola | Denegada por la herramienta de permisos, por tratarse de una credencial. No se insistió: las animaciones se crean | Decisión 0021 |
+| 263 | Medir el modelo con Blender | Script suelto, fuera del proyecto | Mira hacia +X, mide 1,076 de alto y 1,51 de envergadura; los ojos son una pieza aparte con su trozo de textura | `investigacion.md`, parte 6 |
+| 264 | Crear la rama y copiar el modelo | `git checkout -b mascota-wingman` desde `cama-del-perro`; copia a `assets/source/riot/Wingman.glb` | Parte del commit `58f18d2`. SHA-256 igual que el original | Decisión 0021 |
+| 265 | Escribir la construcción del modelo | Nuevos `tools/model/build_wingman.py` y `build-wingman.mjs` | Primera pasada: 15 clips y validación correcta, pero las poses salen torcidas y diminutas en la hoja | Decisión 0021, incidencias |
+| 266 | Buscar por qué | Script suelto que compara la cadena de huesos calculada a mano con la de Blender | La cadena coincide; el modelo no se había girado: el objeto importado guarda su giro como cuaternión. Corregido con `rotation_mode = "XYZ"` | `investigacion.md`, parte 6 |
+| 267 | Arreglar el encuadre de las hojas | `tools/model/preview.py`: solo cuenta las mallas visibles | La esfera oculta del importador ya no agranda el encuadre | Decisión 0021, incidencias |
+| 268 | Afinar las poses, tres rondas | `build_wingman.py`: tumbado apoyado en el suelo (no flotando), brazos con la armadura hacia arriba (giro `twist`), pose intermedia al caer, brazo apartado de la cara en la cama, agarre en lo alto del casco | Hojas revisadas: de pie, en el suelo y cabeza sin ojos | Decisión 0021 |
+| 269 | Separar lo común de lo propio del perro | Nuevo `src/pet.ts`; `src/dog.ts` se queda con la cola, los ojos y la lengua; nuevos `src/wingman.ts` y `src/loadPet.ts` | `npx tsc --noEmit` sin errores | Decisión 0021 |
+| 270 | Adaptar el resto de la app | `src/behavior.ts`, `src/main.ts`, `src/portrait.ts`, `src/petMenu.ts`, `src/pets.ts`; `pet.dog` pasa a `pet.animal` en `tools/verify/` | 40 pruebas en verde, 1 nueva. La app de desarrollo, que seguía en marcha, se recarga sola con el perro y funciona | Decisión 0021 |
+| 271 | Primer vistazo al menú | `cdp.mjs` | Salen las dos mascotas. El retrato de Wingman, oscuro y demasiado cerca | Decisión 0021, incidencias |
+| 272 | Quitar el oscurecido y alejar el retrato | `src/wingman.ts` | Wingman en su color; la cabeza cabe en el círculo con las orejas | Decisión 0021, incidencias |
+| 273 | Cambiar a Wingman desde el menú | Clic inyectado en su círculo | Recarga y sale Wingman. Con 1,0 de alto se ve pequeño: pasa a 1,3 | Decisión 0021 |
+| 274 | Recorrer sus actividades | `cdp.mjs`, forzando cada una, con capturas | Reposo, sentado, tumbado, dormido, triste, contento, comiendo, andando, en brazos y soltado. El cuenco, algo lejos: de 0,8 a 0,72 | Decisión 0021 |
+| 275 | Probar la cama con Wingman | `node tools/verify/bed.mjs --shots ...` | 15 correctas, dos veces | Decisión 0021 |
+| 276 | Calmar el aleteo | `src/wingman.ts`: solo aletea con mucha alegría | Antes de verlo temblar en la app: se cambió al repasar los números | Decisión 0021 |
+| 277 | Probar el menú con Wingman | `node tools/verify/menu.mjs` | Falla una: la prueba esperaba una sola mascota. Era la prueba. Ahora cuenta las de la app y comprueba el retrato de las demás: 20 correctas | Decisión 0021 |
+| 278 | Probar balanceo y caricias con Wingman | `carry.mjs` y `cdp.mjs` con caricias cada 50 ms durante 3 s | 12,1° de balanceo máximo. Tras las caricias, cabeza y brazos vuelven al clip | Decisión 0021 |
+| 279 | Comprobar que el perro sigue igual | Vuelta al perro desde el menú; `bed.mjs`, `carry.mjs`, `pet-face.mjs` | Todo correcto; 12,9°; la cabeza vuelve a 0,0° | Decisión 0021 |
+| 280 | Probar la app sin el modelo | `wingman.glb` renombrado, recarga, y devuelto a su nombre | Arranca el perro, sin error en pantalla; Wingman sin retrato en el menú. Restaurado: vuelve Wingman | Decisión 0021 |
+| 281 | Dejar el modelo de Riot fuera de git | `.gitignore`; `assets/source/riot/PROCEDENCIA.md` | `git check-ignore` confirma los dos GLB | Decisión 0021 |
+| 282 | Leer la política de Riot | https://www.riotgames.com/en/legal | Resumida en la investigación, con lo que dice y lo que no | `investigacion.md`, parte 6 |
+| 283 | Comprobaciones finales | `npx tsc --noEmit`, `npx vitest run`, `npm run build` | Sin errores; 40 pruebas; las dos páginas | |
+| 284 | Documentar | Decisión 0021, parte 6 de la investigación, `README.md`, `CLAUDE.md` y estas filas | Sin subir nada a GitHub, sin fusionar en otra rama y sin regenerar el instalador. La app de desarrollo queda en marcha, con Wingman | Decisión 0021 |

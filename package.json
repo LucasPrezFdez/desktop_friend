@@ -11,6 +11,7 @@
     "test": "vitest run",
     "model": "node tools/model/build.mjs",
     "model:bed": "node tools/model/build-bed.mjs",
+    "model:wingman": "node tools/model/build-wingman.mjs",
     "installer": "tauri build && node tools/copy-installer.mjs"
   },
   "dependencies": {

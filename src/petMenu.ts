@@ -31,10 +31,12 @@ export class PetMenu {
   private readonly fan = document.createElement('div');
   private readonly portraits = new Map<string, HTMLElement>();
   private closeTimer = 0;
+  private opened = false;
 
   /**
    * @param active La mascota que está ahora en el escritorio.
    * @param origin Centro de la mascota en la ventana: de ahí salen los círculos.
+   * @param onFirstOpen Se llama la primera vez que se abre: para lo que solo hace falta si se usa.
    */
   constructor(
     container: HTMLElement,
@@ -42,6 +44,7 @@ export class PetMenu {
     active: string,
     private readonly origin: () => Point,
     onPick: (pet: PetSpec) => void,
+    private readonly onFirstOpen: () => void = () => {},
   ) {
     this.fan.className = 'pets';
     // El último hueco no es una mascota: avisa de que vendrán más.
@@ -107,6 +110,10 @@ export class PetMenu {
     this.fan.style.top = `${origin.y}px`;
     this.fan.classList.add('open');
     this.scheduleClose(AUTO_CLOSE_MS);
+    if (!this.opened) {
+      this.opened = true;
+      this.onFirstOpen();
+    }
   }
 
   close(): void {

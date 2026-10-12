@@ -30,9 +30,9 @@ const shot = async (page, name) => {
 };
 const state = () =>
   dog.evaluate(`({
-    activity: pet.behavior.activity, phase: pet.behavior.phase, rest: pet.behavior.rest, clip: pet.dog.clip,
+    activity: pet.behavior.activity, phase: pet.behavior.phase, rest: pet.behavior.rest, clip: pet.animal.clip,
     inBed: pet.behavior.inBed, spot: pet.behavior.bedSpot, position: { ...pet.behavior.windowPosition },
-    bedHere: pet.bed.shown, energy: pet.behavior.needs.energy, eyesClosed: pet.dog.eyesClosed,
+    bedHere: pet.bed.shown, energy: pet.behavior.needs.energy, eyesClosed: pet.animal.eyesClosed,
   })`);
 /** Lo que dibuja la ventana de la cama y dónde está, en píxeles físicos. */
 const bedWindow = () =>

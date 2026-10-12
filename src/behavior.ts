@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import type { Desktop, Point, Rect } from './desktop';
-import type { ClipName, Dog } from './dog';
 import { canEat, feed, FULLY_RESTED, mood, pet, RESTED, type Mood, type Needs, type Rest } from './needs';
+import type { ClipName, Pet } from './pet';
 import { BED_MATTRESS, type Bed, type Bowl, type Hand } from './props';
 import type { Stage } from './scene';
 import type { Hud } from './ui';
@@ -43,13 +43,6 @@ export function landsInBed(x: number, bedX: number, reach: number): boolean {
 }
 
 const SIDE = Math.PI / 2;
-/** Tumbado se le ve más de perfil: de frente, las patas estiradas se salían por debajo de la ventana. */
-const LYING_FACING = 1.0;
-/** En la cama va casi de perfil, a lo largo de ella, con la cabeza vuelta hacia quien mira. */
-const NAP_FACING = 1.4;
-/** Cuánto retrocede dentro de la cama, en unidades de la escena, para que quede centrado en ella. */
-const NAP_BACK = 0.36;
-const BOWL_X = 0.98;
 const EAT_SECONDS = 5.3;
 const HAPPY_SECONDS = 1.6;
 /** Píxeles lógicos por segundo al caminar. */
@@ -58,12 +51,6 @@ const WALK_SPEED = 95;
 const GRAVITY = 2600;
 /** Cuánto sube el perro cuando la mano lo levanta, en unidades de la escena. */
 const CARRY_LIFT = 0.7;
-// La mano entra en diagonal desde un lado y agarra el collar por detrás del cuello. Encima de la
-// cabeza parecía un gorro; así se ve la palma junto al cuello, a la altura del collar.
-/** Dónde quedan las puntas de los dedos respecto a la nuca, vistas desde la cámara. */
-const HAND_GRIP = new THREE.Vector3(0.2, 0.03, -0.05);
-/** Inclinación de la mano, en radianes: los dedos apuntan hacia el cuello. */
-const HAND_TILT = -0.8;
 // Balanceo al llevarlo: un péndulo amortiguado que cuelga de la nuca. Tiene que ser leve.
 const SWAY_STIFFNESS = 38;
 const SWAY_DAMPING = 5;
@@ -104,7 +91,10 @@ const fingertips = new THREE.Vector3();
 const yawTurn = new THREE.Quaternion();
 const swayTurn = new THREE.Quaternion();
 
-/** Decide qué hace el perro en cada momento y mueve la ventana por el escritorio. */
+/**
+ * Decide qué hace la mascota en cada momento y mueve la ventana por el escritorio. Se escribió para
+ * el perro y vale para cualquiera: lo que cambia de una a otra está en su `shape` (ver src/pet.ts).
+ */
 export class Behavior {
   needs: Needs;
 
@@ -153,7 +143,7 @@ export class Behavior {
   private handover = 0;
 
   constructor(
-    private readonly dog: Dog,
+    private readonly pet: Pet,
     private readonly desktop: Desktop,
     private readonly stage: Stage,
     private readonly bowl: Bowl,
@@ -382,7 +372,7 @@ export class Behavior {
     this.activity = activity;
     this.clock = 0;
     this.phase = 0;
-    this.dog.tongueOut = activity === 'happy' || activity === 'held';
+    this.pet.tongueOut = activity === 'happy' || activity === 'held';
     // En la cama solo se está tumbado, o levantándose de ella: empezar otra cosa es haber salido.
     if (!STAYS_IN_BED.has(activity)) this.leaveBed();
     this.stage.setFps(CALM.has(activity) ? FPS_CALM : FPS_ACTIVE);
@@ -391,7 +381,7 @@ export class Behavior {
       case 'idle':
         this.duration = random(5, 11);
         this.facing = this.side * 0.65;
-        this.dog.play(IDLE_CLIPS[Math.floor(Math.random() * IDLE_CLIPS.length)]);
+        this.pet.play(IDLE_CLIPS[Math.floor(Math.random() * IDLE_CLIPS.length)]);
         break;
       case 'walk': {
         const min = this.work.x;
@@ -402,64 +392,64 @@ export class Behavior {
         this.targetX = goRight ? random(Math.min(this.windowPosition.x + reach, max), max) : random(min, Math.max(this.windowPosition.x - reach, min));
         this.side = this.targetX >= this.windowPosition.x ? 1 : -1;
         this.facing = this.side * SIDE;
-        this.dog.play('Walk', { speed: this.lowSpirits ? 0.7 : 1 });
+        this.pet.play('Walk', { speed: this.lowSpirits ? 0.7 : 1 });
         break;
       }
       case 'sit':
         this.duration = random(10, 24);
         this.facing = this.side * 0.5;
         if (this.posture === 'sit') {
-          this.dog.play('Sit');
+          this.pet.play('Sit');
           this.phase = 1;
         } else {
-          this.dog.play('SitDown', { once: true });
+          this.pet.play('SitDown', { once: true });
         }
         break;
       case 'lie':
         this.duration = random(14, 34);
-        this.facing = this.side * LYING_FACING;
+        this.facing = this.side * this.pet.shape.lyingFacing;
         if (this.posture === 'lie') {
-          this.dog.play('Lie', { fade: 0.6 });
+          this.pet.play('Lie', { fade: 0.6 });
           this.phase = 1;
         } else {
-          this.dog.play('LieDown', { once: true });
+          this.pet.play('LieDown', { once: true });
         }
         break;
       case 'sleep':
-        this.facing = this.side * LYING_FACING;
+        this.facing = this.side * this.pet.shape.lyingFacing;
         if (this.posture === 'lie') this.fallAsleep();
-        else this.dog.play('LieDown', { once: true });
+        else this.pet.play('LieDown', { once: true });
         break;
       case 'nap':
         // Cae de pie sobre el colchón y se tumba. El clip `Nap` está hecho para verse desde su derecha.
         this.side = 1;
-        this.facing = NAP_FACING;
-        this.dog.play('LieDown', { once: true, fade: 0.25 });
+        this.facing = this.pet.shape.napFacing;
+        this.pet.play('LieDown', { once: true, fade: 0.25 });
         break;
       case 'sad':
         this.duration = random(7, 13);
         this.facing = this.side * 0.65;
-        this.dog.play('Sad', { fade: 0.6 });
+        this.pet.play('Sad', { fade: 0.6 });
         break;
       case 'happy':
-        this.dog.play('Happy', { fade: 0.15 });
+        this.pet.play('Happy', { fade: 0.15 });
         break;
       case 'eat':
         this.side = 1;
         this.facing = SIDE;
-        this.bowl.show(BOWL_X);
-        this.dog.play('Happy', { fade: 0.15 });
+        this.bowl.show(this.pet.shape.bowlX);
+        this.pet.play('Happy', { fade: 0.15 });
         break;
       case 'held':
         // De frente, como un cachorro al que sostienen en alto de cara a ti.
         this.facing = 0;
-        this.dog.play('Carry', { fade: 0.2 });
+        this.pet.play('Carry', { fade: 0.2 });
         break;
       case 'fall':
         this.fallSpeed = 0;
         break;
       case 'rise':
-        this.dog.play(this.posture === 'sit' ? 'SitDown' : 'LieDown', { once: true, reverse: true, fade: 0.25 });
+        this.pet.play(this.posture === 'sit' ? 'SitDown' : 'LieDown', { once: true, reverse: true, fade: 0.25 });
         break;
     }
   }
@@ -468,7 +458,7 @@ export class Behavior {
     this.posture = 'lie';
     this.phase = 1;
     // En la cama duerme echado del todo, con la barbilla apoyada; el clip del suelo no cabe en ella.
-    this.dog.play(this.activity === 'nap' ? 'Nap' : 'Sleep', { fade: 0.9 });
+    this.pet.play(this.activity === 'nap' ? 'Nap' : 'Sleep', { fade: 0.9 });
     // Dormido casi no se mueve: con menos fotogramas por segundo gasta menos.
     this.stage.setFps(FPS_ASLEEP);
   }
@@ -497,11 +487,11 @@ export class Behavior {
       case 'sit':
       case 'lie':
         if (this.phase === 0) {
-          if (this.dog.finished) {
+          if (this.pet.finished) {
             this.posture = this.activity;
             this.phase = 1;
             this.clock = 0;
-            this.dog.play(this.activity === 'sit' ? 'Sit' : 'Lie');
+            this.pet.play(this.activity === 'sit' ? 'Sit' : 'Lie');
           }
         } else if (this.clock > this.duration) {
           this.next();
@@ -509,14 +499,14 @@ export class Behavior {
         break;
       case 'sleep':
         if (this.phase === 0) {
-          if (this.dog.finished) this.fallAsleep();
+          if (this.pet.finished) this.fallAsleep();
         } else if (this.needs.energy >= RESTED) {
           this.start('idle');
         }
         break;
       case 'nap':
         if (this.phase === 0) {
-          if (this.dog.finished) this.fallAsleep();
+          if (this.pet.finished) this.fallAsleep();
         } else if (this.clock > NAP_MIN_SECONDS && this.needs.energy >= FULLY_RESTED) {
           // Descansado del todo: se levanta de un salto y la cama se guarda.
           this.start('happy');
@@ -530,7 +520,7 @@ export class Behavior {
           if (this.clock > 0.8) {
             this.phase = 1;
             this.clock = 0;
-            this.dog.play('Eat', { fade: 0.35 });
+            this.pet.play('Eat', { fade: 0.35 });
           }
         } else {
           this.bowl.setLevel(1 - this.clock / EAT_SECONDS);
@@ -544,7 +534,7 @@ export class Behavior {
         this.fall(delta);
         break;
       case 'rise':
-        if (this.dog.finished) {
+        if (this.pet.finished) {
           this.posture = 'stand';
           const pending = this.pending ?? 'idle';
           this.pending = null;
@@ -595,10 +585,10 @@ export class Behavior {
     this.placeDog(delta);
 
     this.petLevel = Math.max(0, this.petLevel - delta * 0.9);
-    this.dog.petting += (this.petLevel - this.dog.petting) * Math.min(1, delta * 8);
-    this.dog.eyesClosed = this.asleep || this.petLevel > 0.55;
+    this.pet.petting += (this.petLevel - this.pet.petting) * Math.min(1, delta * 8);
+    this.pet.eyesClosed = this.asleep || this.petLevel > 0.55;
 
-    this.dog.wag += (this.wagTarget() - this.dog.wag) * Math.min(1, delta * 4);
+    this.pet.wag += (this.wagTarget() - this.pet.wag) * Math.min(1, delta * 4);
 
     const head = this.headOnScreen();
     const current = mood(this.needs);
@@ -633,12 +623,12 @@ export class Behavior {
     this.swaySpeed += (SWAY_STIFFNESS * (target - this.sway) - SWAY_DAMPING * this.swaySpeed) * delta;
     this.sway += this.swaySpeed * delta;
 
-    const root = this.dog.root;
+    const root = this.pet.root;
     // La nuca en coordenadas del propio perro: no depende de dónde esté colocado ahora.
-    root.worldToLocal(this.dog.napePosition(nape));
+    root.worldToLocal(this.pet.napePosition(nape));
     this.nest += ((this.inBed ? 1 : 0) - this.nest) * Math.min(1, delta * 8);
     // Primero baja la mano y después lo levanta. En la cama se apoya en el colchón, no en el suelo.
-    const back = NAP_BACK * this.nest;
+    const back = this.pet.shape.napBack * this.nest;
     base.set(
       -Math.sin(this.yaw) * back,
       CARRY_LIFT * THREE.MathUtils.smoothstep(this.carry, 0.3, 1) + BED_MATTRESS * this.nest,
@@ -651,8 +641,8 @@ export class Behavior {
     root.position.copy(base).sub(pivot).applyQuaternion(swayTurn).add(pivot);
 
     // La mano gira con el perro alrededor de la nuca.
-    fingertips.copy(HAND_GRIP).applyQuaternion(swayTurn).add(pivot);
-    this.hand.place(fingertips, this.sway + HAND_TILT, this.grip);
+    fingertips.copy(this.pet.shape.handGrip).applyQuaternion(swayTurn).add(pivot);
+    this.hand.place(fingertips, this.sway + this.pet.shape.handTilt, this.grip);
   }
 
   private wagTarget(): number {
@@ -679,6 +669,6 @@ export class Behavior {
   }
 
   private headOnScreen(): Point {
-    return this.stage.project(this.dog.headPosition(headWorld));
+    return this.stage.project(this.pet.headPosition(headWorld));
   }
 }

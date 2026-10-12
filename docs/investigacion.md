@@ -314,6 +314,41 @@ Hechos comprobados al hacer el menú (decisión 0020). No hubo búsqueda en la w
 ## El servidor de desarrollo
 - Con dos ediciones muy seguidas de un mismo fichero, Vite 8 recargó la app con la versión intermedia y siguió sirviéndola después, con el fichero ya correcto en disco. [V] Visto dos veces con `src/portrait.ts`; `curl` al servidor devolvía la versión vieja. Volver a tocar el fichero lo arregla. [I] Parece que el vigilante de ficheros se pierde el segundo cambio; no se ha investigado.
 
+# Parte 6. Wingman (12 de octubre de 2026)
+
+Hechos comprobados al añadir la segunda mascota (decisión 0021).
+
+## El modelo extraído
+- `Wingman.glb` trae una malla de 3649 vértices en dos primitivas, 21 huesos, dos materiales que usan las mismas tres texturas de 1024 × 1024 y ninguna animación. [V] `tools/model/inspect.mjs`.
+- Cada vértice lleva ocho canales de UV y dos de color. [V] Atributos de las primitivas en el JSON del GLB.
+- En Blender mira hacia +X, mide 1,076 de alto y 1,51 de punta a punta de los brazos, que en reposo están en cruz. [V] Medido con un script.
+- Las piernas son dos huesos de 0,18 y 0,14: un tercio de la altura. Los pies no tienen pesos propios: siguen a la espinilla. [V] El mismo script.
+- La cabeza, las orejas y el casco siguen todos al hueso `Head`. `Head_Armor` no es el casco: mueve las placas de la espalda. [V] Grupos de vértices por hueso.
+- Los ojos son una pieza aparte de la malla, 196 caras, con su propio trozo de textura; debajo está pintado el antifaz. Al quitarlos se ve el antifaz entero. [V] Hoja `wingman_head.png`.
+- En el juego hay animaciones de Wingman (`ABTP_AggroBot_S0_Q_Spikebot_Run`, `_Intro`, `_Turn_L`, `_Bomb_Activate` y otras). [V] Listado `out/find_aggrobot.txt` de la carpeta del usuario. Ninguna está extraída. [V] No hay más GLB que los de las mallas.
+
+## Blender
+- El importador de glTF deja los objetos con el giro en modo cuaternión. Asignar `rotation_euler` en ese modo no cambia nada y no avisa. [V] La matriz del objeto seguía siendo la identidad.
+- El importador añade una esfera para dibujar los huesos, en una colección oculta. `visible_get()` la distingue. [V] El encuadre de `preview.py` antes y después.
+- La pose de un hueso se puede calcular sin Blender: la del padre, por el reposo del hijo visto desde el padre, por lo que se le haya girado. Coincide con la de Blender en los 23 huesos. [V] Comparación con un script, en dos poses.
+- El exportador conserva los canales de todos los huesos en todos los clips, aunque el hueso no se mueva: 69 canales por clip, tres por hueso. [V] `inspect.mjs` sobre el resultado.
+- Si dos materiales usan la misma imagen, el exportador la escribe una sola vez. [V] 2 texturas y 1 imagen en el resultado.
+
+## Three.js
+- Las luces de la escena (1,2 de ambiente y 1,9 de principal) no queman una textura clara: con el material en blanco, Wingman sale en su color. [V] Capturas antes y después de quitar un tinte gris. [I] Las intensidades de Three.js se dividen entre π al sombrear, así que 1,9 no es "el doble de luz".
+- Dos materiales de un GLB que usan la misma textura reciben el mismo objeto de textura. [I] Un solo material nuevo sirve para las dos mallas y se ve bien; no se ha contado la memoria.
+- Dibujar otra escena en el mismo canvas, copiarla y volver a dibujar la del escritorio, todo en la misma tarea, no llega a verse. [I] No se ha visto parpadeo en las pruebas; no se ha grabado la pantalla.
+
+## La política de Riot para proyectos de aficionados
+Leída el 12-10-2026 en https://www.riotgames.com/en/legal ("Legal Jibber Jabber", actualizada en agosto de 2018), a través de una herramienta que resume la página. Las citas son las que devolvió.
+
+- Da permiso "strictly for noncommercial [...] community use". No admite proyectos comerciales ni financiados entre muchos. [V]
+- Pide incluir, a la vista, este aviso: "[The title of your Project] was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project." [V]
+- Dice que los proyectos no pueden usar su propiedad intelectual, y cita "character appearance", en juegos o aplicaciones, ni estar en tiendas de aplicaciones, sin licencia escrita. [V] Es el punto que toca a una app con Wingman.
+- Riot puede negar el uso "at any time, for any reason or no reason" y cerrar cualquier proyecto. [V]
+- No dice nada de ficheros extraídos del juego ni de redistribuir sus modelos sueltos. [V] Que no lo diga no es un permiso. [I]
+- Las condiciones de uso de VALORANT, que son las que regulan qué se puede hacer con los ficheros del juego, no se han leído. [NV]
+
 # Fuentes
 
 ## Tauri
@@ -387,6 +422,9 @@ Hechos comprobados al hacer el menú (decisión 0020). No hubo búsqueda en la w
 - https://gltf-transform.dev/cli
 - https://meshoptimizer.org/gltf/
 - https://github.com/KhronosGroup/glTF-Validator
+
+## Riot Games
+- https://www.riotgames.com/en/legal
 
 ## Fuentes que no se pudieron abrir
 El manual actual del exportador glTF de Blender, la página de precios de Tripo, la documentación de la API de Poly Pizza y el fichero de licencia oficial de Hunyuan3D. Los datos correspondientes están marcados [NV] o proceden de una fuente alternativa.

@@ -90,19 +90,25 @@ try {
   await sleep(500);
   await shot('1-abierto');
   const all = await circles();
+  // Las mascotas que hay las dice la propia app (src/pets.ts).
+  const pets = await app.evaluate(`import('/src/pets.ts').then((module) => module.PETS.length)`);
   const dog = all.find((circle) => circle.active);
   const soon = all.find((circle) => !circle.option);
-  check('hay un círculo por mascota y un hueco para las que vendrán', all.length === 2 && all.filter((circle) => circle.option).length === 1, all.map((circle) => circle.name).join(', '));
+  check('hay un círculo por mascota y un hueco para las que vendrán', all.length === pets + 1 && all.filter((circle) => circle.option).length === pets, all.map((circle) => circle.name).join(', '));
   check('la mascota actual lleva el anillo lleno y su retrato', dog && dog.ring === 0 && dog.portrait && dog.opacity === 1, dog && `${dog.name}, ${dog.size} px`);
   check('el hueco va atenuado y sin anillo', soon && soon.ring > 100 && soon.opacity < 1);
   check('los círculos caben en la ventana', all.every((circle) => circle.x - circle.size / 2 >= 0 && circle.x + circle.size / 2 <= view.width && circle.y - circle.size / 2 >= 0), all.map((circle) => `(${Math.round(circle.x)}, ${Math.round(circle.y)})`).join(' '));
 
   // 2. Solo los círculos de mascota capturan el clic.
   const corner = dog.size / 2 - 3;
-  check('el círculo del perro captura el clic', await uiAt(dog.x, dog.y));
+  check('el círculo de la mascota actual captura el clic', await uiAt(dog.x, dog.y));
   check('la esquina de su caja no', !(await uiAt(dog.x - corner, dog.y - corner)));
   check('su nombre tampoco', !(await uiAt(dog.x, dog.y + dog.size / 2 + 14)));
   check('el hueco de "Pronto" deja pasar el clic', !(await uiAt(soon.x, soon.y)));
+  // Los retratos de las demás llegan algo después que el menú: antes hay que cargar su modelo.
+  await sleep(1500);
+  const others = (await circles()).filter((circle) => circle.option && !circle.active);
+  check('las demás llevan el anillo vacío y su retrato', others.every((circle) => circle.ring > 100 && circle.portrait), others.map((circle) => circle.name).join(', '));
 
   // 3. Convive con los círculos de estado: abrir unos cierra el otro.
   await click(await head(), 'left');

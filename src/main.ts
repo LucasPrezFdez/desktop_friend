@@ -1,13 +1,13 @@
-import { Vector3 } from 'three';
 import { Behavior } from './behavior';
 import { createLights } from './blackFur';
 import { ClickThrough } from './clickThrough';
 import { createDesktop, type Point } from './desktop';
-import { Dog } from './dog';
 import { Interaction } from './interaction';
+import { loadPet } from './loadPet';
 import { advance, canEat, catchUp, initialState, parseState, type PetState } from './needs';
+import type { Pet } from './pet';
 import { PetMenu } from './petMenu';
-import { PETS, resolvePet } from './pets';
+import { PETS, resolvePet, type PetSpec } from './pets';
 import { takePortrait } from './portrait';
 import { Bed, Bowl, createShadow, Hand } from './props';
 import { Stage } from './scene';
@@ -17,31 +17,41 @@ const STATE_KEY = 'pet';
 const WINDOW_KEY = 'windowX';
 const CHOICE_KEY = 'chosenPet';
 const SAVE_EVERY_MS = 20_000;
-// Por encima de esta opacidad el píxel bajo el cursor es perro (o cuenco, o cama), no sombra ni borde.
+// Por encima de esta opacidad el píxel bajo el cursor es mascota (o cuenco, o cama), no sombra ni borde.
 const SOLID_ALPHA = 128;
-// Centro del cuerpo del perro en la escena: de ahí salen los círculos de estado.
-const BODY_CENTER = new Vector3(0, 0.62, 0);
+
+/** Carga la mascota elegida. Si su modelo falta o no se puede leer, sale la primera de la lista. */
+async function loadChosen(chosen: PetSpec): Promise<{ chosen: PetSpec; pet: Pet }> {
+  try {
+    return { chosen, pet: await loadPet(chosen.id) };
+  } catch (error) {
+    if (chosen === PETS[0]) throw error;
+    console.error(error);
+    return { chosen: PETS[0], pet: await loadPet(PETS[0].id) };
+  }
+}
 
 async function main(): Promise<void> {
   const desktop = createDesktop();
   const stage = new Stage(document.querySelector<HTMLCanvasElement>('#stage')!);
-  stage.scene.add(createLights(), createShadow());
 
-  const chosen = resolvePet(await desktop.loadState<unknown>(CHOICE_KEY));
-  const [dog, bed] = await Promise.all([Dog.load(), Bed.load()]);
-  stage.scene.add(dog.root);
-  // El retrato se saca ahora, con el perro solo en la escena y antes de que empiece a moverse.
-  const portrait = takePortrait(stage, dog);
+  const saved = resolvePet(await desktop.loadState<unknown>(CHOICE_KEY));
+  const [{ chosen, pet }, bed] = await Promise.all([loadChosen(saved), Bed.load()]);
+  const shadow = createShadow();
+  shadow.scale.set(pet.shape.shadow.width, pet.shape.shadow.depth, 1);
+  stage.scene.add(createLights(), shadow, pet.root);
+  // El retrato se saca ahora, antes de que empiece a moverse.
+  const portrait = takePortrait(stage, pet);
   const bowl = new Bowl();
   const hand = new Hand();
   stage.scene.add(bowl.group, hand.group, bed.group);
 
   // Lo primero es ponerse al día con el tiempo que la app ha estado cerrada.
-  const saved = parseState(await desktop.loadState<unknown>(STATE_KEY));
-  const start = saved ? catchUp(saved, Date.now()) : initialState(Date.now());
+  const state = parseState(await desktop.loadState<unknown>(STATE_KEY));
+  const start = state ? catchUp(state, Date.now()) : initialState(Date.now());
 
   const ui = document.querySelector<HTMLElement>('#ui')!;
-  const bodyOnScreen = (): Point => stage.project(BODY_CENTER);
+  const bodyOnScreen = (): Point => stage.project(pet.shape.bodyCenter);
   const hud = new Hud(
     ui,
     () => {
@@ -49,15 +59,33 @@ async function main(): Promise<void> {
     },
     bodyOnScreen,
   );
-  const petMenu = new PetMenu(ui, PETS, chosen.id, bodyOnScreen, (pet) => {
-    if (pet.id === chosen.id) return;
-    // Cambiar de mascota es arrancar de nuevo con la otra: se guarda todo y se recarga la ventana.
-    void save()
-      .then(() => desktop.saveState(CHOICE_KEY, pet.id))
-      .then(() => location.reload());
-  });
+  const petMenu = new PetMenu(
+    ui,
+    PETS,
+    chosen.id,
+    bodyOnScreen,
+    (picked) => {
+      if (picked.id === chosen.id) return;
+      // Cambiar de mascota es arrancar de nuevo con la otra: se guarda todo y se recarga la ventana.
+      void save()
+        .then(() => desktop.saveState(CHOICE_KEY, picked.id))
+        .then(() => location.reload());
+    },
+    () => {
+      // Para retratar a las demás hay que cargar su modelo: se hace solo si el menú llega a abrirse.
+      for (const other of PETS) {
+        if (other.id === chosen.id) continue;
+        void loadPet(other.id)
+          .then((model) => {
+            petMenu.setPortrait(other.id, takePortrait(stage, model));
+            model.dispose();
+          })
+          .catch((error: unknown) => console.error(error));
+      }
+    },
+  );
   petMenu.setPortrait(chosen.id, portrait);
-  const behavior = new Behavior(dog, desktop, stage, bowl, hand, bed, hud, start.needs);
+  const behavior = new Behavior(pet, desktop, stage, bowl, hand, bed, hud, start.needs);
   window.addEventListener('resize', () => void behavior.relayout());
   await behavior.init(await desktop.loadState<number>(WINDOW_KEY));
 
@@ -120,7 +148,7 @@ async function main(): Promise<void> {
 
   stage.onUpdate = (delta) => {
     behavior.update(delta);
-    dog.update(delta);
+    pet.update(delta);
     bowl.update(delta);
     bed.update(delta);
   };
@@ -137,7 +165,7 @@ async function main(): Promise<void> {
 
   if (import.meta.env.DEV) {
     // Acceso desde las herramientas de verificación (tools/verify/cdp.mjs).
-    Object.assign(window, { pet: { behavior, dog, bed, hud, petMenu, stage, save } });
+    Object.assign(window, { pet: { behavior, animal: pet, bed, hud, petMenu, stage, save } });
   }
 }
 

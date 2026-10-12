@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { hasModel } from '../src/loadPet';
 import { fanOffsets } from '../src/petMenu';
 import { PETS, resolvePet } from '../src/pets';
 
@@ -25,6 +26,11 @@ describe('resolvePet (qué mascota sale al arrancar)', () => {
   it('con la lista real, el perro', () => {
     expect(resolvePet(undefined).id).toBe('dog');
     expect(PETS.map((pet) => pet.id)).toContain('dog');
+  });
+
+  it('todas las de la lista tienen un modelo que cargar, y ninguna se repite', () => {
+    for (const pet of PETS) expect(hasModel(pet.id), pet.name).toBe(true);
+    expect(new Set(PETS.map((pet) => pet.id)).size).toBe(PETS.length);
   });
 });
 

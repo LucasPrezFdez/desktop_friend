@@ -159,7 +159,8 @@ def main():
     for material in bpy.data.materials:
         material.use_backface_culling = True
 
-    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    # El importador guarda en una colección oculta la esfera con la que dibuja los huesos: no cuenta.
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH" and o.visible_get()]
     hidden = {name for name in args.hide.split(",") if name}
     for obj in meshes:
         slots = {i for i, m in enumerate(obj.data.materials) if m and m.name in hidden}

@@ -1,4 +1,5 @@
 // Acaricia la cara del perro con un cursor virtual y mide si la cabeza se deforma.
+// Solo vale con el perro en el escritorio: también mide su cola.
 //
 // No mueve el ratón real: los movimientos se inyectan en la página por el protocolo DevTools
 // y el punto de sondeo de la app (el que decide si el cursor está sobre el perro) se sustituye
@@ -36,7 +37,7 @@ const shot = async (name) => {
 const sample = () =>
   app.evaluate(`(() => {
     const head = pet.behavior.headOnScreen();
-    return { x: head.x, y: head.y, q: pet.dog.head.quaternion.toArray(), tail: pet.dog.tail[2].quaternion.toArray(), wag: pet.dog.wag, pet: pet.behavior.petLevel, clip: pet.dog.clip };
+    return { x: head.x, y: head.y, q: pet.animal.head.quaternion.toArray(), tail: pet.animal.tail[2].quaternion.toArray(), wag: pet.animal.wag, pet: pet.behavior.petLevel, clip: pet.animal.clip };
   })()`);
 
 try {
