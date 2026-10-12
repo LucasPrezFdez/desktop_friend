@@ -1,7 +1,7 @@
 # 0018. Modelo nuevo: un retrato del perro del usuario, con collar lila
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta en su octava versión (ver las revisiones 2 a 8 al final; la 8 rehace la forma de toda la cabeza y sustituye a lo dicho en la 4 sobre hocico y trufa y en la 6 sobre el alto del cráneo; la 7 añade las cejas canosas y queda guardada con la etiqueta `modelo-revision-7`; la 6 cambia el alto y la inclinación del cráneo de la 4; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
+- **Estado:** propuesta en su novena versión (ver las revisiones 2 a 9 al final; la 9 sube el hocico de la 8; la 8 rehace la forma de toda la cabeza y sustituye a lo dicho en la 4 sobre hocico y trufa y en la 6 sobre el alto del cráneo; la 7 añade las cejas canosas y queda guardada con la etiqueta `modelo-revision-7`; la 6 cambia el alto y la inclinación del cráneo de la 4; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos), pendiente de la opinión del usuario. Está en la rama `nuevo-modelo-3d`, sin fusionar
 - **Decide:** el usuario pide el cambio; el diseño lo propone el agente
 - **Relación con otras decisiones:** mantiene la 0005 y la 0009 (se sigue partiendo del Husky de Quaternius y de Blender en modo script) y sustituye, de la 0010, la tabla de colores y la lista de piezas añadidas. El resto de la 0010 (cinemática propia, poses en coordenadas de mundo, clips) sigue en vigor
 
@@ -486,3 +486,33 @@ En la revisión 6 el usuario pidió menos frente y la coronilla bajó a 0,39 anc
 - **Los ojos no se han tocado.** En las fotos son redondos; en el modelo la abertura es una almendra un tercio más baja que ancha (revisión 5). Es la diferencia más visible que queda.
 - **Las orejas no se han tocado.** Vistas desde arriba siguen saliendo hacia los lados más que las del perro.
 - Sigue sin haber foto de perfil: el largo del hocico y la inclinación de la frente son una estimación.
+
+## Revisión 9: el morro, más arriba
+Al ver la revisión 8 en el escritorio, el usuario pidió que **el morro esté un poco más arriba**.
+
+### Decisión (`tools/model/build_dog.py`)
+Se sube 0,05 todo lo que forma el morro, sin cambiar su tamaño ni su forma: el hocico (`MUZZLE_BASE`, `MUZZLE_END`), los belfos (`LIP_CENTER`), la trufa (`NOSE_CENTER`) y, con ellos, los planos que delimitan sus canas (`MUZZLE_WHITE_AT`, `MUZZLE_GREY_AT`, `MUZZLE_WHITE_TOP`). Son 0,06 anchos de cráneo.
+
+| Medida | Revisión 8 | Revisión 9 |
+|---|---|---|
+| De la línea de ojos al centro de la trufa | 0,225 | 0,175 |
+| Caña del hocico en el stop, respecto a la línea de ojos | 0,085 por debajo | 0,035 por debajo |
+
+El stop queda menos hondo y la caña sale casi a la altura de los ojos. La quijada no se ha movido.
+
+"Más arriba" se ha entendido como el morro entero más alto en la cara, no como la punta levantada; si era lo segundo, se sube solo `MUZZLE_END`.
+
+### Efecto sobre las medidas de la revisión 8
+La distancia de los ojos a la trufa, que coincidía con las fotos (0,49 separaciones entre ojos en la vista de frente, frente a 0,47 de la foto 1), baja a unas 0,42, calculadas sobre las medidas para esa misma vista. Aquí manda lo que ve el usuario.
+
+### Verificación de esta versión
+| Comprobación | Resultado |
+|---|---|
+| Renders de perfil, de frente y en tres cuartos, antes y después | El morro sube; la forma es la misma |
+| Renders en seis vistas (`docs/capturas/nuevo-modelo-cabeza.png`) | Sin defectos |
+| App en desarrollo: primer plano claro, oscuro y con los ojos cerrados (`docs/capturas/nuevo-modelo-cara.png`), sobre fucsia, con la lengua fuera y comiendo | Sin huecos; la lengua cuelga bajo el hocico; el hocico llega al cuenco |
+| Copia de pantalla del rectángulo de la ventana | El perro se ve en el escritorio con esta versión |
+| `npm run model` | 14 clips, sin errores de validación. 1 240 800 bytes, 13 071 vértices |
+| `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
+
+`docs/capturas/nuevo-modelo-poses.png` también se rehízo. `nuevo-modelo-app.png` es de la revisión 8 y `nuevo-modelo-union-orejas.png`, de la 6.

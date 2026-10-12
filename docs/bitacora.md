@@ -353,3 +353,24 @@ Hora comprobada: 19:03, pruebas unitarias en verde con esta versión.
 | 200 | Regenerar, validar y probar | `npm run model`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 239 828 bytes, 13 051 vértices, 12 materiales; 26 pruebas en verde | Decisión 0018, revisión 8 |
 | 201 | Probar en la app | `tools/verify/cdp.mjs` (actividades, primeros planos, fucsia, lengua, ojos cerrados, comer) y `tools/verify/carry.mjs` | Sin huecos; la lengua y el cuenco encajan; en brazos, balanceo máximo de 10,2° | Decisión 0018, revisión 8 |
 | 202 | Rehacer las capturas | `docs/capturas/nuevo-modelo-cabeza.png`, `-cara.png`, `-poses.png` y `-app.png` | `-union-orejas.png` no se rehace: sigue siendo de la revisión 6 | Decisión 0018, revisión 8 |
+
+### El perro no se veía en el escritorio
+
+Hora comprobada: 19:09, hora de inicio del proceso `desktopfriend.exe` según `Get-Process`.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 203 | Comprobar si el perro se ve en el escritorio, a petición del usuario | Estado de la ventana preguntado a Windows y copia de pantalla de su rectángulo (`BitBlt` con `CAPTUREBLT`) | La ventana existía, visible y siempre encima, y por dentro dibujaba al perro (`tools/verify/cdp.mjs`), pero en pantalla no aparecía. Llevaba abierta desde las 18:31, con muchas recargas y capturas por el puerto de depuración. Causa sin averiguar | |
+| 204 | Reiniciar la app | Se cierra `desktopfriend.exe` y se vuelve a lanzar `npm run tauri dev` con el puerto de depuración | El perro se ve en el escritorio, en el monitor principal, sobre la barra de tareas | Commit `c4d5939` |
+
+### Modelo nuevo, revisión 9: el morro, más arriba
+
+Hora comprobada: 19:12, pruebas unitarias en verde con esta versión.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 205 | Subir el morro | `tools/model/build_dog.py`: hocico, belfos, trufa y planos de las canas, 0,05 más arriba | Renders de antes y después: sube sin cambiar de forma | Decisión 0018, revisión 9 |
+| 206 | Regenerar, validar y probar | `npm run model`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 240 800 bytes, 13 071 vértices; 26 pruebas en verde | Decisión 0018, revisión 9 |
+| 207 | Probar en la app | Recarga de la página y `tools/verify/cdp.mjs` (primeros planos, fucsia, lengua, ojos cerrados, comer) | Vite no recarga la página al cambiar el modelo: llevaba 213 s sin cargarse y hubo que recargarla. Sin huecos; lengua y cuenco encajan | Decisión 0018, revisión 9 |
+| 208 | Comprobar que se ve en el escritorio | Copia de pantalla del rectángulo de la ventana (`BitBlt` con `CAPTUREBLT`) | El perro se ve, sentado, con el morro nuevo | Decisión 0018, revisión 9 |
+| 209 | Rehacer las capturas | `docs/capturas/nuevo-modelo-cabeza.png`, `-cara.png` y `-poses.png` | `-app.png` sigue siendo de la revisión 8 y `-union-orejas.png`, de la 6 | Decisión 0018, revisión 9 |

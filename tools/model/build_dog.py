@@ -215,9 +215,9 @@ HEAD_RELAX = 4
 JAW_CENTER = Vector((0.0, -1.80, 2.47))
 JAW_RADII = Vector((0.36, 0.30, 0.28))
 # Hocico: un cono redondeado que se estrecha del stop a la punta.
-MUZZLE_BASE = Vector((0.0, -2.00, 2.41))
+MUZZLE_BASE = Vector((0.0, -2.00, 2.46))
 MUZZLE_BASE_RADIUS = 0.25
-MUZZLE_END = Vector((0.0, -2.32, 2.40))
+MUZZLE_END = Vector((0.0, -2.32, 2.45))
 MUZZLE_END_RADIUS = 0.20
 # Es más ancho que alto.
 MUZZLE_WIDE = 1.32
@@ -225,12 +225,12 @@ MUZZLE_WIDE = 1.32
 # MUZZLE_WHITE_AT, y gris hasta otro plano paralelo, más atrás. Al estar inclinados, la barbilla
 # es blanca hasta la comisura. Por encima de MUZZLE_WHITE_TOP no hay canas: la caña es negra
 # hasta la trufa.
-MUZZLE_WHITE_AT = Vector((0.0, -2.30, 2.42))
-MUZZLE_GREY_AT = Vector((0.0, -2.20, 2.42))
+MUZZLE_WHITE_AT = Vector((0.0, -2.30, 2.47))
+MUZZLE_GREY_AT = Vector((0.0, -2.20, 2.47))
 MUZZLE_WHITE_TOWARDS = Vector((0.0, -1.0, -0.6)).normalized()
-MUZZLE_WHITE_TOP = 2.55
+MUZZLE_WHITE_TOP = 2.60
 # Belfos: dos almohadillas a los lados de la trufa.
-LIP_CENTER = Vector((0.13, -2.37, 2.34))
+LIP_CENTER = Vector((0.13, -2.37, 2.39))
 LIP_RADIUS = 0.16
 # Arcos de las cejas: dos bultos sobre los ojos con un surco en medio. Cada uno se apoya en el
 # cráneo, en el punto más cercano a BROW_AT, y sobresale BROW_OUT.
@@ -238,7 +238,7 @@ BROW_AT = Vector((0.20, -2.30, 3.00))
 BROW_RADII = Vector((0.15, 0.12, 0.12))
 BROW_OUT = 0.05
 # La trufa: lo que asoma de este elipsoide mide unos 0,31 anchos de cráneo de ancho.
-NOSE_CENTER = Vector((0.0, -2.475, 2.52))
+NOSE_CENTER = Vector((0.0, -2.475, 2.57))
 NOSE_RADII = Vector((0.16, 0.075, 0.10))
 # Los ojos quedan poco por encima del centro del cráneo; entre sus centros hay 0,67 anchos de cráneo.
 EYE_X = 0.67 * SKULL_WIDTH / 2
