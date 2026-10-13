@@ -16,6 +16,7 @@ import { Hud } from './ui';
 const STATE_KEY = 'pet';
 const WINDOW_KEY = 'windowX';
 const CHOICE_KEY = 'chosenPet';
+const MONITOR_KEY = 'monitor';
 const SAVE_EVERY_MS = 20_000;
 // Por encima de esta opacidad el píxel bajo el cursor es mascota (o cuenco, o cama), no sombra ni borde.
 const SOLID_ALPHA = 128;
@@ -87,12 +88,17 @@ async function main(): Promise<void> {
   petMenu.setPortrait(chosen.id, portrait);
   const behavior = new Behavior(pet, desktop, stage, bowl, hand, bed, hud, start.needs);
   window.addEventListener('resize', () => void behavior.relayout());
-  await behavior.init(await desktop.loadState<number>(WINDOW_KEY));
+  // Vuelve a la pantalla en la que estaba. Si ya no está conectada, se queda en la principal.
+  const lastMonitor = await desktop.loadState<unknown>(MONITOR_KEY);
+  const home = (await desktop.monitors()).find((monitor) => monitor.name === lastMonitor);
+  await behavior.init(await desktop.loadState<number>(WINDOW_KEY), home?.workArea);
 
   const save = async (): Promise<void> => {
     const state: PetState = { version: 1, needs: behavior.needs, lastSeen: Date.now() };
     await desktop.saveState(STATE_KEY, state);
     await desktop.saveState(WINDOW_KEY, behavior.windowX);
+    const monitor = await desktop.monitor();
+    if (monitor) await desktop.saveState(MONITOR_KEY, monitor.name);
   };
 
   const clickThrough = new ClickThrough(desktop, stage, (point) => hud.isUiAt(point));
@@ -134,6 +140,15 @@ async function main(): Promise<void> {
     }
   });
 
+  desktop.onMonitorPick((name) => {
+    void Promise.all([desktop.monitor(), desktop.monitors()]).then(([current, monitors]) => {
+      const picked = monitors.find((monitor) => monitor.name === name);
+      // Elegir la pantalla en la que ya está no hace nada.
+      if (!picked || picked.name === current?.name) return;
+      void behavior.moveTo(picked.workArea).then(save);
+    });
+  });
+
   // Las necesidades avanzan según el reloj, no según los fotogramas dibujados.
   let lastTick = Date.now();
   const tick = (): void => {
@@ -144,7 +159,9 @@ async function main(): Promise<void> {
   };
   tick();
   window.setInterval(tick, 1000);
-  window.setInterval(() => void save(), SAVE_EVERY_MS);
+  // Antes de guardar se vuelve a apoyar en su pantalla: si la han desconectado, Windows habrá
+  // pasado la ventana a otra.
+  window.setInterval(() => void behavior.relayout().then(save), SAVE_EVERY_MS);
 
   stage.onUpdate = (delta) => {
     behavior.update(delta);
@@ -165,7 +182,7 @@ async function main(): Promise<void> {
 
   if (import.meta.env.DEV) {
     // Acceso desde las herramientas de verificación (tools/verify/cdp.mjs).
-    Object.assign(window, { pet: { behavior, animal: pet, bed, hud, petMenu, stage, save } });
+    Object.assign(window, { pet: { behavior, animal: pet, bed, desktop, hud, petMenu, stage, save } });
   }
 }
 

@@ -510,3 +510,30 @@ Horas comprobadas en las salidas de las herramientas:
 | 282 | Leer la política de Riot | https://www.riotgames.com/en/legal | Resumida en la investigación, con lo que dice y lo que no | `investigacion.md`, parte 6 |
 | 283 | Comprobaciones finales | `npx tsc --noEmit`, `npx vitest run`, `npm run build` | Sin errores; 40 pruebas; las dos páginas | |
 | 284 | Documentar | Decisión 0021, parte 6 de la investigación, `README.md`, `CLAUDE.md` y estas filas | Sin subir nada a GitHub, sin fusionar en otra rama y sin regenerar el instalador. La app de desarrollo queda en marcha, con Wingman | Decisión 0021 |
+
+## 2026-10-13
+
+### Elegir pantalla (rama `elegir-pantalla`)
+
+Horas comprobadas en las salidas de las herramientas: 14:58 pruebas unitarias en verde con el cambio ya escrito; 15:09 comprobaciones finales terminadas y app cerrada.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 285 | Mirar cómo se coloca hoy la ventana | Lectura de `src/desktop.ts`, `src/behavior.ts`, `src/main.ts` y `src-tauri/src/lib.rs`; pantallas del equipo con PowerShell | La mascota ya vive en la pantalla donde esté su ventana, pero no hay dónde elegirla y al arrancar vuelve a la principal. El equipo tiene dos pantallas | Decisión 0022 |
+| 286 | Leer en el código de Tauri qué se puede hacer | `tauri-2.12.3` y `tray-icon-0.25.1` en la caché de Cargo; `gen/schemas/desktop-schema.json` | Hay pantallas con nombre y zona útil, submenús que se pueden cambiar y avisos del icono; no hacen falta permisos nuevos | `investigacion.md`, parte 7 |
+| 287 | Crear la rama y guardar el estado de la mascota | `git checkout -b elegir-pantalla` desde `mascota-wingman`; copia de `pet.json` fuera del proyecto | Parte del commit `0b84824` | Decisión 0022 |
+| 288 | Escribir el submenú de la bandeja | `src-tauri/src/lib.rs`: `mod monitors`, evento `pet-monitor` | `cargo check` sin errores | Decisión 0022 |
+| 289 | Escribir el lado de la ventana | `src/desktop.ts` (`monitor`, `monitors`, `onMonitorPick`), `src/behavior.ts` (`moveTo`, `init`, `relayout`), `src/main.ts` | `npx tsc --noEmit` sin errores; 40 pruebas en verde | Decisión 0022 |
+| 290 | Escribir la prueba del cambio de pantalla y pasarla | Nuevo `tools/verify/monitors.mjs`, con la app de desarrollo | 10 correctas a la primera | Decisión 0022 |
+| 291 | Escribir la herramienta que lee el menú de la bandeja | Nuevo `tools/verify/tray.ps1` | Primera pasada: no encuentra el icono, que está entre los ocultos. Añadido abrir esa lista: lee las entradas y las dos pantallas | Decisión 0022; `investigacion.md`, parte 7 |
+| 292 | Elegir pantalla con el ratón real | `tray.ps1 -Pick "Pantalla 2"`; captura con `screenshot.ps1` | La mascota aparece en la pantalla 2 y la marca cambia | Decisión 0022 |
+| 293 | Cerrar con **Salir** y volver a abrir | `tray.ps1 -Pick "Salir"`; `npm run tauri dev` | Arranca en la pantalla 2, en su sitio. **Pero el menú marca la pantalla 1** | Decisión 0022, incidencias |
+| 294 | Buscar por qué | Trazas temporales en `lib.rs` de los avisos del icono | El aviso de que llega el cursor no llega con el cursor llevado de un salto; paso a paso llega una vez y ya no más. El del botón derecho llega siempre | `investigacion.md`, parte 7 |
+| 295 | Rehacer el menú al pulsar el botón derecho | `src-tauri/src/lib.rs`; trazas quitadas | Recién arrancada en la pantalla 2, el menú marca la 2 | Decisión 0022 |
+| 296 | Arrancar con una pantalla guardada que no existe | `pet.json` editado con la app cerrada | Arranca en la principal | Decisión 0022 |
+| 297 | Hacer fiable `tray.ps1` | Hasta tres intentos de abrir el menú | Antes del cambio falló dos pasadas; después, ninguna de seis | Decisión 0022, incidencias |
+| 298 | Probar que la marca sigue a la mascota y que su propia pantalla no la mueve | Tres cambios de pantalla inyectados con lectura del menú; `tray.ps1 -Pick "Pantalla 2"` estando en ella | Marca correcta las tres veces; no se mueve | Decisión 0022 |
+| 299 | Arrastrarla de una pantalla a otra con el ratón real | `input.ps1 -Action drag -DX -1900 -DY -150` | Cae en la pantalla 1, que queda guardada y marcada | Decisión 0022 |
+| 300 | Comprobar que lo demás sigue igual | `monitors.mjs`, `bed.mjs`, `menu.mjs` y `carry.mjs`, con la mascota en la pantalla 2 | Todo correcto; balanceo de 9,6° | Decisión 0022 |
+| 301 | Comprobaciones finales | `npx tsc --noEmit`, `npx vitest run`, `npm run build`, `cargo check` | Sin errores; 40 pruebas; las dos páginas | |
+| 302 | Documentar | Decisión 0022, parte 7 de la investigación, `README.md` y estas filas | Sin subir nada a GitHub, sin fusionar en otra rama y sin regenerar el instalador. La app de desarrollo queda cerrada; la mascota, en la pantalla principal | Decisión 0022 |

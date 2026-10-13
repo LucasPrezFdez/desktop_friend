@@ -2,7 +2,14 @@
 // Fuera de Tauri (navegador) ofrece una simulación para poder desarrollar y verificar el frontend.
 import { invoke } from '@tauri-apps/api/core';
 import { emitTo, listen } from '@tauri-apps/api/event';
-import { currentMonitor, cursorPosition, getCurrentWindow, PhysicalPosition } from '@tauri-apps/api/window';
+import {
+  availableMonitors,
+  currentMonitor,
+  cursorPosition,
+  getCurrentWindow,
+  PhysicalPosition,
+  type Monitor as TauriMonitor,
+} from '@tauri-apps/api/window';
 import { load, type Store } from '@tauri-apps/plugin-store';
 
 export interface Point {
@@ -13,6 +20,14 @@ export interface Point {
 export interface Rect extends Point {
   width: number;
   height: number;
+}
+
+/** Una pantalla del equipo. */
+export interface Monitor {
+  /** El nombre que le da Windows (`\\.\DISPLAY1`): es lo que se guarda y lo que envía la bandeja. */
+  name: string;
+  /** Su zona útil (sin la barra de tareas), en píxeles físicos. */
+  workArea: Rect;
 }
 
 /** Órdenes que llegan desde la bandeja del sistema (ver src-tauri/src/lib.rs). */
@@ -52,6 +67,10 @@ export interface Desktop {
   windowSize(): Point;
   /** Zona útil del monitor actual (sin la barra de tareas), en píxeles físicos. */
   workArea(): Promise<Rect>;
+  /** La pantalla en la que está la ventana. */
+  monitor(): Promise<Monitor | undefined>;
+  /** Todas las pantallas conectadas. */
+  monitors(): Promise<Monitor[]>;
   /**
    * Saca la cama al escritorio en su propia ventana, que no se mueve mientras se lleva al perro.
    * `position` es la de esa ventana, igual de grande que la del perro. Termina cuando ya está dibujada.
@@ -62,7 +81,17 @@ export interface Desktop {
   loadState<T>(key: string): Promise<T | undefined>;
   saveState(key: string, value: unknown): Promise<void>;
   onCommand(handler: (command: PetCommand) => void): void;
+  /** El usuario ha elegido pantalla en el menú de la bandeja. Llega su nombre. */
+  onMonitorPick(handler: (name: string) => void): void;
   quit(): Promise<void>;
+}
+
+function describe(monitor: TauriMonitor): Monitor {
+  const area = monitor.workArea ?? monitor;
+  return {
+    name: monitor.name ?? '',
+    workArea: { x: area.position.x, y: area.position.y, width: area.size.width, height: area.size.height },
+  };
 }
 
 class TauriDesktop implements Desktop {
@@ -134,12 +163,17 @@ class TauriDesktop implements Desktop {
   }
 
   async workArea(): Promise<Rect> {
+    const monitor = await this.monitor();
+    return monitor?.workArea ?? { x: 0, y: 0, width: screen.availWidth, height: screen.availHeight };
+  }
+
+  async monitor(): Promise<Monitor | undefined> {
     const monitor = await currentMonitor();
-    if (!monitor) {
-      return { x: 0, y: 0, width: screen.availWidth, height: screen.availHeight };
-    }
-    const area = monitor.workArea ?? monitor;
-    return { x: area.position.x, y: area.position.y, width: area.size.width, height: area.size.height };
+    return monitor ? describe(monitor) : undefined;
+  }
+
+  async monitors(): Promise<Monitor[]> {
+    return (await availableMonitors()).map(describe);
   }
 
   async showBed(position: Point, instant: boolean): Promise<void> {
@@ -188,6 +222,10 @@ class TauriDesktop implements Desktop {
 
   onCommand(handler: (command: PetCommand) => void): void {
     void listen<PetCommand>('pet-command', (event) => handler(event.payload));
+  }
+
+  onMonitorPick(handler: (name: string) => void): void {
+    void listen<string>('pet-monitor', (event) => handler(event.payload));
   }
 
   quit(): Promise<void> {
@@ -244,6 +282,14 @@ class BrowserDesktop implements Desktop {
     return { x: 0, y: 0, width: window.innerWidth * 3, height: window.innerHeight };
   }
 
+  async monitor(): Promise<Monitor> {
+    return { name: 'navegador', workArea: await this.workArea() };
+  }
+
+  async monitors(): Promise<Monitor[]> {
+    return [await this.monitor()];
+  }
+
   // En el navegador no hay segunda ventana: la cama solo se ve cuando el perro está dentro.
   async showBed(): Promise<void> {}
 
@@ -274,6 +320,9 @@ class BrowserDesktop implements Desktop {
       if (event.key === 'm') handler('pets');
     });
   }
+
+  // El escritorio ficticio tiene una sola pantalla: no hay nada que elegir.
+  onMonitorPick(): void {}
 
   async quit(): Promise<void> {}
 }

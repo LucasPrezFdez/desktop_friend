@@ -349,9 +349,35 @@ Leída el 12-10-2026 en https://www.riotgames.com/en/legal ("Legal Jibber Jabber
 - No dice nada de ficheros extraídos del juego ni de redistribuir sus modelos sueltos. [V] Que no lo diga no es un permiso. [I]
 - Las condiciones de uso de VALORANT, que son las que regulan qué se puede hacer con los ficheros del juego, no se han leído. [NV]
 
+# Parte 7. Elegir pantalla (13 de octubre de 2026)
+
+Hechos comprobados al hacer el cambio de pantalla (decisión 0022). No hubo búsqueda en la web: son lecturas del código de las bibliotecas instaladas y medidas sobre la app en marcha, en un equipo con dos pantallas.
+
+## Las pantallas, vistas desde Tauri
+- Las dos pantallas del equipo se llaman `\\.\DISPLAY1` (2560 × 1440, principal, zona útil de 2560 × 1392) y `\\.\DISPLAY2` (1920 × 1080, a su derecha y 174 px más abajo, zona útil de 1920 × 1032). El lado nativo y el de la ventana dan el mismo nombre. [V] `pet.desktop.monitors()` por depuración y las entradas del menú.
+- Las dos están al 100 %: la ventana mide 420 px físicos de ancho en ambas. [V] Posiciones medidas por `tools/verify/monitors.mjs`.
+- El número de `DISPLAYn` suele ser el que enseña la configuración de Windows, pero no hay garantía. [I] No se ha comprobado con la configuración abierta.
+- Preguntar por las pantallas desde la ventana (`availableMonitors`, `currentMonitor`) no necesita permisos nuevos: están en `core:window:default`. [V] `src-tauri/gen/schemas/desktop-schema.json`.
+- Tras mover la ventana con `setPosition`, `currentMonitor` ya devuelve la pantalla nueva en la llamada siguiente. [V] `monitors.mjs`: la app mide la pantalla nada más mover la ventana y acierta siempre.
+- Con una pantalla guardada que no existe, la ventana se queda donde nace: en la principal. [V] Arranque con `pet.json` editado.
+
+## El menú de la bandeja
+- `tray-icon` 0.25.1 abre el menú al **soltar** el botón derecho, después de avisar a la app del clic. El aviso de "botón pulsado" llega antes, en un mensaje aparte. [V] `tray-icon-0.25.1/src/platform_impl/windows/mod.rs`, y la marca del menú, que sale al día rehaciéndola con ese aviso.
+- El aviso `Enter` (el cursor llega al icono) no llega si el cursor se lleva de un salto con `SetCursorPos`. Llevándolo paso a paso con `mouse_event` llegó una vez; en las pasadas siguientes no volvió a llegar, y el de salida (`Leave`) no llegó nunca. El icono estaba entre los ocultos. [V] Trazas en la consola de la app. Causa sin buscar.
+- Un submenú de Tauri se puede poner en el menú de la bandeja, y cambiarle las entradas, con el menú ya creado y en uso. [V] El submenú se rellena después de crear el menú y se rehace en cada cambio. Quitarlo (lo que toca al quedarse con una sola pantalla) usa la operación inversa. [NV] El equipo tiene dos pantallas.
+- Windows cambia por su cuenta la marca de una entrada con casilla al pulsarla. [I] Es lo que dice la documentación de `muda`; aquí la app vuelve a poner todas las marcas tras cada pulsación, así que no se ha visto por separado.
+
+## Leer el menú desde fuera
+- Un menú desplegado es una ventana de clase `#32768`; el mensaje `MN_GETHMENU` (0x1E1) devuelve su menú, y `GetMenuItemCount`, `GetMenuStringW`, `GetMenuState` y `GetMenuItemRect` lo leen desde otro proceso, textos, marcas y posiciones incluidos. [V] `tools/verify/tray.ps1`.
+- En Windows 11 el icono de la app se encuentra por su nombre con UI Automation, dentro de `Shell_TrayWnd` o, si está oculto, de la ventana `TopLevelWindowForOverflowXamlIsland`, que solo existe mientras la lista de iconos ocultos está abierta. El botón que la abre es de clase `SystemTray.NormalButton` con identificador `SystemTrayIcon`, y pulsarlo otra vez la cierra. [V] La misma herramienta.
+
+## La consola
+- Un fichero escrito desde la consola con un documento incrustado (`<<'EOF'`) pierde la mitad de las barras invertidas: `\\\\.\\DISPLAY` queda en `\\.\DISPLAY`. [V] Visto dos veces con un guion de prueba. Los ficheros con barras invertidas se escriben con la herramienta de edición.
+
 # Fuentes
 
 ## Tauri
+- `tauri-2.12.3/src/window/mod.rs`, `tauri-2.12.3/src/menu/` y `tray-icon-0.25.1/src/platform_impl/windows/mod.rs`, en la caché de Cargo del equipo (`~/.cargo/registry/src/`)
 - https://github.com/tauri-apps/tauri/issues/6164
 - https://github.com/tauri-apps/tauri/issues/2090
 - https://github.com/tauri-apps/tauri/issues/9250

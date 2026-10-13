@@ -5,6 +5,8 @@ use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 
 /// Evento con el que la bandeja habla con el frontend (ver `src/desktop.ts`).
 const COMMAND_EVENT: &str = "pet-command";
+/// Evento con el que la bandeja le dice a qué pantalla llevar a la mascota. Lleva su nombre.
+const MONITOR_EVENT: &str = "pet-monitor";
 
 fn send(app: &AppHandle, command: &str) {
     let _ = app.emit(COMMAND_EVENT, command);
@@ -94,6 +96,128 @@ fn stow_bed(app: AppHandle) -> Result<(), String> {
     bed::stow(&app)
 }
 
+/// El submenú "Cambiar de pantalla" de la bandeja: una entrada por pantalla, con la marca en la que
+/// tiene a la mascota. Con una sola pantalla no hay nada que elegir y el submenú no está.
+mod monitors {
+    use std::sync::Mutex;
+    use tauri::menu::{CheckMenuItem, Menu, Submenu};
+    use tauri::{AppHandle, Manager, Wry};
+
+    /// Las entradas se llaman así, seguido del nombre que Windows da a la pantalla.
+    const PREFIX: &str = "monitor:";
+    /// Sitio del submenú en el menú de la bandeja: detrás de "Cambiar de mascota".
+    const POSITION: usize = 3;
+
+    #[derive(PartialEq)]
+    struct Entry {
+        name: String,
+        label: String,
+        checked: bool,
+    }
+
+    pub struct Picker {
+        menu: Menu<Wry>,
+        submenu: Submenu<Wry>,
+        /// Lo que hay ahora mismo en el submenú.
+        shown: Mutex<Vec<(Entry, CheckMenuItem<Wry>)>>,
+    }
+
+    /// El número de `\\.\DISPLAY2`, que suele ser el que enseña la configuración de Windows.
+    fn number(name: &str, order: usize) -> usize {
+        name.trim_start_matches(|c: char| !c.is_ascii_digit())
+            .parse()
+            .unwrap_or(order + 1)
+    }
+
+    fn entries(app: &AppHandle) -> Vec<Entry> {
+        let Some(window) = app.get_webview_window("main") else {
+            return Vec::new();
+        };
+        let name_of = |monitor: tauri::Result<Option<tauri::Monitor>>| {
+            monitor.ok().flatten().and_then(|monitor| monitor.name().cloned())
+        };
+        let current = name_of(window.current_monitor());
+        let primary = name_of(window.primary_monitor());
+        let mut monitors: Vec<_> = window
+            .available_monitors()
+            .unwrap_or_default()
+            .into_iter()
+            .enumerate()
+            .filter_map(|(order, monitor)| {
+                let name = monitor.name()?.clone();
+                Some((number(&name, order), name, *monitor.size()))
+            })
+            .collect();
+        if monitors.len() < 2 {
+            return Vec::new();
+        }
+        monitors.sort_by_key(|(number, ..)| *number);
+        monitors
+            .into_iter()
+            .map(|(number, name, size)| {
+                let main = if primary.as_ref() == Some(&name) { " (principal)" } else { "" };
+                Entry {
+                    label: format!("Pantalla {number}{main} · {} × {}", size.width, size.height),
+                    checked: current.as_ref() == Some(&name),
+                    name,
+                }
+            })
+            .collect()
+    }
+
+    /// Crea el submenú, vacío y sin poner: `refresh` lo rellena y lo pone si hay donde elegir.
+    pub fn install(app: &AppHandle, menu: &Menu<Wry>) -> tauri::Result<()> {
+        let submenu = Submenu::with_id(app, "monitors", "Cambiar de pantalla", true)?;
+        app.manage(Picker {
+            menu: menu.clone(),
+            submenu,
+            shown: Mutex::new(Vec::new()),
+        });
+        refresh(app)
+    }
+
+    /// Pone el submenú al día con las pantallas que hay conectadas y con dónde está la mascota.
+    pub fn refresh(app: &AppHandle) -> tauri::Result<()> {
+        let Some(picker) = app.try_state::<Picker>() else {
+            return Ok(());
+        };
+        let wanted = entries(app);
+        let mut shown = picker.shown.lock().unwrap();
+        // Si no ha cambiado nada no se toca: el menú puede estar abierto.
+        if shown.iter().map(|(entry, _)| entry).eq(wanted.iter()) {
+            return Ok(());
+        }
+        if shown.is_empty() {
+            picker.menu.insert(&picker.submenu, POSITION)?;
+        }
+        for (_, item) in shown.drain(..) {
+            picker.submenu.remove(&item)?;
+        }
+        for entry in wanted {
+            let id = format!("{PREFIX}{}", entry.name);
+            let item = CheckMenuItem::with_id(app, id, &entry.label, true, entry.checked, None::<&str>)?;
+            picker.submenu.append(&item)?;
+            shown.push((entry, item));
+        }
+        if shown.is_empty() {
+            picker.menu.remove(&picker.submenu)?;
+        }
+        Ok(())
+    }
+
+    /// Si `id` es una de las entradas, deja la marca solo en ella y devuelve el nombre de su pantalla.
+    pub fn pick(app: &AppHandle, id: &str) -> Option<String> {
+        let name = id.strip_prefix(PREFIX)?;
+        let picker = app.try_state::<Picker>()?;
+        // Windows ya ha cambiado la marca de la entrada pulsada; las demás hay que quitarlas a mano.
+        for (entry, item) in picker.shown.lock().unwrap().iter_mut() {
+            entry.checked = entry.name == name;
+            let _ = item.set_checked(entry.checked);
+        }
+        Some(name.to_string())
+    }
+}
+
 fn build_tray(app: &AppHandle) -> tauri::Result<()> {
     let autostart_on = app.autolaunch().is_enabled().unwrap_or(false);
 
@@ -123,6 +247,7 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
             &quit,
         ],
     )?;
+    monitors::install(app, &menu)?;
 
     let mut tray = TrayIconBuilder::with_id("main")
         .tooltip("DesktopFriend")
@@ -154,18 +279,32 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
                 }
                 send(app, event.id.as_ref());
             }
-            _ => {}
+            id => {
+                if let Some(monitor) = monitors::pick(app, id) {
+                    show_window(app);
+                    let _ = app.emit(MONITOR_EVENT, monitor);
+                }
+            }
         })
-        .on_tray_icon_event(|tray, event| {
-            if let TrayIconEvent::Click {
+        .on_tray_icon_event(|tray, event| match event {
+            TrayIconEvent::Click {
                 button: MouseButton::Left,
                 button_state: MouseButtonState::Up,
                 ..
-            } = event
-            {
+            } => {
                 show_window(tray.app_handle());
                 send(tray.app_handle(), "come");
             }
+            // El menú se abre al soltar el botón derecho: al pulsarlo es el momento de ponerle al
+            // día las pantallas.
+            TrayIconEvent::Click {
+                button: MouseButton::Right,
+                button_state: MouseButtonState::Down,
+                ..
+            } => {
+                let _ = monitors::refresh(tray.app_handle());
+            }
+            _ => {}
         });
     if let Some(icon) = app.default_window_icon() {
         tray = tray.icon(icon.clone());

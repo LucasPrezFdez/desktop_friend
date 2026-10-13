@@ -155,8 +155,13 @@ export class Behavior {
     this.needs = needs;
   }
 
-  /** Coloca la ventana en el suelo del escritorio, en la posición guardada o junto a la bandeja. */
-  async init(savedX: number | undefined): Promise<void> {
+  /**
+   * Coloca la ventana en el suelo del escritorio, en la posición guardada o junto a la bandeja.
+   * `home` es la zona útil de la pantalla en la que estaba la última vez, si sigue conectada.
+   */
+  async init(savedX: number | undefined, home?: Rect): Promise<void> {
+    // La ventana nace en la pantalla principal: si estaba en otra, se lleva a ella antes de medir.
+    if (home) await this.desktop.moveWindow({ x: home.x, y: home.y });
     await this.measureDesktop();
     this.windowPosition = { x: this.clampX(savedX ?? this.homeX), y: this.floorY };
     await this.desktop.moveWindow(this.windowPosition);
@@ -165,13 +170,15 @@ export class Behavior {
   }
 
   /**
-   * Vuelve a apoyar la ventana en el suelo cuando cambia su tamaño. Hace falta porque al arrancar
-   * la ventana se mide antes de que Windows le quite la barra de título, y saldría demasiado baja.
+   * Vuelve a apoyar la ventana en el suelo de la pantalla en la que esté. Hace falta cuando cambia
+   * su tamaño (al arrancar se mide antes de que Windows le quite la barra de título, y saldría
+   * demasiado baja) y cuando desconectan su pantalla y Windows la pasa a otra.
    */
   async relayout(): Promise<void> {
     if (!this.ready) return;
     await this.measureDesktop();
     if (this.activity === 'held' || this.activity === 'fall') return;
+    this.targetX = this.clampX(this.targetX);
     this.windowPosition = { x: this.clampX(this.windowPosition.x), y: this.floorY };
     await this.desktop.moveWindow(this.windowPosition);
   }
@@ -255,6 +262,16 @@ export class Behavior {
     this.windowPosition = { x: this.homeX, y: this.floorY };
     void this.desktop.moveWindow(this.windowPosition);
     if (this.activity !== 'eat') this.start('happy');
+  }
+
+  /** Lleva al perro a otra pantalla, de la que `area` es la zona útil: aparece junto a su esquina. */
+  async moveTo(area: Rect): Promise<void> {
+    // Primero la ventana entra en esa pantalla, ya en su sitio si las dos tienen la misma escala;
+    // después se mide desde dentro, como al traerlo.
+    this.work = area;
+    this.windowPosition = { x: this.homeX, y: this.floorY };
+    await this.desktop.moveWindow(this.windowPosition);
+    await this.come();
   }
 
   grab(): void {
