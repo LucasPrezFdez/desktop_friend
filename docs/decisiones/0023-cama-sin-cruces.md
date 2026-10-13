@@ -1,7 +1,7 @@
 # 0023. El perro duerme en la cama sin cruzarse con ella
 
 - **Fecha:** 2026-10-13
-- **Estado:** propuesta en la rama `cama-sin-cruces`. Pendiente de la opinión del usuario
+- **Estado:** propuesta en la rama `cama-sin-cruces`. Pendiente de la opinión del usuario. En `main` y en GitHub desde el 2026-10-13 por orden del usuario ([0025](0025-todo-a-main-y-app-instalada.md))
 - **Decide:** el usuario pide el arreglo; cómo se arregla lo propone el agente
 - **Depende de:** la rama `elegir-pantalla` (decisión 0022), de la que sale esta y que tampoco está aprobada todavía
 - **Sustituye a:** de la [0019](0019-cama-del-perro.md), los números de la pose de dormir y la colocación en la cama de su "Revisión 2" (`NAP_FACING`, `NAP_BACK`). El resto de la 0019 sigue en vigor: la cama, su ventana y su tamaño no cambian

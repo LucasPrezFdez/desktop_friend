@@ -574,3 +574,18 @@ Horas comprobadas en las salidas de las herramientas: 15:56 app cerrada, con el 
 | 323 | Cambiarlo | `src/pets.ts`: `name: 'Blacky'`. El identificador `dog` no se toca | `npx tsc --noEmit` sin errores; 40 pruebas en verde | Decisión 0024 |
 | 324 | Verlo en la app | `npm run tauri dev` con el puerto de depuración; `node tools/verify/menu.mjs --shots` | 20 comprobaciones correctas; en la captura se lee "Blacky" bajo su retrato | Decisión 0024 |
 | 325 | Documentar | Decisión 0024 y estas filas | Sin tocar el ratón del usuario. Sin subir nada a GitHub, sin fusionar en otra rama y sin regenerar el instalador. La app de desarrollo queda cerrada | Decisión 0024 |
+
+### Todo a `main`, a GitHub y a la app instalada
+
+Horas comprobadas en las salidas de las herramientas: 15:58 `main` subida; 16:00 instalador generado e instalado; 16:01 app instalada en marcha.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 326 | Ver qué hay pendiente y dónde está GitHub | `git fetch`, `git branch -a -vv`, `git log --graph` | Historia en línea recta; `main` en `d4d48c7`, `origin/main` en `1122ca1`, 18 commits por detrás de `nombre-blacky` | Decisión 0025 |
+| 327 | Mirar lo que se publicaría | Ficheros nuevos y binarios entre `origin/main` y la rama; `git ls-files` con Wingman y Riot; búsqueda de claves; las capturas del escritorio y del menú, vistas | El modelo de Wingman no está versionado; ninguna captura es suya ni enseña nada privado; sin claves | Decisión 0025 |
+| 328 | Avanzar `main` y subirla | `git merge --ff-only nombre-blacky`; `git push origin main` | `1122ca1..795fdf9` en GitHub | Decisión 0025 |
+| 329 | Generar el instalador | `npm run installer` | 3 396 648 bytes; compilación de 50 s | Decisión 0025 |
+| 330 | Actualizar la app instalada | Instalador con `/S`; no estaba abierta | Código 0. Ejecutable de 11 143 680 bytes, igual al compilado salvo los 3 bytes de la marca de paquete | Decisión 0025 |
+| 331 | Comprobar que lleva el código nuevo | Arrancada una vez con el puerto de depuración; `cdp.mjs --eval` sobre su JavaScript y `--shot` | Contiene "Blacky", el giro 1,62 y el sitio −0,25; `pet` no existe; el perro se ve. Un primer intento desde PowerShell falló por las comillas de la orden; repetido desde Bash | Decisión 0025 |
+| 332 | Dejarla en marcha como la usa el usuario | Se cierra el proceso y se abre desde el menú Inicio, sin puerto de depuración | En marcha desde las 16:01 | Decisión 0025 |
+| 333 | Documentar y subir la documentación | Decisión 0025, nota en el estado de las 0019 a 0024 y estas filas; segundo `git push origin main`; `desarrollo` avanza en este equipo | Sin tocar el ratón del usuario. La cama y los menús no se han probado en la versión empaquetada. `origin/desarrollo` no se toca | Decisión 0025 |

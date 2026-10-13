@@ -1,7 +1,7 @@
 # 0024. El perro se llama Blacky
 
 - **Fecha:** 2026-10-13
-- **Estado:** decidida por el usuario. Hecha en la rama `nombre-blacky`
+- **Estado:** decidida por el usuario. Hecha en la rama `nombre-blacky`. En `main` y en GitHub desde el 2026-10-13 por orden del usuario ([0025](0025-todo-a-main-y-app-instalada.md))
 - **Decide:** el usuario
 - **Depende de:** la rama `cama-sin-cruces` (decisión 0023), de la que sale esta y que no está aprobada todavía
 - **Sustituye a:** el punto 3 de "Decisiones que el usuario no especificó" de la [0020](0020-menu-de-mascotas.md), que le ponía el nombre de la especie, "Perro"
