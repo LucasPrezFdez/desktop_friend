@@ -6,7 +6,7 @@ export interface PetSpec {
 
 /** Las mascotas que hay, en el orden en que salen en el menú. */
 export const PETS: readonly PetSpec[] = [
-  { id: 'dog', name: 'Perro' },
+  { id: 'dog', name: 'Blacky' },
   { id: 'wingman', name: 'Wingman' },
 ];
 

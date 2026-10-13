@@ -563,3 +563,14 @@ Horas comprobadas en las salidas de las herramientas: 15:22 primera construcció
 | 319 | Comprobaciones finales | `nap.mjs`, `bed.mjs`, `carry.mjs`, `npx tsc --noEmit`, `npx vitest run`, `npm run build` | 8 y 15 comprobaciones correctas; arrastre sin cambios; 40 pruebas; las dos páginas | Decisión 0023 |
 | 320 | Capturas | `sheet.ps1` con las fotos de `nap.mjs --shots` y `bed.mjs --shots` | `docs/capturas/cama-sin-cruces.png` (antes y ahora) y `cama-secuencia.png` rehecha. La del escritorio real no se guarda: salían otras ventanas del usuario | |
 | 321 | Documentar | Decisión 0023, enlace desde la 0019, parte 8 de la investigación, `README.md` y estas filas | Sin tocar el ratón del usuario en ningún momento. Sin subir nada a GitHub, sin fusionar en otra rama y sin regenerar el instalador. La app de desarrollo queda cerrada; la energía del perro, en 99,9 | Decisión 0023 |
+
+### El perro se llama Blacky (rama `nombre-blacky`)
+
+Horas comprobadas en las salidas de las herramientas: 15:56 app cerrada, con el cambio ya probado.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 322 | Buscar dónde sale el nombre del perro | Búsqueda de "Perro" en `src/`, `src-tauri/`, `tests/` y `tools/verify/` | Solo en `src/pets.ts`; la prueba unitaria usa su propia lista | Decisión 0024 |
+| 323 | Cambiarlo | `src/pets.ts`: `name: 'Blacky'`. El identificador `dog` no se toca | `npx tsc --noEmit` sin errores; 40 pruebas en verde | Decisión 0024 |
+| 324 | Verlo en la app | `npm run tauri dev` con el puerto de depuración; `node tools/verify/menu.mjs --shots` | 20 comprobaciones correctas; en la captura se lee "Blacky" bajo su retrato | Decisión 0024 |
+| 325 | Documentar | Decisión 0024 y estas filas | Sin tocar el ratón del usuario. Sin subir nada a GitHub, sin fusionar en otra rama y sin regenerar el instalador. La app de desarrollo queda cerrada | Decisión 0024 |
