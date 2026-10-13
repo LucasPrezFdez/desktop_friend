@@ -32,12 +32,24 @@ describe('pickActivity', () => {
 
 describe('bedSpotX (dónde sale la cama al coger al perro)', () => {
   // Un escritorio en el que la ventana del perro puede estar entre 0 y 2000.
-  it('sale hacia el lado con más sitio', () => {
-    expect(bedSpotX(1800, 0, 2000, 300)).toBe(1500);
-    expect(bedSpotX(200, 0, 2000, 300)).toBe(500);
+  it('sale en la esquina derecha de la pantalla', () => {
+    expect(bedSpotX(200, 0, 2000, 300)).toBe(2000);
+    expect(bedSpotX(1000, 0, 2000, 300)).toBe(2000);
+    expect(bedSpotX(1700, 0, 2000, 300)).toBe(2000);
   });
 
-  it('no se sale del escritorio', () => {
+  it('si el perro está junto a esa esquina, sale a su izquierda', () => {
+    expect(bedSpotX(1701, 0, 2000, 300)).toBe(1401);
+    expect(bedSpotX(1920, 0, 2000, 300)).toBe(1620);
+    expect(bedSpotX(2000, 0, 2000, 300)).toBe(1700);
+  });
+
+  it('en otra pantalla, en la esquina derecha de esa', () => {
+    expect(bedSpotX(-1500, -1920, -420, 300)).toBe(-420);
+    expect(bedSpotX(-500, -1920, -420, 300)).toBe(-800);
+  });
+
+  it('sin sitio a ningún lado, va al extremo más lejano y no se sale del escritorio', () => {
     expect(bedSpotX(100, 0, 150, 300)).toBe(0);
     expect(bedSpotX(40, 0, 150, 300)).toBe(150);
   });

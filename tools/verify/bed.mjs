@@ -4,7 +4,7 @@
 //
 // Requiere la app en modo desarrollo con --remote-debugging-port=9223 (ver cdp.mjs).
 // Uso: node tools/verify/bed.mjs [--shots prefijo]
-// Deja la energía del perro como estaba; el rato que duerme durante la prueba sí cuenta.
+// Deja la energía del perro como estaba, y la ventana donde estaba; el rato que duerme durante la prueba sí cuenta.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { connect } from './cdp-client.mjs';
@@ -42,23 +42,36 @@ const bedWindow = () =>
     hidden: document.visibilityState === 'hidden',
   })`);
 const near = (a, b) => Math.abs(a - b) <= 1;
+/** Lleva la ventana del perro a una posición, sin cogerlo. */
+const place = async (x) => {
+  await dog.evaluate(`pet.behavior.windowPosition.x = ${x}; pet.desktop.moveWindow(pet.behavior.windowPosition)`);
+  await sleep(300);
+};
 
 const saved = await dog.evaluate('pet.behavior.needs.energy');
+const home = await dog.evaluate('pet.behavior.windowPosition.x');
 try {
   const background = `document.documentElement.style.background = '#c9ced6'`;
   await dog.evaluate(`${background}; pet.behavior.needs = { ...pet.behavior.needs, energy: 50 }; pet.behavior.force('idle')`);
   await bed.evaluate(background);
   await sleep(1500);
+  // Entre qué posiciones puede estar la ventana en esta pantalla, y cuánto es un píxel lógico.
+  const desk = await dog.evaluate(`({
+    min: pet.behavior.work.x, max: pet.behavior.work.x + pet.behavior.work.width - pet.behavior.windowSize.x,
+    ratio: devicePixelRatio,
+  })`);
+  await place(Math.round((desk.min + desk.max) / 2));
   const start = await state();
   check('antes de cogerlo no hay cama', (await bedWindow()).shown === 0 && start.bedHere === 0);
 
-  // 1. Al cogerlo sale la cama, a un lado.
+  // 1. Al cogerlo sale la cama, en la esquina derecha de la pantalla.
   await dog.evaluate('pet.behavior.grab()');
   await sleep(900);
   let now = await state();
   let out = await bedWindow();
   const spot = now.spot;
   check('al cogerlo sale la cama en su ventana', out.shown === 1 && spot !== null, `a ${spot && Math.round(spot.x - start.position.x)} px del perro`);
+  check('en la esquina derecha de la pantalla', spot && near(spot.x, desk.max), `x ${spot && spot.x}, la esquina en ${desk.max}`);
   check('la ventana de la cama está donde se pidió', spot && near(out.x, spot.x) && near(out.y, spot.y), `(${out.x}, ${out.y})`);
   await shot(dog, '1-cogido');
   await shot(bed, '2-la-cama-fuera');
@@ -72,6 +85,22 @@ try {
   out = await bedWindow();
   check('soltado lejos de la cama, no duerme', now.activity !== 'nap' && !now.inBed, now.activity);
   check('y la cama se guarda', out.shown === 0 && now.spot === null);
+
+  // 2b. Con el perro junto a la esquina, la cama sale a su izquierda: soltarlo donde estaba no lo acuesta.
+  await dog.evaluate(`pet.behavior.force('idle')`);
+  await sleep(500);
+  const corner = Math.round(desk.max - 80 * desk.ratio);
+  await place(corner);
+  await dog.evaluate('pet.behavior.grab()');
+  await sleep(900);
+  now = await state();
+  check('junto a la esquina, la cama sale a su izquierda', now.spot && near(now.spot.x, corner - 300 * desk.ratio), `a ${now.spot && Math.round(now.spot.x - corner)} px del perro`);
+  await dog.evaluate(`pet.behavior.drag({ x: ${corner}, y: ${start.position.y - 180} })`);
+  await sleep(300);
+  await dog.evaluate('pet.behavior.drop()');
+  await sleep(1400);
+  now = await state();
+  check('y soltarlo donde estaba no lo acuesta', now.activity !== 'nap' && !now.inBed && now.spot === null, now.activity);
 
   // 3. Si se le suelta encima, cae dentro y se duerme.
   await dog.evaluate(`pet.behavior.force('idle')`);
@@ -129,6 +158,8 @@ try {
   await shot(dog, '7-fuera-de-la-cama');
 } finally {
   await dog.evaluate(`document.documentElement.style.background = ''; pet.behavior.needs = { ...pet.behavior.needs, energy: ${saved} }`);
+  // La prueba lo ha movido por la pantalla: vuelve a donde estaba, si no está en la cama ni en el aire.
+  if (await dog.evaluate(`!pet.behavior.inBed && !['held', 'fall'].includes(pet.behavior.activity)`)) await place(home);
   await bed.evaluate(`document.documentElement.style.background = ''`);
   dog.close();
   bed.close();

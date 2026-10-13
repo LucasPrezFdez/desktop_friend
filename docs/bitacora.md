@@ -589,3 +589,19 @@ Horas comprobadas en las salidas de las herramientas: 15:58 `main` subida; 16:00
 | 331 | Comprobar que lleva el código nuevo | Arrancada una vez con el puerto de depuración; `cdp.mjs --eval` sobre su JavaScript y `--shot` | Contiene "Blacky", el giro 1,62 y el sitio −0,25; `pet` no existe; el perro se ve. Un primer intento desde PowerShell falló por las comillas de la orden; repetido desde Bash | Decisión 0025 |
 | 332 | Dejarla en marcha como la usa el usuario | Se cierra el proceso y se abre desde el menú Inicio, sin puerto de depuración | En marcha desde las 16:01 | Decisión 0025 |
 | 333 | Documentar y subir la documentación | Decisión 0025, nota en el estado de las 0019 a 0024 y estas filas; segundo `git push origin main`; `desarrollo` avanza en este equipo | Sin tocar el ratón del usuario. La cama y los menús no se han probado en la versión empaquetada. `origin/desarrollo` no se toca | Decisión 0025 |
+
+### La cama, en la esquina derecha (rama `cama-en-la-esquina`)
+
+Horas comprobadas en las salidas de las herramientas: 16:08 comprobaciones finales terminadas y app de desarrollo cerrada; 16:09 app instalada otra vez en marcha.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 334 | Mirar dónde se decide el sitio de la cama | Lectura de `bedSpotX`, `putOutBed` y `homeX` en `src/behavior.ts` y de sus pruebas | Es una función pura. El sitio de siempre del perro está a 80 px de la esquina derecha: una cama fija en la esquina le saldría debajo | Decisión 0026 |
+| 335 | Cambiar la regla | `bedSpotX` en `src/behavior.ts`: la esquina derecha, salvo que el perro esté a menos de 300 px de ella; pruebas en `tests/behavior.test.ts`; `README.md` | `npx tsc --noEmit` sin errores; 42 pruebas en verde | Decisión 0026 |
+| 336 | Ampliar la prueba de la cama | `tools/verify/bed.mjs`: coloca al perro en mitad de la pantalla y junto a la esquina, y lo devuelve a su sitio al terminar | Tres comprobaciones nuevas | Decisión 0026 |
+| 337 | Cerrar la app instalada y abrir la de desarrollo | `Stop-Process`; `npm run tauri dev` con el puerto de depuración | Solo puede haber una abierta | Decisión 0026, incidencias |
+| 338 | Pasar la prueba de la cama | `node tools/verify/bed.mjs --shots` | 18 correctas a la primera. La cama sale en (2140, 1052), la esquina de una pantalla de 2560 × 1392 útiles; junto a la esquina, 300 px a la izquierda del perro | Decisión 0026 |
+| 339 | Comprobar lo demás | `nap.mjs` y `carry.mjs` | 8 correctas, con los números de la decisión 0023; arrastre sin cambios. Al coger al perro recién despertado en la esquina, la cama sale a su izquierda: es la excepción, anotada en la decisión | Decisión 0026 |
+| 340 | Ver la cama en el escritorio real | `cdp.mjs --eval "pet.behavior.grab()"` y `screenshot.ps1 -Title "DesktopFriend (cama)"` | La cama, en la esquina inferior derecha. Un primer intento falló por pedir la ventana con un título que no era el suyo | Decisión 0026 |
+| 341 | Comprobaciones finales y cierre | `npx tsc --noEmit`, `npx vitest run`, `npm run build`; la app de desarrollo se cierra y la instalada se abre desde el menú Inicio | Sin errores; 42 pruebas; las dos páginas. La instalada, en marcha, todavía con la regla anterior | Decisión 0026 |
+| 342 | Documentar | Decisión 0026, nota en el estado de la 0019 y estas filas | Sin tocar el ratón del usuario. Sin subir nada a GitHub, sin fusionar en `main` y sin regenerar el instalador | Decisión 0026 |

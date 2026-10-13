@@ -28,13 +28,16 @@ export function pickActivity(current: Mood, roll: number): Choice {
 }
 
 /**
- * Dónde aparece la cama al coger al perro: a un lado, hacia donde haya más sitio, y lo bastante
- * lejos como para que soltarlo donde estaba no lo meta en ella. Todo en píxeles físicos:
+ * Dónde aparece la cama al coger al perro: en la esquina derecha de la pantalla. Si el perro está
+ * a menos de `distance` de esa esquina, la cama le saldría debajo y soltarlo donde estaba lo
+ * metería en ella: entonces sale a su izquierda, a esa distancia. Todo en píxeles físicos:
  * `x` es la posición de la ventana del perro y `min` y `max` los límites entre los que puede estar.
  */
 export function bedSpotX(x: number, min: number, max: number, distance: number): number {
-  const target = x - min > max - x ? x - distance : x + distance;
-  return Math.min(Math.max(target, min), max);
+  if (max - x >= distance) return max;
+  if (x - min >= distance) return x - distance;
+  // No hay sitio a ningún lado: al extremo que le quede más lejos.
+  return x - min > max - x ? min : max;
 }
 
 /** true si, al soltarlo con la ventana en `x`, el perro cae dentro de la cama que hay en `bedX`. */
@@ -60,7 +63,7 @@ const SWAY_MAX = 0.2;
 const SWAY_PER_SPEED = 0.00035;
 /** Vaivén suave cuando se le sostiene quieto, en radianes (unos 2 grados). */
 const SWAY_IDLE = 0.035;
-/** A qué distancia del perro aparece la cama, en píxeles lógicos. */
+/** Lo más cerca del perro que puede aparecer la cama, en píxeles lógicos. */
 const BED_DISTANCE = 300;
 /** Cuánto puede desviarse del centro de la cama al soltarlo y aun así caer dentro, en píxeles lógicos. */
 const BED_REACH = 105;

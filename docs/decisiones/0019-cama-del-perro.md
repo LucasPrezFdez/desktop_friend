@@ -1,7 +1,7 @@
 # 0019. Una cama que aparece al coger al perro, para que duerma y recupere energía
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta en la rama `cama-del-perro`, en su segunda versión (ver "Revisión 2" al final, que sustituye a lo dicho antes sobre la pose de dormir y el tamaño de la cama). Pendiente de la opinión del usuario. Los números de la pose de dormir y la colocación en la cama de esa revisión quedan sustituidos por la [0023](0023-cama-sin-cruces.md). En `main` y en GitHub desde el 2026-10-13 por orden del usuario ([0025](0025-todo-a-main-y-app-instalada.md))
+- **Estado:** propuesta en la rama `cama-del-perro`, en su segunda versión (ver "Revisión 2" al final, que sustituye a lo dicho antes sobre la pose de dormir y el tamaño de la cama). Pendiente de la opinión del usuario. Los números de la pose de dormir y la colocación en la cama de esa revisión quedan sustituidos por la [0023](0023-cama-sin-cruces.md). En `main` y en GitHub desde el 2026-10-13 por orden del usuario ([0025](0025-todo-a-main-y-app-instalada.md)). Dónde sale la cama queda sustituido por la [0026](0026-cama-en-la-esquina-derecha.md)
 - **Decide:** el usuario pide la función; el diseño y los detalles no especificados los propone el agente
 
 ## Lo que pidió el usuario
