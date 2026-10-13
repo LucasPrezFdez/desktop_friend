@@ -636,3 +636,14 @@ Horas comprobadas en las salidas de las herramientas: 16:15 primer instalador, c
 | 357 | Mirar por qué el acceso del escritorio sigue con el icono antiguo, a raíz de una captura del usuario | Destino e icono de los dos accesos directos con `WScript.Shell`; icono que da `SHGetFileInfo` para ellos y para el ejecutable | Los dos apuntan al ejecutable instalado, sin icono propio, y a un proceso nuevo Windows ya le da la foto: lo viejo es lo que el Explorador tiene en memoria | Decisión 0027, incidencias |
 | 358 | Avisar al Explorador | `SHUpdateImage` sobre el ejecutable; `SHChangeNotify` sobre el acceso, el escritorio y las asociaciones; `ie4uinit.exe -show` | Enviados. Buscado después el ámbar del icono antiguo en las dos pantallas, sin guardar la captura: no aparece. No prueba que se vea el nuevo: falta que lo confirme el usuario. Encontrar el icono por automatización para capturar solo su hueco no funcionó | Decisión 0027, incidencias |
 | 359 | Subir el icono a `main`, con el sí del usuario | `git merge --ff-only icono-foto`; `git push origin main`, a las 16:30; resolución en la decisión 0027 y un segundo push con ella; `desarrollo` avanza en este equipo | `12997cc..258a67e` en GitHub: el recorte de la foto queda publicado. La app instalada ya lo llevaba. El acceso del escritorio sigue sin confirmar | Decisión 0027, resolución |
+
+### Una carpeta para instalar la app en otro equipo (rama `carpeta-para-instalar`)
+
+Horas comprobadas en las salidas de las herramientas: 16:33 `LEEME.txt` escrito en la carpeta.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 360 | El usuario confirma que el acceso del escritorio ya enseña la foto | Su mensaje | Los avisos al Explorador bastaron; no hizo falta reiniciarlo | Decisión 0027, incidencias |
+| 361 | Ver qué hace falta para instalar en otro equipo | `installer.nsi` y `English.nsh` en `src-tauri/target/release/nsis/x64/`; `git diff` entre `2b9a503` y `main` | Solo el instalador: se instala para el usuario, sin administrador, y descarga WebView2 si falta. Está en inglés. Corresponde al código de `main` | Decisión 0028 |
+| 362 | Crear la carpeta en el escritorio | `Instalar DesktopFriend`, con una copia del instalador de las 16:17 y un `LEEME.txt` | Copia con el mismo SHA-256; el `LEEME.txt`, en UTF-8 con marca y saltos de línea de Windows | Decisión 0028 |
+| 363 | Documentar | Decisión 0028 y estas filas | El instalador lleva a Wingman dentro: repartirlo así lo decide el usuario. Sin probar en otro equipo. Sin subir a GitHub | Decisión 0028 |
