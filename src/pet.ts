@@ -32,8 +32,8 @@ export interface PetShape {
   lyingFacing: number;
   /** Giro con el que duerme en la cama. El clip `Nap` está hecho para verse desde su derecha. */
   napFacing: number;
-  /** Cuánto retrocede dentro de la cama para quedar centrada en ella. */
-  napBack: number;
+  /** Dónde queda dentro de la cama, desde el centro de esta: `x` hacia la derecha de la pantalla, `z` hacia quien mira. */
+  napSpot: { x: number; z: number };
   /** Dónde quedan las puntas de los dedos de la mano que la lleva respecto a la nuca, vistas desde la cámara. */
   handGrip: THREE.Vector3;
   /** Inclinación de esa mano, en radianes: los dedos apuntan hacia donde agarra. */
@@ -140,6 +140,14 @@ export abstract class Pet {
 
   get clip(): ClipName | null {
     return this.current;
+  }
+
+  /** 0 a 1: cuánto lleva recorrido el clip que se reproduce una sola vez. En bucle, o ya terminado, 1. */
+  get progress(): number {
+    const action = this.current ? this.actions.get(this.current) : undefined;
+    if (!action || action.loop !== THREE.LoopOnce) return 1;
+    const played = action.time / action.getClip().duration;
+    return THREE.MathUtils.clamp(action.timeScale < 0 ? 1 - played : played, 0, 1);
   }
 
   /** Solo el perro tiene lengua que enseñar. */

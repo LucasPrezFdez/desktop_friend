@@ -106,7 +106,7 @@ export class Bed {
     const ramp = toonRamp();
     const materials = new Map<string, THREE.MeshToonMaterial>();
     for (const [name, color] of Object.entries(BED_PALETTE)) {
-      materials.set(name, new THREE.MeshToonMaterial({ color, gradientMap: ramp }));
+      materials.set(name, new THREE.MeshToonMaterial({ name, color, gradientMap: ramp }));
     }
     model.traverse((node) => {
       if (!(node instanceof THREE.Mesh)) return;

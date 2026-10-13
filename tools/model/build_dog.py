@@ -1310,20 +1310,28 @@ SLEEP = {**LIE, **expand({
 
 # Dormido en su cama, como en los dibujos de perros durmiendo: echado del todo, con las patas
 # delanteras estiradas y la barbilla apoyada. En la app se le ve desde su lado derecho, así que el
-# lomo, el cuello y la cola se curvan hacia ese lado: la cabeza queda vuelta hacia quien mira,
-# sobre el borde delantero de la cama, y la cola recogida por delante.
+# cuello y la cola se vuelven hacia ese lado: la cabeza queda hacia quien mira, sobre el borde
+# delantero de la cama, y la cola recogida por delante.
+# El hueco de la cama mide 1,48 x 0,64 y el perro así tumbado, 1,50 x 0,71: solo cabe a lo largo y
+# con la cabeza encima del reborde. Cada número de esta pose está ajustado midiendo en la app con
+# tools/verify/nap.mjs que nada entra en el reborde (decisión 0023); si se toca alguno, hay que
+# volver a medir.
 NAP = {**LIE, **expand({
-    # Echado del todo: el pecho y la barriga bajan hasta hundirse un poco en el colchón, y la grupa
-    # con ellos. Con el pecho en alto, aunque fuera poco, parecía medio de pie.
-    "body.pitch": 9.0, "body.dz": -1.05,
-    # Las patas delanteras, estiradas por delante y hacia su derecha, para que la cabeza caiga encima.
-    "FL.dy": -0.85, "FR.dy": -0.85, "FL.dx": -0.40, "FR.dx": -0.40,
-    "Torso.yaw": -6.0, "Torso2.yaw": -8.0, "Torso3.yaw": -10.0,
-    # El cuello baja hasta el suelo y la cabeza se endereza: queda horizontal, con la barbilla apoyada.
-    "Neck1.pitch": -60.0, "Neck1.yaw": -12.0, "Neck2.pitch": -30.0, "Neck2.yaw": -12.0,
-    "Neck3.pitch": -10.0, "Neck3.yaw": -10.0, "Head.pitch": 78.0, "Head.roll": 8.0,
+    # Echado del todo: el pecho y la barriga bajan hasta hundirse en el colchón, que es blando,
+    # sin llegar al suelo. Con el pecho en alto, aunque fuera poco, parecía medio de pie.
+    "body.pitch": 9.0, "body.dz": -0.90,
+    # Las patas delanteras, estiradas por delante sobre el colchón. Más estiradas, o abiertas hacia
+    # un lado, se metían en el reborde: el lomo va casi recto para que el perro no quede en diagonal.
+    "FL.dy": -0.62, "FR.dy": -0.62, "FL.dx": -0.10, "FR.dx": -0.10, "FL.dz": 0.0, "FR.dz": 0.0,
+    "Torso.yaw": -3.0, "Torso2.yaw": -4.0, "Torso3.yaw": -5.0,
+    # El cuello baja y se vuelve hacia quien mira, y la cabeza se endereza: queda horizontal, con la
+    # barbilla apoyada encima del reborde. Con el cuello más bajo, la barbilla lo atravesaba.
+    "Neck1.pitch": -56.0, "Neck1.yaw": -15.0, "Neck2.pitch": -30.0, "Neck2.yaw": -15.0,
+    "Neck3.pitch": -10.0, "Neck3.yaw": -15.0, "Head.pitch": 74.0, "Head.yaw": -28.0, "Head.roll": 8.0,
     "Ear1.*.pitch": 15.0,
-    "Tail1.pitch": 35.0, "Tail1.yaw": 45.0, "Tail2.yaw": 40.0, "Tail3.yaw": 35.0, "Tail4.yaw": 30.0, "Tail5.yaw": 25.0,
+    # La cola dobla nada más salir y se queda pegada al muslo, por encima de la pata. Abierta en
+    # arco se metía en el reborde, y más baja lo rozaba al recogerse mientras se duerme.
+    "Tail1.pitch": 20.0, "Tail1.yaw": 90.0, "Tail2.yaw": 50.0, "Tail3.yaw": 30.0, "Tail4.yaw": 20.0, "Tail5.yaw": 10.0,
 })}
 
 SAD = expand({

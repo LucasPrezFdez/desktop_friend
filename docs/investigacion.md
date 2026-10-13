@@ -374,6 +374,28 @@ Hechos comprobados al hacer el cambio de pantalla (decisión 0022). No hubo bús
 ## La consola
 - Un fichero escrito desde la consola con un documento incrustado (`<<'EOF'`) pierde la mitad de las barras invertidas: `\\\\.\\DISPLAY` queda en `\\.\DISPLAY`. [V] Visto dos veces con un guion de prueba. Los ficheros con barras invertidas se escriben con la herramienta de edición.
 
+# Parte 8. El perro y la cama, medidos (13 de octubre de 2026)
+
+Hechos comprobados al quitar los cruces entre el perro dormido y la cama (decisión 0023).
+
+## Cuánto sitio hay y cuánto ocupa el perro
+- El hueco de la cama, a la altura del colchón, es una elipse de 1,48 × 0,64 unidades de la escena. El reborde mide 0,16 de alto por delante, 0,27 en los extremos y 0,42 por detrás. [V] Constantes de `tools/model/build_bed.py`: radios 0,88 y 0,46 menos el medio ancho del reborde, 0,14.
+- El perro dormido ocupa 1,50 × 0,71, cabeza incluida, y antes del cambio 1,49 × 0,75. De pie mide 1,95 de largo, con la cola. [V] Extremos de los puntos de su malla, volcados de la app en su propio sistema de ejes.
+- No cabe entero dentro del hueco: solo a lo largo y con la cabeza encima del reborde. Girado 1,62 rad hay una sola casilla de 2 × 2 centésimas en la que nada entra más de 0,01. Tumbado sin dormir cabe en esa misma zona; de pie necesita estar entre 0,12 y 0,24 más a la derecha. [V] Barrido de colocaciones contra un modelo analítico del reborde (las mismas fórmulas que `build_bed.py`), que coincide con la medida sobre la malla en menos de 0,01.
+- Una unidad de la escena son unos 125 píxeles de la ventana a la profundidad de la cama. [V] La cama mide 2,02 unidades y 255 píxeles.
+
+## Medir el cruce de dos mallas en la app
+- `SkinnedMesh.getVertexPosition` de Three.js devuelve cada vértice ya deformado por el esqueleto, en el sistema de la malla: con su `matrixWorld` se tiene la pose que se está dibujando. [V] `tools/verify/nap.mjs`.
+- Para saber si un punto está dentro de una malla cerrada basta contar cuántas veces la corta la vertical que sube desde él: impar, dentro. El reborde y el vivo son cerrados; el colchón no, y de él solo interesa la altura. [V] La medida coincide con el modelo analítico.
+- La distancia al vértice más cercano no sirve como profundidad: en una malla con caras de 0,04 de lado da hasta 0,03 para un punto que está en la superficie. Hace falta la distancia al triángulo. [V] La primera versión de la herramienta daba 0,03 a la barbilla apoyada en el reborde; la definitiva, 0,013.
+- Repartir los triángulos en una rejilla vista desde arriba baja cada medida de 2,0 s a unas décimas. [V] Tiempos de la herramienta: 2,0 s por medida antes; después, la pasada entera, con 103 medidas, tarda 19 s.
+- El bucle de dibujo de la app se puede parar desde fuera (`renderer.setAnimationLoop(null)`) y avanzar a mano (`stage.onUpdate(1 / 30)`): así se mide una transición fotograma a fotograma. Midiendo con la app en marcha pasaban 0,2 s de animación entre dos medidas, y un cruce de 0,117 que duraba cuatro fotogramas salía en una pasada y en la siguiente no. [V] Las trazas de una forma y de otra.
+- Un segundo `WebGLRenderer` en la misma página, con su cámara, saca fotos de la escena desde cualquier ángulo sin tocar la cámara ni el canvas de la app. Sus constructores se alcanzan desde los objetos que la app ya expone (`pet.stage.renderer.constructor`). [V] Las capturas de `nap.mjs --shots`.
+
+## Las transiciones
+- Al fundir dos clips, cada hueso va de un giro al otro por el camino corto. La cola, que tumbado va recta hacia atrás por encima del reborde y dormido va recogida dentro, barre el reborde por el camino si la pose final la deja baja. [V] Traza: 0,039 durante cinco fotogramas con la cola caída 35°, nada con 20°.
+- Blender no genera el mismo GLB byte a byte en dos ejecuciones del mismo script: mismo tamaño, algún byte distinto. [V] `cmp` entre dos construcciones seguidas del modelo anterior.
+
 # Fuentes
 
 ## Tauri

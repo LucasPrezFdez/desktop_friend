@@ -16,9 +16,10 @@ const SHAPE: PetShape = {
   bowlX: 0.98,
   // Tumbado se le ve más de perfil: de frente, las patas estiradas se salían por debajo de la ventana.
   lyingFacing: 1.0,
-  // En la cama va casi de perfil, a lo largo de ella, con la cabeza vuelta hacia quien mira.
-  napFacing: 1.4,
-  napBack: 0.36,
+  // En la cama va de perfil, a lo largo de ella, con la cabeza vuelta hacia quien mira. Cabe justo:
+  // el giro y el sitio salen de medir con tools/verify/nap.mjs que no toca el reborde (decisión 0023).
+  napFacing: 1.62,
+  napSpot: { x: -0.25, z: -0.02 },
   // La mano entra en diagonal desde un lado y agarra el collar por detrás del cuello. Encima de la
   // cabeza parecía un gorro; así se ve la palma junto al cuello, a la altura del collar.
   handGrip: new THREE.Vector3(0.2, 0.03, -0.05),

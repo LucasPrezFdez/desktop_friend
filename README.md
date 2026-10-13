@@ -67,6 +67,7 @@ npm run tauri dev
 
 node tools/verify/cdp.mjs --eval "pet.behavior.force('sit')" --wait 1500 --shot sentado.png
 node tools/verify/bed.mjs                                # toda la secuencia de la cama
+node tools/verify/nap.mjs                                # mide si la mascota y la cama se cruzan
 node tools/verify/menu.mjs                               # el menú para cambiar de mascota
 node tools/verify/cdp.mjs --page bed --shot cama.png     # la ventana de la cama
 powershell -File tools/verify/clickthrough.ps1

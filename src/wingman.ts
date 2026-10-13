@@ -19,8 +19,8 @@ const SHAPE: PetShape = {
   bowlX: 0.72,
   lyingFacing: 1.0,
   napFacing: 1.4,
-  // Tumbado boca abajo, casi todo el cuerpo queda por delante de los pies.
-  napBack: 0.58,
+  // Tumbado boca abajo, casi todo el cuerpo queda por delante de los pies: van a la izquierda de la cama.
+  napSpot: { x: -0.572, z: -0.099 },
   // La mano lo coge por lo alto del casco, como un gancho de feria.
   handGrip: new THREE.Vector3(0.12, 0.02, 0),
   handTilt: -0.5,

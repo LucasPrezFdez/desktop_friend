@@ -537,3 +537,29 @@ Horas comprobadas en las salidas de las herramientas: 14:58 pruebas unitarias en
 | 300 | Comprobar que lo demás sigue igual | `monitors.mjs`, `bed.mjs`, `menu.mjs` y `carry.mjs`, con la mascota en la pantalla 2 | Todo correcto; balanceo de 9,6° | Decisión 0022 |
 | 301 | Comprobaciones finales | `npx tsc --noEmit`, `npx vitest run`, `npm run build`, `cargo check` | Sin errores; 40 pruebas; las dos páginas | |
 | 302 | Documentar | Decisión 0022, parte 7 de la investigación, `README.md` y estas filas | Sin subir nada a GitHub, sin fusionar en otra rama y sin regenerar el instalador. La app de desarrollo queda cerrada; la mascota, en la pantalla principal | Decisión 0022 |
+
+### La cama sin cruces (rama `cama-sin-cruces`)
+
+Horas comprobadas en las salidas de las herramientas: 15:22 primera construcción del modelo con Blender; 15:45 modelo definitivo; 15:49 comprobaciones finales terminadas; 15:50 app cerrada.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 303 | Mirar cómo están hechas la cama, la pose de dormir y la colocación | Lectura de `tools/model/build_bed.py`, `build_dog.py` (`NAP`), `src/behavior.ts`, `src/dog.ts` y la decisión 0019 | El perro se coloca con un giro y un retroceso; la pose se había ajustado mirando capturas | Decisión 0023 |
+| 304 | Arrancar la app y fotografiar al perro dormido de cerca | `npm run tauri dev` con el puerto de depuración; un segundo renderer en la página, desde cinco ángulos | La cola, la grupa y una pata trasera están dentro del reborde izquierdo; la cola se ve cortada | Decisión 0023 |
+| 305 | Escribir una herramienta que mida el cruce | Nuevo `tools/verify/nap.mjs`; nombre a los materiales de la cama en `src/props.ts` | Dormido entra hasta 0,13 en el reborde y se hunde 0,10 en el colchón | Decisión 0023 |
+| 306 | Buscar dónde cabe | Puntos de la malla volcados de la app y barrido de giro y posición contra un modelo analítico del reborde | El cuerpo cabe 0,33 más a la derecha; la cabeza y las patas delanteras, no: hay que cambiar la pose | `investigacion.md`, parte 8 |
+| 307 | Poder colocarlo en cualquier punto de la cama | `napBack` pasa a ser `napSpot` en `src/pet.ts`, `src/dog.ts`, `src/wingman.ts` y `src/behavior.ts` | Wingman queda donde estaba | Decisión 0023 |
+| 308 | Primera pose nueva: lomo recto, patas delante del pecho, cola pegada al muslo | `NAP` en `tools/model/build_dog.py`; construcción con Blender, 22 s | Cabe girado 1,63 rad en (−0,24, −0,02). Queda la barbilla, 0,055 dentro del reborde, y el pecho hundido 0,10 | Decisión 0023 |
+| 309 | Segunda pose: cuerpo otros 0,07 más alto (0,15 en total), cuello menos bajado, cabeza más vuelta | `NAP`; nueva construcción | La herramienta da 0,033 en una pata que el modelo analítico da por fuera | |
+| 310 | Corregir la medida de profundidad | `nap.mjs`: distancia al triángulo más cercano, no al vértice | Dormido, 0,013 en el reborde. Giro 1,62 y sitio (−0,25, −0,02), en `src/dog.ts` | Decisión 0023, incidencias |
+| 311 | Medir también mientras se tumba y al levantarse | `nap.mjs`, con la app en marcha | Una pata trasera entra 0,087 al tumbarse y 0,095 al levantarse: de pie no cabe donde duerme | Decisión 0023 |
+| 312 | Que vaya a su sitio a la vez que se tumba | `Pet.progress` en `src/pet.ts`; `settle` y `lyingInBed` en `src/behavior.ts`; se gira en el aire al caer hacia la cama | Al levantarse, 0,009. Al tumbarse, una pasada da 0,097 y otra 0,021 | Decisión 0023 |
+| 313 | Medir las transiciones fotograma a fotograma | `nap.mjs` para el bucle de dibujo y lo avanza a 1/30 s; opción `--trace`; rejilla para los triángulos | Dos cruces cortos: una pata delantera al aterrizar (0,117, cuatro fotogramas) y la cola al recogerse (0,039, cinco) | `investigacion.md`, parte 8 |
+| 314 | Quitar esos dos | Fundido de 0,15 s al aterrizar en la cama; cola caída 20° en vez de 35°; de pie, un 30 % hacia su sitio (`BED_STAND`) | Con 20 % quedaba un fotograma a 0,024. Con 30 %, 0,017 al tumbarse y 0,016 al levantarse | Decisión 0023 |
+| 315 | Medir el modelo anterior con la herramienta ya terminada | `git show HEAD:public/models/dog.glb`, con su giro y su sitio; después se repone el nuevo | Dormido: 0,130 en el reborde, 0,099 en el colchón, 0,026 bajo el suelo | Decisión 0023 |
+| 316 | Construir el modelo definitivo | `npm run model` | 15 clips, sin errores de validación; 1 288 564 bytes | |
+| 317 | Medir a Wingman | `chosenPet` a `wingman`, `nap.mjs`, y vuelta al perro | Tiene el mismo defecto, sin tocar: 0,133 en el reborde de atrás. No se arregla aquí | Decisión 0023, "Qué no se ha probado" |
+| 318 | Que al volver a cogerlo en plena caída no se quede desplazado | `lyingInBed` en `src/behavior.ts`: solo cuenta mientras cae | `npx tsc --noEmit` sin errores | |
+| 319 | Comprobaciones finales | `nap.mjs`, `bed.mjs`, `carry.mjs`, `npx tsc --noEmit`, `npx vitest run`, `npm run build` | 8 y 15 comprobaciones correctas; arrastre sin cambios; 40 pruebas; las dos páginas | Decisión 0023 |
+| 320 | Capturas | `sheet.ps1` con las fotos de `nap.mjs --shots` y `bed.mjs --shots` | `docs/capturas/cama-sin-cruces.png` (antes y ahora) y `cama-secuencia.png` rehecha. La del escritorio real no se guarda: salían otras ventanas del usuario | |
+| 321 | Documentar | Decisión 0023, enlace desde la 0019, parte 8 de la investigación, `README.md` y estas filas | Sin tocar el ratón del usuario en ningún momento. Sin subir nada a GitHub, sin fusionar en otra rama y sin regenerar el instalador. La app de desarrollo queda cerrada; la energía del perro, en 99,9 | Decisión 0023 |

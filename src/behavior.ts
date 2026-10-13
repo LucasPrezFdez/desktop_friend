@@ -66,6 +66,8 @@ const BED_DISTANCE = 300;
 const BED_REACH = 105;
 /** Lo mínimo que duerme en la cama, aunque ya esté descansado: si no, se levantaría nada más dejarlo. */
 const NAP_MIN_SECONDS = 20;
+/** De pie en la cama se pone ya a esta parte del camino entre su centro y el sitio donde duerme. */
+const BED_STAND = 0.3;
 /** Fotogramas en los que conviven la cama de esta ventana y la de la otra al relevarse. */
 const BED_HANDOVER_FRAMES = 3;
 const UP = new THREE.Vector3(0, 1, 0);
@@ -139,6 +141,8 @@ export class Behavior {
   private intoBed = false;
   /** 0 en el suelo, 1 subido al colchón. */
   private nest = 0;
+  /** 0 en el centro de la cama, donde cae de pie; 1 acomodado en su sitio, tumbado. */
+  private settle = 0;
   /** Fotogramas que faltan para retirar la cama de la otra ventana tras meterse en ella. */
   private handover = 0;
 
@@ -310,6 +314,8 @@ export class Behavior {
       landsInBed(this.windowPosition.x, spot.x, BED_REACH * window.devicePixelRatio);
     if (!this.intoBed) this.putAwayBed();
     this.begin('fall');
+    // Se gira ya en el aire: si cayera de frente y se girase dentro, las patas barrerían el reborde.
+    if (this.intoBed) this.facing = this.pet.shape.napFacing;
   }
 
   // ------------------------------------------------------------------ la cama
@@ -359,6 +365,17 @@ export class Behavior {
     if (!this.inBed) return;
     this.inBed = false;
     this.bed.hide(instant);
+  }
+
+  /** Mientras está en la cama, 0 de pie y 1 tumbado del todo; al tumbarse y al levantarse, lo que lleve. */
+  private lyingInBed(): number {
+    // Ya mientras cae hacia ella se va a donde cabe de pie.
+    if (!this.inBed) return this.activity === 'fall' && this.intoBed ? BED_STAND : 0;
+    // Con la misma entrada y salida suaves que las poses del clip.
+    const done = THREE.MathUtils.smoothstep(this.pet.progress, 0, 1);
+    if (this.activity === 'nap' && this.phase === 0) return BED_STAND + (1 - BED_STAND) * done;
+    if (this.activity === 'rise') return 1 - (1 - BED_STAND) * done;
+    return 1;
   }
 
   /** Fuerza una actividad. Solo para pruebas y depuración. */
@@ -441,7 +458,7 @@ export class Behavior {
         // Cae de pie sobre el colchón y se tumba. El clip `Nap` está hecho para verse desde su derecha.
         this.side = 1;
         this.facing = this.pet.shape.napFacing;
-        this.pet.play('LieDown', { once: true, fade: 0.25 });
+        this.pet.play('LieDown', { once: true, fade: 0.15 });
         break;
       case 'sad':
         this.duration = random(7, 13);
@@ -644,12 +661,14 @@ export class Behavior {
     // La nuca en coordenadas del propio perro: no depende de dónde esté colocado ahora.
     root.worldToLocal(this.pet.napePosition(nape));
     this.nest += ((this.inBed ? 1 : 0) - this.nest) * Math.min(1, delta * 8);
-    // Primero baja la mano y después lo levanta. En la cama se apoya en el colchón, no en el suelo.
-    const back = this.pet.shape.napBack * this.nest;
+    this.settle += (this.lyingInBed() - this.settle) * Math.min(1, delta * 12);
+    // Primero baja la mano y después lo levanta. En la cama se apoya en el colchón, no en el suelo,
+    // y se acomoda en su sitio a la vez que se tumba: de pie no cabe ahí, y tumbado no cabe en el centro.
+    const spot = this.pet.shape.napSpot;
     base.set(
-      -Math.sin(this.yaw) * back,
+      spot.x * this.settle,
       CARRY_LIFT * THREE.MathUtils.smoothstep(this.carry, 0.3, 1) + BED_MATTRESS * this.nest,
-      -Math.cos(this.yaw) * back,
+      spot.z * this.settle,
     );
     yawTurn.setFromAxisAngle(UP, this.yaw);
     swayTurn.setFromAxisAngle(TOWARD_CAMERA, this.sway);
