@@ -1,7 +1,7 @@
 # 0027. El icono de la app es una foto del perro del usuario
 
 - **Fecha:** 2026-10-13
-- **Estado:** hecha en la rama `icono-foto` y puesta en la app instalada. **Sin subir a GitHub**: lo decide el usuario (ver "La foto y el repositorio público")
+- **Estado:** en la app instalada, en `main` y en GitHub desde el 2026-10-13, con el sí del usuario a publicar el recorte (ver "Resolución" al final)
 - **Decide:** el usuario pide el icono y da la foto; el recorte lo propone el agente
 
 ## Lo que pidió el usuario
@@ -67,3 +67,8 @@ En el recorte se ve el perro, la diadema y la manta. No sale ninguna persona, ni
 ## Consecuencias
 - El icono ya no sale del modelo: si el perro de la app cambia, el icono no cambia con él.
 - La app instalada va por delante de `main`: lleva este icono y `main` no.
+
+## Resolución
+Preguntado si se subía a `main`, sabiendo que eso publica el recorte de la foto, el usuario contestó "si". A las 16:30 `main` avanzó hasta `258a67e` y se subió a GitHub (`12997cc..258a67e`). La app instalada no se ha vuelto a tocar: ya llevaba el icono desde las 16:17, compilada con este mismo código.
+
+Queda pendiente lo del acceso directo del escritorio (ver "Incidencias"): el usuario no ha dicho todavía si ya ve la foto, y el Explorador no se ha reiniciado.
