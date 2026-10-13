@@ -618,3 +618,18 @@ Horas comprobadas en las salidas de las herramientas: 16:10 `main` subida; 16:11
 | 346 | Comprobar que lleva el código nuevo | Arrancada una vez con el puerto de depuración; `cdp.mjs --eval` con el nombre, el tamaño y el SHA-256 de su JavaScript, comparados con los de `dist/assets/` | El mismo fichero: `index-9uQBHmoo.js`, 28 921 caracteres, mismo resumen. `pet` no existe | Decisión 0026, resolución |
 | 347 | Dejarla en marcha como la usa el usuario | Se cierra y se abre desde el menú Inicio, sin puerto de depuración | En marcha desde las 16:11 | Decisión 0026, resolución |
 | 348 | Documentar y subir la documentación | Resolución en la decisión 0026 y estas filas; segundo `git push origin main`; `desarrollo` avanza en este equipo | Sin tocar el ratón del usuario. La cama no se ha probado en la versión empaquetada | Decisión 0026, resolución |
+
+### El icono, con la foto del perro (rama `icono-foto`)
+
+Horas comprobadas en las salidas de las herramientas: 16:15 primer instalador, con el icono viejo dentro; 16:17 segundo instalador, instalado y app en marcha.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 349 | Ver cómo está hecho el icono y leer la foto | `src-tauri/icons/`, `tauri.conf.json`, filas 27 y 67 de esta bitácora; tamaño y EXIF de `C:\Users\lucas\Pictures\icono.jpeg` con `System.Drawing` | El icono sale de `assets/icon.png` con `npx tauri icon`. La foto mide 1536 × 2048 y no lleva datos EXIF | Decisión 0027 |
+| 350 | Escribir la herramienta que recorta | Nuevo `tools/icon.ps1`: cuadrado, 1024 px y círculo con fondo transparente | Tres recortes probados y vistos a 512, 48, 32 y 16 px; elegido el de la cabeza con las dos astas (270, 170, lado 1266) | Decisión 0027 |
+| 351 | Generar los iconos | `tools/icon.ps1` y `npx tauri icon assets/icon.png` | 17 ficheros en `src-tauri/icons/`. Las carpetas `android` e `ios` que crea de más, borradas | Decisión 0027 |
+| 352 | Compilar e instalar | `npm run installer`; instalador con `/S` | Código 0, **pero el ejecutable instalado sigue con el icono viejo**: visto al extraérselo con `ExtractAssociatedIcon` | Decisión 0027, incidencias |
+| 353 | Buscar por qué | Fecha de `resource.lib` en `src-tauri/target/release/build/` | Es de las 15:59: cambiar los iconos no hace que se regenere el recurso de Windows | Decisión 0027, incidencias |
+| 354 | Forzar la compilación y repetir | `cargo clean -p desktopfriend --release` (y el de desarrollo); `npm run installer`; `/S` | `resource.lib` de las 16:16; ejecutable de 11 243 520 bytes. Extraído de una copia, el icono es la foto. App en marcha desde las 16:17 | Decisión 0027 |
+| 355 | Pedir a Windows que renueve su caché de iconos | `ie4uinit.exe -show` | Sin comprobar en pantalla | Decisión 0027, "Qué no se ha probado" |
+| 356 | Documentar | Decisión 0027 y estas filas | Sin tocar el ratón del usuario. **Sin subir a GitHub ni fusionar en `main`**: el recorte de la foto se publicaría, y eso lo decide el usuario. La foto original no se copia al repositorio | Decisión 0027 |
