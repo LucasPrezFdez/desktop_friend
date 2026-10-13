@@ -605,3 +605,16 @@ Horas comprobadas en las salidas de las herramientas: 16:08 comprobaciones final
 | 340 | Ver la cama en el escritorio real | `cdp.mjs --eval "pet.behavior.grab()"` y `screenshot.ps1 -Title "DesktopFriend (cama)"` | La cama, en la esquina inferior derecha. Un primer intento falló por pedir la ventana con un título que no era el suyo | Decisión 0026 |
 | 341 | Comprobaciones finales y cierre | `npx tsc --noEmit`, `npx vitest run`, `npm run build`; la app de desarrollo se cierra y la instalada se abre desde el menú Inicio | Sin errores; 42 pruebas; las dos páginas. La instalada, en marcha, todavía con la regla anterior | Decisión 0026 |
 | 342 | Documentar | Decisión 0026, nota en el estado de la 0019 y estas filas | Sin tocar el ratón del usuario. Sin subir nada a GitHub, sin fusionar en `main` y sin regenerar el instalador | Decisión 0026 |
+
+### La cama en la esquina, a `main` y a la app instalada
+
+Horas comprobadas en las salidas de las herramientas: 16:10 `main` subida; 16:11 instalador generado e instalado; 16:11 app instalada en marcha.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 343 | Avanzar `main` y subirla, con el sí del usuario | `git merge --ff-only cama-en-la-esquina`; `git push origin main` | `4976232..42aa1c7` en GitHub | Decisión 0026, resolución |
+| 344 | Generar el instalador | `npm run installer` | 3 392 298 bytes; compilación de 48 s | Decisión 0026, resolución |
+| 345 | Actualizar la app instalada | Se cierra, instalador con `/S` | Código 0; ejecutable de las 16:11 | Decisión 0026, resolución |
+| 346 | Comprobar que lleva el código nuevo | Arrancada una vez con el puerto de depuración; `cdp.mjs --eval` con el nombre, el tamaño y el SHA-256 de su JavaScript, comparados con los de `dist/assets/` | El mismo fichero: `index-9uQBHmoo.js`, 28 921 caracteres, mismo resumen. `pet` no existe | Decisión 0026, resolución |
+| 347 | Dejarla en marcha como la usa el usuario | Se cierra y se abre desde el menú Inicio, sin puerto de depuración | En marcha desde las 16:11 | Decisión 0026, resolución |
+| 348 | Documentar y subir la documentación | Resolución en la decisión 0026 y estas filas; segundo `git push origin main`; `desarrollo` avanza en este equipo | Sin tocar el ratón del usuario. La cama no se ha probado en la versión empaquetada | Decisión 0026, resolución |

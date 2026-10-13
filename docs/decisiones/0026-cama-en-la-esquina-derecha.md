@@ -1,7 +1,7 @@
 # 0026. La cama aparece en la esquina derecha de la pantalla
 
 - **Fecha:** 2026-10-13
-- **Estado:** propuesta en la rama `cama-en-la-esquina`. El sitio lo decide el usuario; la excepción de más abajo la propone el agente y está pendiente de su opinión
+- **Estado:** en `main`, en GitHub y en la app instalada desde el 2026-10-13, con el sí del usuario (ver "Resolución" al final). El sitio lo decidió él; la excepción de más abajo la propuso el agente y no la ha comentado
 - **Decide:** el usuario
 - **Sustituye a:** de la [0019](0019-cama-del-perro.md), dónde sale la cama (la primera fila de "Cómo funciona" y el punto 1 de "Decisiones que el usuario no especificó"): a 300 px del perro, hacia el lado con más sitio
 
@@ -64,3 +64,17 @@ Con la app de desarrollo, en una pantalla de 2560 × 1392 útiles a escala 1, a 
 ## Incidencias
 - Para abrir la app de desarrollo hubo que cerrar la instalada, que estaba en marcha: solo puede haber una. Al terminar se ha vuelto a abrir desde el menú Inicio.
 - Las pruebas han movido la energía guardada del perro de 99,6 a 99,5.
+
+## Resolución
+Al preguntarle si se subía a `main` y se actualizaba la app instalada, el usuario contestó "si". Hecho el mismo día:
+
+| Paso | Resultado |
+|---|---|
+| `main` avanza hasta `42aa1c7` y se sube a GitHub, a las 16:10 | `4976232..42aa1c7` |
+| `npm run installer` e instalación con `/S`, a las 16:11 | Código 0; instalador de 3 392 298 bytes |
+| La app instalada lleva el código nuevo | Arrancada una vez con el puerto de depuración: su JavaScript es el mismo fichero que el recién compilado (mismo nombre, tamaño y SHA-256) |
+| Queda en marcha | Abierta desde el menú Inicio a las 16:11, sin puerto de depuración |
+
+Sobre la excepción (la cama a la izquierda cuando el perro está junto a la esquina) no dijo nada: queda como está propuesta.
+
+Sigue sin probarse la cama en la versión empaquetada: no tiene el acceso de depuración con el que se dan las órdenes, y habría que mover el ratón del usuario.
