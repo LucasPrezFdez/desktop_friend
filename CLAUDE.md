@@ -17,6 +17,7 @@ Toda decisión y toda acción se documentan, en español, antes de cerrar el tra
 - La simulación de necesidades usa marcas de tiempo, nunca conteo de frames.
 - Todas las mascotas traen los mismos clips, con los mismos nombres (`ClipName` en `src/pet.ts`). Lo que cambia de una a otra va en su clase (`src/dog.ts`, `src/wingman.ts`), no en `src/behavior.ts`.
 - El modelo de Wingman es de Riot Games y no se versiona: ni `assets/source/riot/*.glb` ni `public/models/wingman.glb` (decisión 0021).
+- El instalador se publica como release de GitHub (`gh release`), con Wingman dentro, por decisión del usuario (0029). El README enlaza la versión concreta: al sacar otra, se cambia el enlace.
 - Git: trabajo en la rama `desarrollo`, un commit por hito verificado.
 
 ## Comandos

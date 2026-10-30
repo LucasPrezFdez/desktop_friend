@@ -647,3 +647,18 @@ Horas comprobadas en las salidas de las herramientas: 16:33 `LEEME.txt` escrito 
 | 361 | Ver qué hace falta para instalar en otro equipo | `installer.nsi` y `English.nsh` en `src-tauri/target/release/nsis/x64/`; `git diff` entre `2b9a503` y `main` | Solo el instalador: se instala para el usuario, sin administrador, y descarga WebView2 si falta. Está en inglés. Corresponde al código de `main` | Decisión 0028 |
 | 362 | Crear la carpeta en el escritorio | `Instalar DesktopFriend`, con una copia del instalador de las 16:17 y un `LEEME.txt` | Copia con el mismo SHA-256; el `LEEME.txt`, en UTF-8 con marca y saltos de línea de Windows | Decisión 0028 |
 | 363 | Documentar | Decisión 0028 y estas filas | El instalador lleva a Wingman dentro: repartirlo así lo decide el usuario. Sin probar en otro equipo. Sin subir a GitHub | Decisión 0028 |
+
+## 2026-10-31
+
+### El instalador, en GitHub (rama `instalador-en-github`)
+
+Horas comprobadas en las salidas de las herramientas: 00:54:03 release publicada (23:54:03 UTC del 30, según `gh release view`).
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 364 | Ver qué había antes de subir | `gh repo view`, `gh release list`, `.gitignore`, `dist/models/`, SHA-256 del instalador de la raíz y del de `src-tauri/target/release/bundle/nsis/` | Repositorio público y sin releases. El instalador es el de las 16:17 del 13 (mismo SHA-256 que en la 0028) y lleva `wingman.glb`. La carpeta `Instalar DesktopFriend` ya no está en el escritorio | Decisión 0029 |
+| 365 | Preguntar al usuario si el instalador que se publica lleva a Wingman | Pregunta con dos opciones, recordando la política de Riot; el agente recomendó publicarlo sin Wingman | Elige el instalador tal cual, con Wingman | Decisión 0029 |
+| 366 | Ver cómo se desinstala, para explicarlo en la release | `WriteRegStr SHCTX "${UNINSTKEY}"` en `installer.nsi`; `reg query` de la clave de desinstalación en `HKCU` | Sale en Configuración → Aplicaciones instaladas | Decisión 0029 |
+| 367 | Publicar la release | Descripción escrita en un fichero temporal; `gh release create v0.1.0 DesktopFriend_0.1.0_x64-setup.exe --target 2b9a503… --title "DesktopFriend 0.1.0" --notes-file …` | Publicada a las 00:54:03. La etiqueta `v0.1.0` se crea en GitHub, en el commit del que se compiló el instalador | Decisión 0029 |
+| 368 | Comprobar la descarga | `gh release view v0.1.0`; `curl` sin iniciar sesión al enlace directo y a `releases/latest`; `git fetch --tags` y `git rev-parse v0.1.0^{commit}` | Código 200, 3 495 550 bytes y el mismo SHA-256; `latest` lleva a la `v0.1.0`; la etiqueta está en `2b9a503` | Decisión 0029, verificación |
+| 369 | Enlazar la descarga y documentar | `README.md` ("Instalar" pasa arriba, con el enlace; créditos), `CLAUDE.md`, estado de las decisiones 0021 y 0028, nueva decisión 0029 y estas filas | Sin tocar código: la app instalada no cambia. Sin probar la instalación desde la descarga en otro equipo | Decisión 0029 |
