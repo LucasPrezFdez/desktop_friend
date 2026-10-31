@@ -663,3 +663,16 @@ Horas comprobadas en las salidas de las herramientas: 00:54:03 release publicada
 | 368 | Comprobar la descarga | `gh release view v0.1.0`; `curl` sin iniciar sesión al enlace directo y a `releases/latest`; `git fetch --tags` y `git rev-parse v0.1.0^{commit}` | Código 200, 3 495 550 bytes y el mismo SHA-256; `latest` lleva a la `v0.1.0`; la etiqueta está en `2b9a503` | Decisión 0029, verificación |
 | 369 | Enlazar la descarga y documentar | `README.md` ("Instalar" pasa arriba, con el enlace; créditos), `CLAUDE.md`, estado de las decisiones 0021 y 0028, nueva decisión 0029 y estas filas | Sin tocar código: la app instalada no cambia. Sin probar la instalación desde la descarga en otro equipo | Decisión 0029 |
 | 370 | Subir a `main` | `git merge --ff-only instalador-en-github`; `git push origin main`, a las 00:56:47; `desarrollo` avanza en este equipo. Sube también el commit de la 0028, que era solo documentación | `ec7af82..6d7db2f` en GitHub. El enlace del README publicado (leído de `raw.githubusercontent.com`) descarga los 3 495 550 bytes | Decisión 0029, commit `6d7db2f` |
+
+### El instalador, fuera de GitHub otra vez (rama `instalador-en-github`)
+
+Horas comprobadas en las salidas de las herramientas: 01:01:21 contador de descargas leído; 01:01:33 release borrada.
+
+| Nº | Acción | Cómo | Resultado | Referencia |
+|---|---|---|---|---|
+| 371 | El usuario pide volver a lo anterior, para no tener nada que ver con Riot | Su mensaje | Se deshace la decisión 0029 entera | Decisión 0030 |
+| 372 | Mirar el contador de descargas | `gh api repos/…/releases/tags/v0.1.0` | 0, pero no contaba las dos descargas de prueba de la fila 368: no prueba que nadie más lo bajara | Decisión 0030, consecuencias |
+| 373 | Borrar la release y su etiqueta | `gh release delete v0.1.0 --cleanup-tag --yes` | Borradas a las 01:01:33, también la etiqueta de este equipo (el `git tag -d` de después ya no la encontró). Estuvo publicada unos siete minutos y medio | Decisión 0030 |
+| 374 | Comprobar que no queda nada | `gh release list`; `git ls-remote --tags origin`; `curl` al enlace directo, a la página de la release y a `releases/latest`; el fichero por la API | Sin releases ni etiquetas; 404 en el enlace, la página y la API; `latest` lleva a la lista vacía | Decisión 0030, verificación |
+| 375 | Devolver el README a como estaba | `git checkout ec7af82 -- README.md CLAUDE.md`; una línea nueva en `CLAUDE.md`: el instalador de aquí no se publica | El README vuelve a remitir a la carpeta raíz para instalar | Decisión 0030 |
+| 376 | Documentar | Decisión 0030, estado de las 0021, 0028 y 0029, y estas filas | La app instalada no cambia | Decisión 0030 |

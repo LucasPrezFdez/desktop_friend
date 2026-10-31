@@ -1,14 +1,6 @@
 # DesktopFriend
 
-Una mascota de escritorio para Windows 11: un perro negro en 3D (o Wingman) que vive sobre la barra de tareas. Pasea, se sienta, se tumba, duerme, y hay que cuidarlo: **acariciarlo**, **darle de comer** y **acostarlo en su cama**.
-
-## Instalar
-
-**[Descargar el instalador](https://github.com/LucasPrezFdez/desktop_friend/releases/download/v0.1.0/DesktopFriend_0.1.0_x64-setup.exe)** (`DesktopFriend_0.1.0_x64-setup.exe`, 3,3 MB). Todas las versiones están en [Releases](https://github.com/LucasPrezFdez/desktop_friend/releases).
-
-Al abrirlo, Windows dice "Windows protegió su PC", porque el instalador no está firmado: pulsa **Más información** y luego **Ejecutar de todas formas**. No hace falta ser administrador. El instalador está en inglés y trae las dos mascotas.
-
-Para generarlo desde el código: `npm run installer`, que lo deja en la carpeta raíz del proyecto.
+Una mascota de escritorio para Windows 11: un perro negro en 3D (o Wingman, si tienes su modelo) que vive sobre la barra de tareas. Pasea, se sienta, se tumba, duerme, y hay que cuidarlo: **acariciarlo**, **darle de comer** y **acostarlo en su cama**.
 
 ## Cómo se usa
 
@@ -27,6 +19,10 @@ Para generarlo desde el código: `npm run installer`, que lo deja en la carpeta 
 Donde no hay perro, los clics llegan a lo que haya debajo: no estorba.
 
 Con el tiempo le entra hambre, se aburre y se cansa. Si tiene hambre o está triste se le nota: baja la cabeza y la cola. Cuando se queda sin energía, duerme donde esté; en su cama descansa el triple. No se muere: si pasas días sin abrir la app, lo encontrarás hambriento y alicaído, nada más.
+
+## Instalar
+
+Ejecuta `DesktopFriend_0.1.0_x64-setup.exe`, que está en la carpeta raíz del proyecto. Se vuelve a generar con `npm run installer`.
 
 ## Desarrollo
 
@@ -90,6 +86,6 @@ Las dos últimas mueven el cursor real un par de segundos.
 
 El perro parte del Husky del "Ultimate Animated Animal Pack" de [Quaternius](https://quaternius.com), publicado como CC0. Ver [`assets/source/quaternius/PROCEDENCIA.md`](assets/source/quaternius/PROCEDENCIA.md).
 
-Wingman es un personaje de VALORANT, de Riot Games. Su modelo **no está en este repositorio**: quien lo tenga puede ponerlo en `assets/source/riot/Wingman.glb` y generar la mascota con `npm run model:wingman`; sin él, la app sigue funcionando con el perro. El instalador de [Releases](https://github.com/LucasPrezFdez/desktop_friend/releases) sí lo lleva dentro. Ver [`assets/source/riot/PROCEDENCIA.md`](assets/source/riot/PROCEDENCIA.md).
+Wingman es un personaje de VALORANT, de Riot Games. Su modelo **no está en este repositorio**: quien lo tenga puede ponerlo en `assets/source/riot/Wingman.glb` y generar la mascota con `npm run model:wingman`; sin él, la app sigue funcionando con el perro. Ver [`assets/source/riot/PROCEDENCIA.md`](assets/source/riot/PROCEDENCIA.md).
 
 DesktopFriend was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.
