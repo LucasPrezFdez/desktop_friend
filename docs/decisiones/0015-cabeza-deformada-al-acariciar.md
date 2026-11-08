@@ -5,7 +5,7 @@
 - **Decide:** Lucas Pérez Fernández
 
 ## Síntoma
-El usuario observó que, al acariciar la cara del perro, a veces la animación fallaba y la cabeza empezaba a deformarse.
+Al acariciar la cara del perro, vi que a veces la animación fallaba y la cabeza empezaba a deformarse.
 
 ## Reproducción
 Con `tools/verify/pet-face.mjs`, que acaricia la cara con un cursor virtual (eventos inyectados en la página, sin mover el ratón real) y mide cuánto se aparta el giro de la cabeza del que tenía al empezar. Una caricia la levanta y la ladea unos 12 grados.

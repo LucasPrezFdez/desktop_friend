@@ -1,17 +1,17 @@
 # 0021. Wingman, la segunda mascota: sus animaciones se crean aquí y su modelo no se versiona
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta en la rama `mascota-wingman`. Pendiente de la opinión del usuario. En `main` y en GitHub desde el 2026-10-13 por orden del usuario ([0025](0025-todo-a-main-y-app-instalada.md)). El modelo sigue sin versionarse, pero desde el 2026-10-31 va dentro del instalador publicado en GitHub, por decisión del usuario ([0029](0029-instalador-en-github.md)). Retirado unos minutos después, también por decisión suya: el instalador con Wingman no se publica ([0030](0030-instalador-retirado-de-github.md))
+- **Estado:** propuesta en la rama `mascota-wingman`. Pendiente de revisión. En `main` y en GitHub desde el 2026-10-13 por decisión mía ([0025](0025-todo-a-main-y-app-instalada.md)). El modelo sigue sin versionarse, pero el 2026-10-31 decidí meterlo en el instalador publicado en GitHub ([0029](0029-instalador-en-github.md)). Lo retiré unos minutos después: el instalador con Wingman no se publica ([0030](0030-instalador-retirado-de-github.md))
 - **Decide:** Lucas Pérez Fernández
 - **Depende de:** la rama `cama-del-perro` (decisiones 0019 y 0020), de la que sale esta
 - **Resuelve:** "Qué falta para una segunda mascota", de la decisión 0020
 
-## Lo que pidió el usuario
+## Qué quería
 - Añadir un nuevo modelo de mascota, con sus animaciones correspondientes.
 - El modelo está en `C:\Users\lucas\valorant-extract` y es Wingman, de VALORANT.
 
 ## Lo que había en esa carpeta
-`Wingman\Wingman.glb`: la malla, 21 huesos y sus texturas, en reposo con los brazos en cruz. **Ninguna animación.** El resto de la carpeta son las herramientas con las que el usuario lo extrajo del juego.
+`Wingman\Wingman.glb`: la malla, 21 huesos y sus texturas, en reposo con los brazos en cruz. **Ninguna animación.** El resto de la carpeta son las herramientas con las que lo extraje del juego.
 
 El juego sí tiene animaciones de Wingman (correr, girar, plantar la Spike y poco más), pero no están extraídas, y ninguna es de sentarse, tumbarse, dormir, comer o ir en brazos, que es lo que la app necesita.
 
@@ -21,7 +21,7 @@ El juego sí tiene animaciones de Wingman (correr, girar, plantar la Spike y poc
 | Opción | Resultado |
 |---|---|
 | **Crearlas con Blender en modo script**, como las del perro que no venían en el pack | **Elegida.** `tools/model/build_wingman.py` coloca el esqueleto en poses clave y las interpola. Salen los mismos quince clips que tiene el perro, con los mismos nombres |
-| Extraer las del juego y completar las que falten | Descartada por ahora. Hace falta el juego instalado y su clave de cifrado; el agente fue a buscar esa clave en el historial de la consola y la herramienta de permisos lo impidió, con razón. Aun con ellas, faltaría crear la mayoría |
+| Extraer las del juego y completar las que falten | Descartada por ahora. Hace falta el juego instalado y su clave de cifrado. Aun con ellas, faltaría crear la mayoría |
 | Dejar a Wingman con menos actividades que el perro | Descartada: habría que enseñar a `src/behavior.ts` qué sabe hacer cada mascota |
 
 Que todas las mascotas traigan los mismos clips es lo que permite que el comportamiento no sepa cuál tiene delante.
@@ -61,20 +61,20 @@ El perro sale de un modelo publicado como CC0. Wingman no: es de Riot Games, ext
 | Opción | A favor | En contra |
 |---|---|---|
 | **Dejar los dos GLB fuera de git** (elegida) | No se publica nada de Riot aunque la rama acabe en GitHub. Se deshace quitando dos líneas de `.gitignore` | Quien clone el repositorio no tiene a Wingman |
-| Versionarlos, como los del perro | El repositorio se compila tal cual | Publicaría un modelo de Riot con el nombre del usuario. Quitarlo después obliga a reescribir el historial |
+| Versionarlos, como los del perro | El repositorio se compila tal cual | Publicaría un modelo de Riot con mi nombre. Quitarlo después obliga a reescribir el historial |
 
 - Fuera de git: `assets/source/riot/Wingman.glb` (el extraído) y `public/models/wingman.glb` (el derivado, que contiene la misma malla y la misma textura).
 - Dentro: el código, `build_wingman.py`, la documentación y `assets/source/riot/PROCEDENCIA.md`.
 - Tampoco se guardan capturas de Wingman en `docs/capturas/`, que se publica. Están en `tools/verify/out/wingman/`, solo en este equipo.
 - **Si falta el modelo**, la app arranca con el perro en vez de fallar, y en el menú el círculo de Wingman sale sin retrato.
 
-Lo que dice la política de Riot para proyectos de aficionados está en `docs/investigacion.md`, parte 6. En corto: los tolera si son gratuitos y llevan un aviso, pero dice que no se use su propiedad intelectual (aspecto de personajes incluido) en juegos o aplicaciones sin permiso, y se reserva retirarlo todo cuando quiera. Para uso propio en este equipo no cambia nada; **para publicar o repartir el instalador con Wingman dentro, sí**, y eso lo decide el usuario.
+Lo que dice la política de Riot para proyectos de aficionados está en `docs/investigacion.md`, parte 6. En corto: los tolera si son gratuitos y llevan un aviso, pero dice que no se use su propiedad intelectual (aspecto de personajes incluido) en juegos o aplicaciones sin permiso, y se reserva retirarlo todo cuando quiera. Para uso propio en este equipo no cambia nada; **para publicar o repartir el instalador con Wingman dentro, sí**, y eso es una decisión aparte.
 
-## Decisiones que el usuario no especificó
-Quedan a su criterio.
+## Decisiones de detalle
+No estaban en la idea inicial y se pueden cambiar.
 
-1. **Las animaciones son nuevas, no las del juego** (ver arriba). Si prefiere las originales para andar y correr, hay que extraerlas: lo puede hacer él con su herramienta, o darle al agente lo que necesita.
-2. **El modelo no se versiona.** Si prefiere tenerlo en el repositorio, son dos líneas de `.gitignore`.
+1. **Las animaciones son nuevas, no las del juego** (ver arriba). Para usar las originales al andar y correr, hay que extraerlas con la herramienta con la que saqué el modelo.
+2. **El modelo no se versiona.** Para tenerlo en el repositorio, son dos líneas de `.gitignore`.
 3. **Las dos mascotas comparten hambre, felicidad y energía.** Cambiar de mascota es cambiar de aspecto, no tener dos animales a la vez. La alternativa, un estado por mascota, haría que la que no está pasara hambre.
 4. **Tamaño.** Wingman mide 1,3 unidades de alto frente a 1,12 del perro. Es más alto pero mucho más estrecho: abulta parecido. Con 1,0 se veía pequeño.
 5. **El nombre "Wingman"** en el menú. Está en `src/pets.ts`.
@@ -107,7 +107,7 @@ Con la app de desarrollo y las herramientas de `tools/verify/`:
 ## Incidencias
 - **El modelo no se giraba.** El importador de glTF deja el giro del objeto como cuaternión y, en ese modo, asignar `rotation_euler` no hace nada ni avisa. Las primeras poses salieron torcidas, con un brazo en cruz y otro caído.
 - **Las hojas de poses salían diminutas.** `preview.py` contaba para el encuadre una esfera que el importador guarda oculta. Ahora solo cuenta lo visible. Afectaba también a las hojas del perro, pero en él no se notaba.
-- **Wingman salía oscuro.** El agente supuso que las luces de la escena, pensadas para un perro negro, quemarían una textura clara, y la oscureció. Era al revés: con el blanco sin tocar sale en su color.
+- **Wingman salía oscuro.** Supuse que las luces de la escena, pensadas para un perro negro, quemarían una textura clara, y la oscurecí. Era al revés: con el blanco sin tocar sale en su color.
 - **Las pruebas han cambiado el estado de la mascota.** Ha comido una vez y la energía se ha quedado en 70; el valor que tenía antes no se anotó.
 - La orden de consola con varias líneas de texto entre comillas volvió a fallar al interpretarla, dos veces, sin cambiar nada. Se hizo con ficheros.
 

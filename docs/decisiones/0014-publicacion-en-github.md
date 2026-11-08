@@ -6,7 +6,7 @@
 - **Sustituye en parte a:** las decisiones 0005 y 0009, que preveían no publicar los modelos originales sueltos
 
 ## Contexto
-El usuario creó el repositorio público https://github.com/LucasPrezFdez/desktop_friend y añadió el remoto `origin`, pero el repositorio seguía vacío: hasta ahora solo se habían hecho commits locales, y todo el trabajo estaba en la rama `desarrollo` (`main` tenía solo el commit inicial).
+Creé el repositorio público https://github.com/LucasPrezFdez/desktop_friend y añadí el remoto `origin`, pero el repositorio seguía vacío: hasta ahora solo se habían hecho commits locales, y todo el trabajo estaba en la rama `desarrollo` (`main` tenía solo el commit inicial).
 
 Al ser público había que decidir dos cosas.
 

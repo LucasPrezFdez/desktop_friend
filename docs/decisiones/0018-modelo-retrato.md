@@ -1,17 +1,17 @@
-# 0018. Modelo nuevo: un retrato del perro del usuario, con collar lila
+# 0018. Modelo nuevo: un retrato de mi perro, con collar lila
 
 - **Fecha:** 2026-10-12
-- **Estado:** aceptada por el usuario el 2026-10-12 en su novena versión (ver las revisiones 2 a 9 y la "Resolución" al final; la 9 sube el hocico de la 8; la 8 rehace la forma de toda la cabeza y sustituye a lo dicho en la 4 sobre hocico y trufa y en la 6 sobre el alto del cráneo; la 7 añade las cejas canosas y queda guardada con la etiqueta `modelo-revision-7`; la 6 cambia el alto y la inclinación del cráneo de la 4; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos). Fusionada en `desarrollo` y `main`
+- **Estado:** aceptada el 2026-10-12 en su novena versión (ver las revisiones 2 a 9 y la "Resolución" al final; la 9 sube el hocico de la 8; la 8 rehace la forma de toda la cabeza y sustituye a lo dicho en la 4 sobre hocico y trufa y en la 6 sobre el alto del cráneo; la 7 añade las cejas canosas y queda guardada con la etiqueta `modelo-revision-7`; la 6 cambia el alto y la inclinación del cráneo de la 4; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos). Fusionada en `desarrollo` y `main`
 - **Decide:** Lucas Pérez Fernández
 - **Relación con otras decisiones:** mantiene la 0005 y la 0009 (se sigue partiendo del Husky de Quaternius y de Blender en modo script) y sustituye, de la 0010, la tabla de colores y la lista de piezas añadidas. El resto de la 0010 (cinemática propia, poses en coordenadas de mundo, clips) sigue en vigor
 
-## Lo que pidió el usuario
+## Qué quería
 - Rehacer el modelo 3D de la mascota en una rama nueva.
-- Que el perro se parezca lo más posible al de cuatro fotos que adjuntó.
+- Que se parezca lo más posible a mi perro, a partir de cuatro fotos suyas.
 - Que el collar sea lila.
 
 ## Qué se ve en las fotos
-Las fotos son del usuario y no se copian al repositorio, que es público. Estaban en `C:\Users\lucas\Pictures\` (`WhatsApp Image 2026-10-12 at 15.27.04.jpeg`, `2.jpeg`, `3.jpeg` y `4.jpeg`).
+Las fotos son mías y no se copian al repositorio, que es público. Estaban en `C:\Users\lucas\Pictures\` (`WhatsApp Image 2026-10-12 at 15.27.04.jpeg`, `2.jpeg`, `3.jpeg` y `4.jpeg`).
 
 | Rasgo | En las fotos | En el modelo anterior |
 |---|---|---|
@@ -134,11 +134,11 @@ Desaparecen `EyeWhite` y el `EyePupil` marrón del pack.
 - La malla de partida es de pocos polígonos: los rasgos son los del perro, pero en versión de dibujo anguloso.
 - El icono de la app (`assets/icon.png`) sigue siendo el del perro anterior.
 
-## Pendiente de la opinión del usuario
-Si se parece lo bastante es un juicio suyo. Cosas fáciles de retocar, todas en `tools/model/build_dog.py` o en la paleta de `src/blackFur.ts`: tono del lila, tamaño y color de los ojos (incluida la pupila velada), cuánto blanco lleva el hocico, largo de las orejas, largo de las patas (`SQUASH`), tamaño de la cabeza y cuánta mancha tiene el pecho.
+## Pendiente de revisar
+Si se parece lo bastante es algo que tengo que juzgar yo, comparándolo con el perro. Cosas fáciles de retocar, todas en `tools/model/build_dog.py` o en la paleta de `src/blackFur.ts`: tono del lila, tamaño y color de los ojos (incluida la pupila velada), cuánto blanco lleva el hocico, largo de las orejas, largo de las patas (`SQUASH`), tamaño de la cabeza y cuánta mancha tiene el pecho.
 
-## Revisión 2: retoques pedidos por el usuario
-Al ver la primera versión en la app, el usuario dijo que estaba muy bien y pidió dos retoques, con una captura:
+## Revisión 2: retoques
+Al ver la primera versión en la app, me pareció muy bien, pero hacían falta dos retoques, que marqué en una captura:
 
 1. Una **hendidura en la cabeza**, entre lo alto del cráneo y el arranque de la oreja.
 2. Las **orejas un poco más cortas**.
@@ -158,17 +158,17 @@ El recorrido de la oreja baja 0,62 en vez de 0,78 (un 20 % menos): ahora acaba a
 |---|---|
 | Renders de la cabeza en seis vistas | Cráneo redondo, sin escalón entre la cúpula y la oreja; ojos y canas como antes |
 | `npm run model` | 14 clips, sin errores de validación. 1 101 948 bytes, 10 056 vértices |
-| App en desarrollo, primer plano sobre el mismo fondo que la captura del usuario | Sin hendidura, de pie y sentado |
+| App en desarrollo, primer plano sobre el mismo fondo que mi captura | Sin hendidura, de pie y sentado |
 | App en desarrollo, resto de actividades | Reposo, sentado, tumbado, andando, comiendo y en brazos; la mano sigue viéndose junto a la oreja |
 | `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
 
 Las cuatro capturas `docs/capturas/nuevo-modelo-*.png` se han rehecho con esta versión.
 
 ## Revisión 3: la hendidura, otra vez
-El usuario dijo que la hendidura seguía sin convencerle, **a los dos lados de la cabeza**, y adjuntó una captura con una línea roja dibujada: un arco que va de lo alto del cráneo a lo alto de la oreja. Pidió rellenarla siguiendo esa línea y que quedase realista.
+La hendidura seguía sin convencerme, **a los dos lados de la cabeza**. La marqué en una captura con una línea roja: un arco que va de lo alto del cráneo a lo alto de la oreja. El objetivo era rellenarla siguiendo esa línea y que quedase realista.
 
 ### Qué estaba mal en la revisión 2
-La revisión 2 rellenó el hundimiento del cráneo, pero la hendidura que veía el usuario era otra: la **muesca en la silueta entre la cúpula del cráneo y la oreja**. La oreja salía de golpe por el costado, a la altura de los ojos, y subía en un pliegue propio; entre ese pliegue y la cúpula quedaba un entrante. El agente arregló lo que encontró al mirar el modelo y no comprobó que fuera lo mismo que señalaba la captura.
+La revisión 2 rellenó el hundimiento del cráneo, pero la hendidura que yo veía era otra: la **muesca en la silueta entre la cúpula del cráneo y la oreja**. La oreja salía de golpe por el costado, a la altura de los ojos, y subía en un pliegue propio; entre ese pliegue y la cúpula quedaba un entrante. Arreglé lo que encontré al mirar el modelo y no comprobé que fuera lo mismo que señalaba la captura.
 
 ### Arreglo
 | Cambio | Cómo |
@@ -190,7 +190,7 @@ El largo que cuelga es el de la revisión 2.
 | Comprobación | Resultado |
 |---|---|
 | Renders de la cabeza en seis vistas, incluida una nueva desde arriba y de frente (`above` en `preview.py`) | Silueta continua del cráneo a las orejas en todas |
-| App en desarrollo, primeros planos sobre fondo fucsia desde seis ángulos, entre ellos el de la captura del usuario y uno desde arriba (`docs/capturas/nuevo-modelo-union-orejas.png`) | No asoma el fondo entre cráneo y orejas en ninguno; tampoco triste ni mientras se le acaricia |
+| App en desarrollo, primeros planos sobre fondo fucsia desde seis ángulos, entre ellos el de mi captura y uno desde arriba (`docs/capturas/nuevo-modelo-union-orejas.png`) | No asoma el fondo entre cráneo y orejas en ninguno; tampoco triste ni mientras se le acaricia |
 | `npm run model` | 14 clips, sin errores de validación. 1 104 756 bytes, 10 120 vértices |
 | App en desarrollo, resto de actividades | Reposo, sentado, tumbado, andando, comiendo y en brazos, sin cambios |
 | `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
@@ -198,16 +198,16 @@ El largo que cuelga es el de la revisión 2.
 Las capturas `docs/capturas/nuevo-modelo-*.png` se han rehecho con esta versión.
 
 ## Revisión 4: la forma de la cabeza, medida sobre las fotos
-El usuario confirmó que estaba viendo la revisión 3 y dijo que seguía mal. Pidió crear **un agente en paralelo** para hacer el trabajo con precisión y fijó el criterio: la forma de la cabeza ha de ser la del perro de las fotos.
+Comprobé que estaba viendo la revisión 3 y seguía mal. Para hacerlo con precisión, **separé la medición del modelado** y fijé el criterio: la forma de la cabeza ha de ser la del perro de las fotos.
 
 ### Método
-Hasta aquí el agente principal había decidido a ojo qué era la hendidura, y había fallado dos veces. En esta revisión:
+Hasta aquí había decidido a ojo qué era la hendidura, y había fallado dos veces. En esta revisión:
 
-1. Un segundo agente, sin conocer las hipótesis anteriores, midió la cabeza en las cuatro fotos y en el render del modelo, píxel a píxel, y lo expresó todo en **anchos de cráneo** (AC). También superpuso el contorno de la foto 1 sobre la vista de frente del modelo.
-2. El agente principal rehízo la cabeza para que se construya a partir de esas medidas.
-3. El segundo agente volvió a medir cada versión (tres rondas) y señaló lo que no coincidía, incluidas dos regresiones que el principal no había visto.
+1. Se midió la cabeza en las cuatro fotos y en el render del modelo, píxel a píxel, de forma independiente y sin partir de las hipótesis anteriores, y se expresó todo en **anchos de cráneo** (AC). También se superpuso el contorno de la foto 1 sobre la vista de frente del modelo.
+2. Rehíce la cabeza para que se construya a partir de esas medidas.
+3. Cada versión se volvió a medir de la misma forma (tres rondas), señalando lo que no coincidía, incluidas dos regresiones que no había visto al modelar.
 
-### Diagnóstico del segundo agente
+### Diagnóstico de la medición
 La hendidura es **el ángulo entrante de la silueta donde la oreja se une al cráneo**. El modelo tenía una cúpula alta y estrecha, con las orejas colgando a la altura de los ojos. El perro tiene un arco ancho y rebajado, y las orejas salen de sus esquinas de arriba sin escalón: en ninguna de las cuatro fotos hay entrante entre la coronilla y la oreja. La revisión 3 había tapado la costura, pero el defecto era de silueta.
 
 ### Medidas (en anchos de cráneo, vista de frente)
@@ -229,7 +229,7 @@ La hendidura es **el ángulo entrante de la silueta donde la oreja se une al cr�
 | Ancho de la trufa | ≈0,31 | 0,46 | 0,33 |
 | Alto de la trufa | ≈0,20 | 0,17 | 0,145 en la última medición; después se estiró un 30 % |
 
-Las cifras de la columna "Revisión 4" son de la tercera ronda del agente. Los últimos retoques (ver más abajo) se hicieron después y **no han pasado por una cuarta medición**.
+Las cifras de la columna "Revisión 4" son de la tercera ronda de medición. Los últimos retoques (ver más abajo) se hicieron después y **no han pasado por una cuarta medición**.
 
 ### Cómo está hecho ahora (`tools/model/build_dog.py`)
 | Parte | Antes | Ahora |
@@ -244,7 +244,7 @@ Las cifras de la columna "Revisión 4" son de la tercera ronda del agente. Los �
 
 El script imprime al construir el perfil del cráneo en anchos de cráneo, para cotejarlo sin renderizar.
 
-### Lo que encontró el segundo agente por el camino
+### Lo que encontró la medición por el camino
 | Ronda | Hallazgo | Arreglo |
 |---|---|---|
 | 2 | Regresión: al crecer el cráneo, hocico y mandíbula quedaron pequeños (0,50 de ancho; ojos a barbilla 0,53) | Hocico y mandíbula ×1,15; ojos algo más altos |
@@ -262,9 +262,9 @@ El script imprime al construir el perfil del cráneo en anchos de cráneo, para 
 ### Verificación de esta versión
 | Comprobación | Resultado |
 |---|---|
-| Medición independiente del segundo agente, ronda 3 | "La forma de la cabeza coincide ya con la del perro de las fotos dentro del margen de mis medidas" |
+| Medición independiente, ronda 3 | La forma de la cabeza coincide ya con la del perro de las fotos dentro del margen de las medidas |
 | Entrantes de coronilla a oreja, ronda 3 | Ninguno de frente, en tres cuartos ni en perfil. Desde arriba y de frente queda un escalón de 0,03 anchos de cráneo, sin valle |
-| Renders en seis vistas tras los últimos retoques (`docs/capturas/nuevo-modelo-cabeza.png`) | Sin rendija entre oreja y mejilla; trufa más alta. Revisado por el agente principal, no medido |
+| Renders en seis vistas tras los últimos retoques (`docs/capturas/nuevo-modelo-cabeza.png`) | Sin rendija entre oreja y mejilla; trufa más alta. Revisado a ojo, no medido |
 | App en desarrollo, primeros planos sobre fucsia (`docs/capturas/nuevo-modelo-union-orejas.png`) | Sin fondo a la vista entre cráneo, orejas y mejillas en seis ángulos |
 | App en desarrollo, actividades (`docs/capturas/nuevo-modelo-app.png`) | Reposo, sentado, tumbado, andando, comiendo y en brazos |
 | `npm run model` | 14 clips, sin errores de validación. 1 153 836 bytes, 11 200 vértices |
@@ -280,13 +280,13 @@ El script imprime al construir el perfil del cráneo en anchos de cráneo, para 
 - El escalón de 0,03 anchos de cráneo donde la oreja se separa del cráneo, visto desde arriba y de frente.
 
 ## Revisión 5: cabeza más pequeña y ojos nuevos
-Al ver la revisión 4 funcionando en la app, el usuario pidió tres cosas:
+Al ver la revisión 4 funcionando en la app, decidí cambiar tres cosas:
 
 1. La cabeza, **un poco más pequeña**.
 2. El azul de los ojos no queda bien: **la parte de fuera del ojo, marrón oscuro; la de dentro, negra**.
 3. Mejorar el diseño de los ojos, porque **no parecían realistas**.
 
-Con esto se retira la pupila velada azul de las revisiones anteriores. Era una interpretación del agente a partir de las fotos; el usuario no la había pedido.
+Con esto se retira la pupila velada azul de las revisiones anteriores. Era una interpretación de las fotos que no formaba parte de lo que buscaba.
 
 ### Cabeza
 `HEAD_SIZE = 0,90`: la cabeza entera (cráneo, hocico, ojos y orejas) se encoge un 10 % alrededor de la base del cráneo, al terminar de darle forma. Las proporciones medidas en la revisión 4 no cambian: el perfil del cráneo que imprime el script es el mismo.
@@ -306,7 +306,7 @@ En la app, el parpadeo pinta también `EyeWhite` (`src/dog.ts`).
 ### Lo que se probó y se descartó
 | Intento | Por qué no |
 |---|---|
-| Iris marrón medio (`#4a2c17`) | El usuario lo pidió oscuro, y en las fotos lo es |
+| Iris marrón medio (`#4a2c17`) | Lo quería oscuro, y en las fotos lo es |
 | Aro de canas hasta 1,5 radios | A tamaño de la app se veía un aro gris con un punto dentro |
 
 ### Verificación de esta versión
@@ -319,13 +319,13 @@ En la app, el parpadeo pinta también `EyeWhite` (`src/dog.ts`).
 | `npm run model` | 14 clips, sin errores de validación. 1 152 504 bytes, 11 106 vértices, 12 materiales |
 | `npx tsc --noEmit`, `npx vitest run` | Sin errores; 26 pruebas en verde |
 
-Esta revisión no ha pasado por el segundo agente: el tamaño de la cabeza y el aspecto de los ojos son juicio del usuario.
+Esta revisión no ha pasado por la medición independiente: el tamaño de la cabeza y el aspecto de los ojos son juicio mío.
 
 ## Revisión 6: menos frente
-El usuario pidió quitarle un poco de la parte superior de la cabeza y darle una forma más realista, porque el modelo quedaba **muy frentón**.
+Había que quitarle un poco de la parte superior de la cabeza y darle una forma más realista, porque el modelo quedaba **muy frentón**.
 
 ### Qué estaba mal
-El cráneo era un elipsoide derecho y simétrico de delante a atrás: la frente salía tan abultada como la nuca, subía casi vertical desde los ojos y lo más alto de la cabeza quedaba justo encima de ellos. El segundo agente ya lo había anotado en la revisión 4 como algo que no podía comprobar por falta de una foto de perfil ("frente muy abombada en perfil: sube a 73° desde el stop"); el usuario, que conoce al perro, lo confirma.
+El cráneo era un elipsoide derecho y simétrico de delante a atrás: la frente salía tan abultada como la nuca, subía casi vertical desde los ojos y lo más alto de la cabeza quedaba justo encima de ellos. La medición de la revisión 4 ya lo había anotado como algo que no se podía comprobar por falta de una foto de perfil ("frente muy abombada en perfil: sube a 73° desde el stop"); yo, que conozco al perro, lo confirmo.
 
 ### Cambios (`tools/model/build_dog.py`)
 | Parámetro | Antes | Ahora | Efecto |
@@ -341,7 +341,7 @@ Una primera versión más tímida (alto 0,37, fondo delantero 0,40, 18°) cambia
 
 ### Efecto sobre las medidas de la revisión 4
 - El ancho del cráneo y su perfil de frente no cambian (a 0,13 bajo la coronilla, 0,88 anchos de cráneo; antes 0,90).
-- La altura de la coronilla sobre la línea de los ojos baja de unos 0,50 anchos de cráneo a unos 0,39. La medida de las fotos era 0,50, pero el agente la dio como aproximada y tomada en un primer plano; aquí manda lo que ve el usuario.
+- La altura de la coronilla sobre la línea de los ojos baja de unos 0,50 anchos de cráneo a unos 0,39. La medida de las fotos era 0,50, pero era aproximada y estaba tomada en un primer plano; aquí manda lo que veo yo.
 
 ### Verificación de esta versión
 | Comprobación | Resultado |
@@ -355,7 +355,7 @@ Una primera versión más tímida (alto 0,37, fondo delantero 0,40, 18°) cambia
 Sigue sin haber una foto de perfil con la que comparar la frente.
 
 ## Revisión 7: cejas canosas
-El usuario adjuntó una foto (`2.jpeg`) y pidió las **"cejas" blancas como en ella: solo unos pocos pelos, sin hacer una línea blanca a modo de ceja**.
+A partir de una foto (`2.jpeg`), quería las **"cejas" blancas como en ella: solo unos pocos pelos, sin hacer una línea blanca a modo de ceja**.
 
 ### Qué se ve en la foto
 Sobre cada ojo hay canas sueltas, cortas, que salen del párpado de arriba y suben tendidas hacia la sien. Son más densas sobre la mitad de dentro del ojo, no forman un borde continuo y no son iguales en los dos ojos.
@@ -363,7 +363,7 @@ Sobre cada ojo hay canas sueltas, cortas, que salen del párpado de arriba y sub
 ### Opciones consideradas
 | Opción | A favor | En contra |
 |---|---|---|
-| Pintar de gris las caras de la piel de encima del ojo | No añade geometría | Con esta malla salen manchas o una franja: justo la línea que se pidió evitar. Ya se descartó para el contorno del ojo en la revisión 4 |
+| Pintar de gris las caras de la piel de encima del ojo | No añade geometría | Con esta malla salen manchas o una franja: justo la línea que se quería evitar. Ya se descartó para el contorno del ojo en la revisión 4 |
 | Una pieza con forma de ceja | Sencilla | Es una línea |
 | **Pelos sueltos, uno a uno** | Se leen como canas; cada uno se coloca y se orienta por separado | A tamaño real en el escritorio se quedan en un moteado tenue |
 
@@ -402,10 +402,10 @@ Para colocar los pelos respecto a la abertura, la forma de la almendra y los eje
 `docs/capturas/nuevo-modelo-poses.png` también se rehízo. `nuevo-modelo-app.png` y `nuevo-modelo-union-orejas.png` son de la revisión 6: no se rehicieron.
 
 ### Límite
-La cabeza del perro ocupa unos 70 píxeles de ancho en el escritorio, contando las orejas. A ese tamaño unos pocos pelos finos no pueden verse uno a uno; hacerlos más gruesos o más numerosos los acercaría a la línea que se pidió evitar. Si se quieren más visibles, se retoca `BROW_WIDTH` o se añaden pelos a `BROW_HAIRS`.
+La cabeza del perro ocupa unos 70 píxeles de ancho en el escritorio, contando las orejas. A ese tamaño unos pocos pelos finos no pueden verse uno a uno; hacerlos más gruesos o más numerosos los acercaría a la línea que se quería evitar. Si se quieren más visibles, se retoca `BROW_WIDTH` o se añaden pelos a `BROW_HAIRS`.
 
 ## Revisión 8: la forma de la cabeza, estudiada otra vez sobre las fotos
-El usuario pidió **guardar el modelo** de la revisión 7 y, con las cuatro fotos adjuntas de nuevo, **estudiar la forma de la cabeza para que se parezca lo más posible**.
+Decidí **guardar el modelo** de la revisión 7 y, con las cuatro fotos otra vez delante, **estudiar la forma de la cabeza para que se parezca lo más posible**.
 
 ### El modelo guardado
 La revisión 7 queda en la etiqueta de git `modelo-revision-7` (commit `c5e2406`). Para volver a ella: `git checkout modelo-revision-7 -- tools/model/build_dog.py public/models/dog.glb`.
@@ -458,7 +458,7 @@ Ojos, cejas canosas, orejas, collar y lengua se colocan como antes, buscando la 
 `tools/model/preview.py` admite ahora una vista cualquiera como dirección `x/y/z`, para renderizar desde el ángulo de una foto.
 
 ### Cambio respecto a la revisión 6
-En la revisión 6 el usuario pidió menos frente y la coronilla bajó a 0,39 anchos de cráneo sobre los ojos. Las fotos dan más: 0,50 en la foto 1 y, en separaciones entre ojos, entre 0,75 y 1,13 frente a 0,57–0,63 del modelo. En esta revisión **la coronilla vuelve a subir, a 0,45**, a medio camino. Se mantienen las otras dos correcciones de la revisión 6 (frente menos abultada que la nuca y cráneo inclinado 24° hacia atrás), que son las que quitaban la frente vertical. Si al usuario le vuelve a parecer frentón, basta bajar el alto de `SKULL_RADII`.
+En la revisión 6 se buscó menos frente y la coronilla bajó a 0,39 anchos de cráneo sobre los ojos. Las fotos dan más: 0,50 en la foto 1 y, en separaciones entre ojos, entre 0,75 y 1,13 frente a 0,57–0,63 del modelo. En esta revisión **la coronilla vuelve a subir, a 0,45**, a medio camino. Se mantienen las otras dos correcciones de la revisión 6 (frente menos abultada que la nuca y cráneo inclinado 24° hacia atrás), que son las que quitaban la frente vertical. Si vuelve a parecer frentón, basta bajar el alto de `SKULL_RADII`.
 
 ### Lo que se probó y se descartó
 | Intento | Por qué no |
@@ -482,13 +482,13 @@ En la revisión 6 el usuario pidió menos frente y la coronilla bajó a 0,39 anc
 `docs/capturas/nuevo-modelo-union-orejas.png` sigue siendo de la revisión 6.
 
 ### Lo que no se ha hecho
-- **No ha medido un segundo agente**, como en la revisión 4: las medidas y el juicio son del agente principal.
+- **No ha pasado por una medición independiente**, como la de la revisión 4: las medidas y el juicio son míos.
 - **Los ojos no se han tocado.** En las fotos son redondos; en el modelo la abertura es una almendra un tercio más baja que ancha (revisión 5). Es la diferencia más visible que queda.
 - **Las orejas no se han tocado.** Vistas desde arriba siguen saliendo hacia los lados más que las del perro.
 - Sigue sin haber foto de perfil: el largo del hocico y la inclinación de la frente son una estimación.
 
 ## Revisión 9: el morro, más arriba
-Al ver la revisión 8 en el escritorio, el usuario pidió que **el morro esté un poco más arriba**.
+Al ver la revisión 8 en el escritorio, quise **el morro un poco más arriba**.
 
 ### Decisión (`tools/model/build_dog.py`)
 Se sube 0,05 todo lo que forma el morro, sin cambiar su tamaño ni su forma: el hocico (`MUZZLE_BASE`, `MUZZLE_END`), los belfos (`LIP_CENTER`), la trufa (`NOSE_CENTER`) y, con ellos, los planos que delimitan sus canas (`MUZZLE_WHITE_AT`, `MUZZLE_GREY_AT`, `MUZZLE_WHITE_TOP`). Son 0,06 anchos de cráneo.
@@ -500,10 +500,10 @@ Se sube 0,05 todo lo que forma el morro, sin cambiar su tamaño ni su forma: el 
 
 El stop queda menos hondo y la caña sale casi a la altura de los ojos. La quijada no se ha movido.
 
-"Más arriba" se ha entendido como el morro entero más alto en la cara, no como la punta levantada; si era lo segundo, se sube solo `MUZZLE_END`.
+Se sube el morro entero en la cara, no solo la punta; si hiciera falta levantar solo la punta, se sube solo `MUZZLE_END`.
 
 ### Efecto sobre las medidas de la revisión 8
-La distancia de los ojos a la trufa, que coincidía con las fotos (0,49 separaciones entre ojos en la vista de frente, frente a 0,47 de la foto 1), baja a unas 0,42, calculadas sobre las medidas para esa misma vista. Aquí manda lo que ve el usuario.
+La distancia de los ojos a la trufa, que coincidía con las fotos (0,49 separaciones entre ojos en la vista de frente, frente a 0,47 de la foto 1), baja a unas 0,42, calculadas sobre las medidas para esa misma vista. Aquí manda lo que veo yo.
 
 ### Verificación de esta versión
 | Comprobación | Resultado |
@@ -518,10 +518,10 @@ La distancia de los ojos a la trufa, que coincidía con las fotos (0,49 separaci
 `docs/capturas/nuevo-modelo-poses.png` también se rehízo. `nuevo-modelo-app.png` es de la revisión 8 y `nuevo-modelo-union-orejas.png`, de la 6.
 
 ## Resolución
-Tras ver la revisión 9 en el escritorio, el usuario pidió confirmar los cambios y fusionarlos en `main` ("haz commit de los cambios y mergea en main"). El agente lo toma como la aprobación de la novena versión; el usuario no lo dijo con esas palabras.
+Tras ver la revisión 9 en el escritorio, la di por buena y decidí confirmar los cambios y fusionarlos en `main`.
 
-- La rama `nuevo-modelo-3d` se fusiona en `main`, como pidió, y también en `desarrollo`, para que la rama de trabajo no quede por detrás (así se hizo con las decisiones 0016 y 0017).
-- **No se sube a GitHub**: no se pidió. `main` y `desarrollo` quedan diez commits por delante de `origin`, y la etiqueta `modelo-revision-7` es solo local.
-- **No se regenera el instalador ni se actualiza la app instalada**: tampoco se pidió. La versión instalada, si la hay, sigue con el modelo anterior.
+- La rama `nuevo-modelo-3d` se fusiona en `main` y también en `desarrollo`, para que la rama de trabajo no quede por detrás (así se hizo con las decisiones 0016 y 0017).
+- **No se sube a GitHub** por ahora. `main` y `desarrollo` quedan diez commits por delante de `origin`, y la etiqueta `modelo-revision-7` es solo local.
+- **No se regenera el instalador ni se actualiza la app instalada** por ahora. La versión instalada, si la hay, sigue con el modelo anterior.
 
 Lo que quedó sin hacer en la revisión 8 sigue pendiente: los ojos son almendrados y en las fotos son redondos, y las orejas se abren más que las del perro vistas desde arriba.

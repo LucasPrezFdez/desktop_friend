@@ -5,8 +5,8 @@
 - **Decide:** Lucas Pérez Fernández
 - **Sustituye a:** la [0029](0029-instalador-en-github.md), que lo había publicado unos minutos antes
 
-## Lo que pidió el usuario
-> vale quiero que lo vuelvas al anterior para no tener nada que ver con riot y que no me den problemas
+## Motivo
+Preferí no tener nada que ver con Riot para evitar problemas, así que lo devolví todo al estado anterior.
 
 ## Decisión
 Se deshace la 0029 entera y todo queda como estaba antes de ella:
@@ -22,15 +22,15 @@ Se deshace la 0029 entera y todo queda como estaba antes de ella:
 Las decisiones 0028 y 0029 no se borran: se les añade en el estado que esto se deshizo. Quedan publicadas en `docs/`, como el resto, y cuentan que el instalador estuvo en GitHub; no llevan nada de Riot.
 
 ### Por qué la release entera y no solo el fichero
-Bastaba con quitar el fichero para que no se pudiera descargar, pero la release vacía seguiría diciendo que la app trae a Wingman y llevaría el aviso de Riot. "Volverlo al anterior" es que no haya release.
+Bastaba con quitar el fichero para que no se pudiera descargar, pero la release vacía seguiría diciendo que la app trae a Wingman y llevaría el aviso de Riot. Volver al estado anterior es que no haya release.
 
 ## Consecuencias
 - **Ya no se puede descargar la app desde GitHub.** Para instalarla hay que compilarla, como antes, o pasar el instalador a mano (decisión 0028).
-- **Estuvo publicada de 00:54:03 a 01:01:33**, unos siete minutos y medio. El contador de descargas de GitHub marcaba 0 justo antes de borrarla, pero tampoco contaba las dos descargas de prueba del agente: no sirve para asegurar que nadie más la bajó. Si alguien lo hizo, esa copia no se puede recuperar.
-- **El repositorio sigue sin nada de Riot dentro**: ni el modelo, ni texturas, ni capturas de Wingman (decisión 0021). Lo que sí sigue es lo que nombra a Wingman: su código (`src/wingman.ts`), el script que lo genera (`tools/model/build_wingman.py`), `assets/source/riot/PROCEDENCIA.md`, el aviso de Riot en el README y la documentación. Todo eso está escrito en este proyecto, pero lleva el nombre del personaje. Quitarlo también no se ha pedido; queda a criterio del usuario.
+- **Estuvo publicada de 00:54:03 a 01:01:33**, unos siete minutos y medio. El contador de descargas de GitHub marcaba 0 justo antes de borrarla, pero tampoco contaba mis dos descargas de prueba: no sirve para asegurar que nadie más la bajó. Si alguien lo hizo, esa copia no se puede recuperar.
+- **El repositorio sigue sin nada de Riot dentro**: ni el modelo, ni texturas, ni capturas de Wingman (decisión 0021). Lo que sí sigue es lo que nombra a Wingman: su código (`src/wingman.ts`), el script que lo genera (`tools/model/build_wingman.py`), `assets/source/riot/PROCEDENCIA.md`, el aviso de Riot en el README y la documentación. Todo eso está escrito en este proyecto, pero lleva el nombre del personaje. Quitar también eso no entraba en esta decisión; queda pendiente de valorar.
 
 ## Una alternativa que no se ha hecho
-Publicar un instalador **sin Wingman**, compilado apartando `public/models/wingman.glb`, que fue la opción recomendada en la 0029. La app arranca con el perro y el círculo de Wingman sale sin retrato en el menú de mascotas. Daría la descarga rápida sin nada de Riot. No se ha pedido.
+Publicar un instalador **sin Wingman**, compilado apartando `public/models/wingman.glb`, que era la opción más prudente en la 0029. La app arranca con el perro y el círculo de Wingman sale sin retrato en el menú de mascotas. Daría la descarga rápida sin nada de Riot. De momento no lo he hecho.
 
 ## Verificación
 

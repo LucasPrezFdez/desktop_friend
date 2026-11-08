@@ -36,7 +36,7 @@ No se encontró ningún benchmark riguroso de RAM y CPU en Windows para una masc
 
 ## Tabla comparativa
 
-| Candidato | 1. Ventana y bandeja | 2. Click-through por píxel | 3. 3D con alpha y glTF | 4. Consumo en reposo | 5. Instalador, update, autostart | 6. Persistencia | Apto para desarrollo por agente |
+| Candidato | 1. Ventana y bandeja | 2. Click-through por píxel | 3. 3D con alpha y glTF | 4. Consumo en reposo | 5. Instalador, update, autostart | 6. Persistencia | Apto para desarrollo desde la línea de comandos |
 |---|---|---|---|---|---|---|---|
 | **Tauri 2 + Three.js** | Todo por configuración: `transparent`, `decorations`, `alwaysOnTop`, `skipTaskbar`, `shadow`; bandeja con la feature `tray-icon` [V] | `setIgnoreCursorEvents` afecta a toda la ventana y no tiene `forward` (issue #6164 abierto). Se resuelve sondeando `cursorPosition()` y leyendo el alpha con `gl.readPixels` [V] | WebGL sobre WebView2 con `alpha: true`; GLTFLoader, AnimationMixer y morph targets [V] | WebView2 es Chromium: RAM similar a Electron según el issue #5889 [V] | Hello-world de unos 3 MB (fuente débil); NSIS o MSI, plugins `updater` y `autostart` [V] | `tauri-plugin-store` (JSON) [V] | Muy alto: todo es código y `tauri dev/build` [I] |
 | **Electron + Three.js** | `transparent`, `frame: false`, `alwaysOnTop`, `skipTaskbar`, `focusable` [V] | `setIgnoreMouseEvents(true, {forward: true})`, nativo. Con fallos en Windows 11 hasta el PR #52633, fusionado el 9-10-2026 [V] | El mismo código Three.js [I] | 128 MB frente a 109 MB de Tauri en una prueba en macOS [V] | Hello-world de 85 a 96 MB (fuente débil) | `electron-store` o JSON propio [I] | Muy alto [I] |
@@ -102,11 +102,11 @@ Descartados como primera opción: Godot (click-through hacia otras aplicaciones 
 
 # Parte 2. Creación del modelo 3D
 
-Objetivo: que un agente que trabaja solo con texto y línea de comandos produzca un perro mediano negro en formato GLB, con animaciones de reposo, parpadeo, mover la cola, feliz, comer, triste, sentarse, dormir y caminar.
+Objetivo: producir, trabajando solo con texto y línea de comandos, un perro mediano negro en formato GLB, con animaciones de reposo, parpadeo, mover la cola, feliz, comer, triste, sentarse, dormir y caminar.
 
 ## Tabla comparativa
 
-| Vía | Calidad visual | Control y reproducibilidad | Automatizable por el agente | Coste | Riesgo de licencia | Animaciones |
+| Vía | Calidad visual | Control y reproducibilidad | Automatizable por script | Coste | Riesgo de licencia | Animaciones |
 |---|---|---|---|---|---|---|
 | 1. Blender en modo script, perro procedural | Media; buena con diseño chibi simple [I] | Máximo | Sí [I] | 0 | Ninguno | Todas por código; caminar es lo difícil [I] |
 | 2. Blender MCP | Igual que 1 | Menor: estado vivo en una sesión con interfaz | No del todo | 0 | Ninguno | Igual que 1 |
@@ -209,12 +209,12 @@ La página de licencia de Quaternius muestra ahora una "Quaternius Asset License
 Datos reunidos para la decisión 0018. Aquí [V] significa medido con una herramienta o visto directamente en las fotos.
 
 ## El perro de las fotos
-Cuatro fotos del usuario, que no se guardan en el repositorio.
+Cuatro fotos de mi perro, que no se guardan en el repositorio.
 
 - Perro pequeño de pelo negro, de tipo spaniel. [V] La raza o mezcla exacta no se conoce. [NV]
 - Orejas caídas, largas y anchas, con flecos ondulados; arrancan a los lados del cráneo, por debajo de su punto más alto. [V]
 - Hocico corto y ancho con canas: casi blanco en labios y barbilla, gris hacia los ojos; la caña sigue negra. Canas también alrededor de los ojos. [V]
-- Sobre cada ojo, canas sueltas y cortas que salen del párpado de arriba y suben tendidas hacia la sien; más densas sobre la mitad de dentro, sin formar un borde continuo y distintas en cada ojo (`2.jpeg`, adjunta el 2026-10-12). [V]
+- Sobre cada ojo, canas sueltas y cortas que salen del párpado de arriba y suben tendidas hacia la sien; más densas sobre la mitad de dentro, sin formar un borde continuo y distintas en cada ojo (`2.jpeg`, del 2026-10-12). [V]
 - Ojos grandes y redondos, marrón oscuro, con el centro velado de azul grisáceo en las cuatro fotos. [V] La causa no se conoce y no hace falta para el modelo. [NV]
 - Mancha blanca y gris pequeña en el pecho; pelo ondulado en cuello y pecho. [V]
 - Cola con flecos largos; en la foto en que se le ve sentado desde arriba la lleva levantada. [V]
@@ -232,7 +232,7 @@ Medido con scripts de Blender sobre `assets/source/quaternius/Husky.glb`.
 - El grupo `Tail1` incluye la grupa, no solo el arranque de la cola. [V]
 
 ## La cabeza del perro, medida
-Medido por un segundo agente sobre las cuatro fotos (1536 × 2048 píxeles), para la revisión 4 de la decisión 0018. Todo en anchos de cráneo (el ancho de costado a costado donde nacen las orejas).
+Medición independiente sobre las cuatro fotos (1536 × 2048 píxeles), para la revisión 4 de la decisión 0018. Todo en anchos de cráneo (el ancho de costado a costado donde nacen las orejas).
 
 - El ancho del cráneo no se ve limpio en ninguna foto: las orejas lo tapan. Se toma como 1,5 veces la separación entre los centros de los ojos, con un margen de 1,4 a 1,75. [I]
 - No hay foto de perfil ni de frente sin perspectiva. La foto 1 es la única con la cámara casi a la altura de la cabeza, y al ser un primer plano agranda hocico y barbilla un 10–15 %. [I]
@@ -248,7 +248,7 @@ Medido por un segundo agente sobre las cuatro fotos (1536 × 2048 píxeles), par
 - Ancho del hocico: de 0,60 a 0,67 en las fotos, unos 0,55 a 0,60 descontando la perspectiva. [I]
 - El largo del hocico y la inclinación de la frente no se pueden determinar con estas fotos. [NV]
 
-Medido por el agente principal sobre recortes de las mismas fotos, para la revisión 8. Todo en separaciones entre los centros de los ojos, que se miden directamente en las cuatro; valores de las fotos 1, 2, 3 y 4. Son medidas a ojo sobre los recortes, con un error de unas décimas.
+Medido sobre recortes de las mismas fotos, para la revisión 8. Todo en separaciones entre los centros de los ojos, que se miden directamente en las cuatro; valores de las fotos 1, 2, 3 y 4. Son medidas a ojo sobre los recortes, con un error de unas décimas.
 
 - Ancho del hocico: 1,3 / 0,87 / 1,05 / 0,93. La foto 1 es un primer plano y lo agranda. [V]
 - Ancho de la trufa: 0,57 / 0,41 / 0,48 / 0,41. [V]
@@ -291,7 +291,7 @@ Hechos comprobados al añadir la cama (decisión 0019). No hubo búsqueda en la 
 - La cámara de la app está a 1,5 de altura y a 5,4 de distancia, mirando a 1,2: ve el suelo casi de canto. Un objeto bajo y ancho, como una cama en forma de rosquilla, se ve como una franja. [V] Captura de la primera versión de la cama en la app.
 
 ## La pose de dormir
-- La página de Dreamstime que el usuario dio como referencia (`es.dreamstime.com/photos-images/dibujo-animado-de-perro-durmiendo.html`) no se puede leer sin navegador: responde HTTP 403 con un captcha de PerimeterX. [V] `curl` con tres agentes de usuario distintos y la herramienta de lectura web, el 12 de octubre de 2026.
+- La página de Dreamstime que tomé como referencia (`es.dreamstime.com/photos-images/dibujo-animado-de-perro-durmiendo.html`) no se puede leer sin navegador: responde HTTP 403 con un captcha de PerimeterX. [V] `curl` con tres *user agents* distintos y un lector web, el 12 de octubre de 2026.
 - Un perro con el pecho a 0,68 unidades del suelo se ve agachado aunque tenga las patas dobladas debajo; con el pecho a 0,37, las patas delanteras estiradas y la cabeza horizontal, se ve tumbado. De pie lo tiene a 1,56. [V] Renders de las dos versiones del clip `Nap` y alturas del hueso `FrontUpperLeg.L` que imprime `DOG_DEBUG=1`.
 - Para bajar la cabeza hasta el suelo hay que doblar el cuello unos 100° y enderezar después la cabeza casi 80°. [V] Valores de `NAP` en `tools/model/build_dog.py`.
 
@@ -325,7 +325,7 @@ Hechos comprobados al añadir la segunda mascota (decisión 0021).
 - Las piernas son dos huesos de 0,18 y 0,14: un tercio de la altura. Los pies no tienen pesos propios: siguen a la espinilla. [V] El mismo script.
 - La cabeza, las orejas y el casco siguen todos al hueso `Head`. `Head_Armor` no es el casco: mueve las placas de la espalda. [V] Grupos de vértices por hueso.
 - Los ojos son una pieza aparte de la malla, 196 caras, con su propio trozo de textura; debajo está pintado el antifaz. Al quitarlos se ve el antifaz entero. [V] Hoja `wingman_head.png`.
-- En el juego hay animaciones de Wingman (`ABTP_AggroBot_S0_Q_Spikebot_Run`, `_Intro`, `_Turn_L`, `_Bomb_Activate` y otras). [V] Listado `out/find_aggrobot.txt` de la carpeta del usuario. Ninguna está extraída. [V] No hay más GLB que los de las mallas.
+- En el juego hay animaciones de Wingman (`ABTP_AggroBot_S0_Q_Spikebot_Run`, `_Intro`, `_Turn_L`, `_Bomb_Activate` y otras). [V] Listado `out/find_aggrobot.txt` de mi carpeta. Ninguna está extraída. [V] No hay más GLB que los de las mallas.
 
 ## Blender
 - El importador de glTF deja los objetos con el giro en modo cuaternión. Asignar `rotation_euler` en ese modo no cambia nada y no avisa. [V] La matriz del objeto seguía siendo la identidad.

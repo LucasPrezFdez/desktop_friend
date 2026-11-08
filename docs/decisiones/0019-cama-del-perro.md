@@ -1,11 +1,11 @@
 # 0019. Una cama que aparece al coger al perro, para que duerma y recupere energía
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta en la rama `cama-del-perro`, en su segunda versión (ver "Revisión 2" al final, que sustituye a lo dicho antes sobre la pose de dormir y el tamaño de la cama). Pendiente de la opinión del usuario. Los números de la pose de dormir y la colocación en la cama de esa revisión quedan sustituidos por la [0023](0023-cama-sin-cruces.md). En `main` y en GitHub desde el 2026-10-13 por orden del usuario ([0025](0025-todo-a-main-y-app-instalada.md)). Dónde sale la cama queda sustituido por la [0026](0026-cama-en-la-esquina-derecha.md)
+- **Estado:** propuesta en la rama `cama-del-perro`, en su segunda versión (ver "Revisión 2" al final, que sustituye a lo dicho antes sobre la pose de dormir y el tamaño de la cama). Pendiente de revisión. Los números de la pose de dormir y la colocación en la cama de esa revisión quedan sustituidos por la [0023](0023-cama-sin-cruces.md). En `main` y en GitHub desde el 2026-10-13 por decisión mía ([0025](0025-todo-a-main-y-app-instalada.md)). Dónde sale la cama queda sustituido por la [0026](0026-cama-en-la-esquina-derecha.md)
 - **Decide:** Lucas Pérez Fernández
 
-## Lo que pidió el usuario
-- Al agarrar al perro aparece una cama de perro, modelada por el agente o sacada de internet.
+## Qué quería
+- Al agarrar al perro aparece una cama de perro, modelada aquí o sacada de internet.
 - Si se deja al perro en la cama, tiene una animación de dormir.
 - Dormir en la cama sirve para recuperar su energía.
 
@@ -67,8 +67,8 @@ Actividad nueva `nap`. La cama está en uno de tres sitios: guardada, fuera en s
 | Primera versión de `Nap` | La grupa quedaba en alto; después, con la cabeza más baja, el morro y una pata atravesaban el reborde. Se agrandó la cama un 10 %, se recogieron las patas y el perro se coloca 0,2 unidades más atrás dentro de ella |
 | Cola poco recogida | La punta atravesaba el reborde por detrás |
 
-## Decisiones que el usuario no especificó
-Quedan a su criterio; todas son un número o una línea en `src/behavior.ts` o `src/needs.ts`.
+## Decisiones de detalle
+No estaban en la idea inicial y se pueden cambiar: todas son un número o una línea en `src/behavior.ts` o `src/needs.ts`.
 
 1. **Dónde sale la cama**: a 300 px, hacia el lado con más sitio. Así nunca sale debajo del perro, y soltarlo donde estaba no lo manda a dormir sin querer.
 2. **Cuánto recupera**: 90 puntos por hora. De 20 a 100 tarda 53 minutos; en el suelo, a 30 por hora, tarda más de dos horas y media.
@@ -88,7 +88,7 @@ Con la app de desarrollo y las herramientas de `tools/verify/`:
 | Cogerlo de la cama con el ratón real y volver a soltarlo | La cama se queda en (1760, 1052) y el perro vuelve a dormirse. Un primer intento no llegó a pulsar: el clic habría atravesado al perro dormido; repetido, correcto |
 | Se despierta solo | Ocurrió durante el trabajo: tras varias siestas de prueba la energía llegó a 100 y el perro se levantó y se fue andando |
 | Arrastre de siempre (`carry.mjs`) | Sin cambios: balanceo máximo de 11,1°, contento al soltarlo, cama guardada |
-| Clics que atraviesan (`clickthrough.ps1`) | Correcto dos veces (de 78 a 153 ms); una tercera con el ratón del usuario en movimiento |
+| Clics que atraviesan (`clickthrough.ps1`) | Correcto dos veces (de 78 a 153 ms); una tercera mientras yo movía el ratón |
 | `npx tsc --noEmit`, `npx vitest run` | Sin errores; 32 pruebas en verde (6 nuevas) |
 | `npm run model:bed`, `npm run model` | Cama sin errores ni avisos de validación; perro con 15 clips, sin errores y el aviso de siempre |
 | `npm run build` | Genera las dos páginas, `index.html` y `bed.html` |
@@ -103,7 +103,7 @@ Capturas en `docs/capturas/`: `cama-secuencia.png` (la secuencia en la app), `ca
 - En el navegador (`npm run dev`) no hay segunda ventana: la cama solo se ve cuando el perro ya está dentro.
 
 ## Qué no se ha probado
-- **La versión empaquetada.** No se ha regenerado el instalador ni actualizado la app instalada: se hará si el usuario aprueba la propuesta.
+- **La versión empaquetada.** No se ha regenerado el instalador ni actualizado la app instalada: se hará cuando dé por buena la propuesta.
 - Varios monitores, o monitores con distinta escala. La cama sale en el monitor donde se coge al perro y solo cuenta en ese.
 - Que la ventana de la cama no aparezca en Alt+Tab: se ha comprobado su estilo de ventana (`WS_EX_TOOLWINDOW`, sin `WS_EX_APPWINDOW`), no la lista.
 - El frontend en el navegador con estos cambios.
@@ -114,10 +114,10 @@ Capturas en `docs/capturas/`: `cama-secuencia.png` (la secuencia en la app), `ca
 - Con el perro dormido la app dibuja 10 fotogramas por segundo, y una vez el clic simulado llegó antes de que la ventana empezara a capturar el ratón. Ya pasaba al dormir en el suelo; no se ha investigado.
 
 ## Revisión 2: dormir echado del todo
-Al ver la primera versión, el usuario dijo que el perro dormido no era lo bastante realista: **"parece que aún está medio de pie"**. Pidió que se pareciera a un dibujo de perro durmiendo, fijándose solo en la forma en que está acostado, y dio un enlace a una página de resultados de Dreamstime ("dibujo animado de perro durmiendo").
+Al ver la primera versión, el perro dormido no me pareció lo bastante realista: **parecía que aún estaba medio de pie**. Quería que se pareciera a un dibujo de perro durmiendo, fijándome solo en la forma en que está acostado, y tomé como referencia una página de resultados de Dreamstime ("dibujo animado de perro durmiendo").
 
 ### La referencia no se pudo ver
-La página devuelve HTTP 403 con un captcha, tanto a `curl` como a la herramienta de lectura web, y además es una lista de resultados, no una imagen concreta. Se tomó la postura más repetida en ese tipo de dibujos: **echado del todo, con las patas delanteras estiradas y la barbilla apoyada**. Si el usuario se refería a otra (hecho una bola, de lado, boca arriba), hay que rehacerla con la imagen delante.
+La página devuelve HTTP 403 con un captcha a las peticiones automáticas (`curl` incluido), y además es una lista de resultados, no una imagen concreta. Se tomó la postura más repetida en ese tipo de dibujos: **echado del todo, con las patas delanteras estiradas y la barbilla apoyada**. Si la referencia buena era otra (hecho una bola, de lado, boca arriba), hay que rehacerla con la imagen delante.
 
 ### Por qué parecía de pie
 En la primera versión el pecho quedaba a 0,68 unidades del suelo (el perro de pie lo tiene a 1,56), con las patas dobladas debajo y la cabeza colgando hacia delante. Eso es un perro agachado, no tumbado.

@@ -14,7 +14,7 @@ El tipo de criatura condiciona la dificultad del modelo 3D y de las animaciones.
 4. Dejar la elección a la investigación.
 
 ## Decisión
-El usuario eligió un **perro mediano de color negro**, respuesta propia fuera de las opciones propuestas.
+Elegí un **perro mediano de color negro**, una opción propia fuera de las que se habían planteado.
 
 ## Consecuencias
 - Es un cuadrúpedo: el esqueleto y el caminar son más difíciles que en una criatura sin patas. Esto motivó preferir un modelo base ya riggeado (decisión 0005).

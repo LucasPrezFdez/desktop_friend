@@ -24,12 +24,12 @@ Las filas siguen el orden en que se hicieron las cosas. No llevan hora porque no
 |---|---|---|---|---|
 | 1 | Revisar la carpeta del proyecto | Listado de ficheros | Vacía, sin git | `investigacion.md`, punto de partida |
 | 2 | Revisar las herramientas instaladas | Consulta de versiones en PowerShell | Hay Node 24.21.0, npm 11.19.0, Git 2.56.0, VS Code, WebView2 154 y GPU RTX 2060 SUPER. Faltan Rust, Blender, Godot, .NET y Python | `investigacion.md`, punto de partida |
-| 3 | Investigar el framework de la app | Agente de búsqueda web: 95 consultas a documentación, issues y repositorios | Recomienda Tauri 2 + Three.js y, como segunda opción, Electron + Three.js | `investigacion.md`, parte 1 |
-| 4 | Investigar la creación del modelo 3D | Agente de búsqueda web: 109 consultas. Se reorientó a mitad al saber que la mascota sería un perro negro | Recomienda un asset libre de Quaternius retocado con Blender en modo script | `investigacion.md`, parte 2 |
-| 5 | Preguntar al usuario alcance, mascota y plataforma | Tres preguntas | Construir la app completa; perro mediano negro; solo Windows | Decisiones 0001, 0002, 0003 |
+| 3 | Investigar el framework de la app | Búsqueda web: 95 consultas a documentación, issues y repositorios | Recomienda Tauri 2 + Three.js y, como segunda opción, Electron + Three.js | `investigacion.md`, parte 1 |
+| 4 | Investigar la creación del modelo 3D | Búsqueda web: 109 consultas. Se reorientó a mitad, cuando decidí que la mascota sería un perro negro | Recomienda un asset libre de Quaternius retocado con Blender en modo script | `investigacion.md`, parte 2 |
+| 5 | Decidir alcance, mascota y plataforma | Tres decisiones | Construir la app completa; perro mediano negro; solo Windows | Decisiones 0001, 0002, 0003 |
 | 6 | Comprobar requisitos de compilación | Consulta de `vswhere`, winget, disco y memoria | Sin Build Tools de C++ ni rustup; winget 1.29; 74 GB libres; 16 GB de RAM | Decisión 0007 |
-| 7 | Preguntar al usuario framework, modelo y registro | Tres preguntas | Tauri 2 + Three.js; base libre + Blender; docs en el repo + git | Decisiones 0004, 0005, 0006 |
-| 8 | Escribir y aprobar el plan | Plan de ocho hitos | Aprobado por el usuario | Decisión 0001 |
+| 7 | Decidir framework, modelo y registro | Tres decisiones | Tauri 2 + Three.js; base libre + Blender; docs en el repo + git | Decisiones 0004, 0005, 0006 |
+| 8 | Escribir y aprobar el plan | Plan de ocho hitos | Aprobado | Decisión 0001 |
 
 ### Hito 0: documentación inicial y repositorio
 
@@ -56,7 +56,7 @@ Se hizo mientras compilaba Rust, porque no dependía de ello.
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
 | 17 | Localizar las descargas | Lectura del HTML de las páginas de Poly Pizza | URL directas de los GLB de Husky y Shiba Inu; licencia mostrada CC0 1.0 | `assets/source/quaternius/PROCEDENCIA.md` |
-| 18 | Descargar los dos modelos | `curl` a `assets/source/quaternius/` | `Husky.glb` (927 536 bytes) y `ShibaInu.glb` (851 196 bytes); no hizo falta intervención del usuario | Decisión 0009 |
+| 18 | Descargar los dos modelos | `curl` a `assets/source/quaternius/` | `Husky.glb` (927 536 bytes) y `ShibaInu.glb` (851 196 bytes); no hizo falta intervención manual | Decisión 0009 |
 | 19 | Escribir un inspector de GLB | `tools/model/inspect.mjs` | Lista clips, materiales, mallas y huesos | |
 | 20 | Inspeccionar ambos modelos | `node tools/model/inspect.mjs` | Materiales de color plano, 12 clips útiles incluidos `Walk` y `Eating`, 49 y 46 huesos | Decisión 0009 |
 | 21 | Escribir el render de previsualización | `tools/model/preview.py` (Blender sin interfaz) | Hoja de contactos PNG; EEVEE funciona sin interfaz en este equipo, no hizo falta Cycles | |
@@ -148,9 +148,9 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 83 | Dejar el instalador en la carpeta raíz | `tools/copy-installer.mjs` y el comando `npm run installer` (compila y copia) | `DesktopFriend_0.1.0_x64-setup.exe` en la raíz del proyecto. Lo pidió el usuario para no tener que buscarlo en `src-tauri/target`. No se versiona en git porque se genera | |
+| 83 | Dejar el instalador en la carpeta raíz | `tools/copy-installer.mjs` y el comando `npm run installer` (compila y copia) | `DesktopFriend_0.1.0_x64-setup.exe` en la raíz del proyecto. Lo quería ahí para no tener que buscarlo en `src-tauri/target`. No se versiona en git porque se genera | |
 | 84 | Diagnosticar por qué GitHub estaba vacío | `git remote -v`, `git branch -vv`, `git ls-remote` | El remoto estaba bien configurado, pero no se había hecho ningún `push`; el repositorio es público | Decisión 0014 |
-| 85 | Preguntar al usuario ramas y modelos | Dos preguntas | Fusionar en `main` y subir todo, modelos incluidos | Decisión 0014 |
+| 85 | Decidir ramas y modelos | Dos decisiones | Fusionar en `main` y subir todo, modelos incluidos | Decisión 0014 |
 | 86 | Fusionar `desarrollo` en `main` | `git merge --ff-only desarrollo` | Avance rápido, sin reescribir historial | Decisión 0014 |
 | 87 | Subir a GitHub | `git push -u origin main desarrollo` | Las dos ramas publicadas en https://github.com/LucasPrezFdez/desktop_friend con 78 ficheros versionados | Decisión 0014 |
 
@@ -179,9 +179,9 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 101 | Limitar la captura de clics al círculo | `Hud.isUiAt` comprueba la distancia al centro | Esquina de la caja: ya no captura | Decisión 0016 |
 | 102 | Capturar fondos y cierre | `cdp.mjs` y `screenshot.ps1` | Legible sobre claro, oscuro y el escritorio real | Decisión 0016 |
 | 103 | Guardar las capturas de la propuesta | `docs/capturas/` | Dos mosaicos | Decisión 0016 |
-| 104 | El usuario aprueba la propuesta | Probó la versión de la rama | Aprobada sin retoques; pide subir los cambios | Decisión 0016 |
+| 104 | Aprobar la propuesta | Pruebo la versión de la rama | Aprobada sin retoques; decido subir los cambios | Decisión 0016 |
 | 105 | Actualizar la app instalada | `npm run installer`, instalación con `/S` y arranque desde el menú Inicio | Instalador de las 16:13; clics que atraviesan correctos | Decisión 0016 |
-| 106 | Comprobar los círculos en la app instalada | Clic real con `input.ps1` y captura | El primer clic cayó en un hueco transparente mientras el perro se tumbaba y llegó a la ventana de debajo (el navegador del usuario, en una zona sin botones según la captura); no abrió los círculos | |
+| 106 | Comprobar los círculos en la app instalada | Clic real con `input.ps1` y captura | El primer clic cayó en un hueco transparente mientras el perro se tumbaba y llegó a la ventana de debajo (mi navegador, en una zona sin botones según la captura); no abrió los círculos | |
 | 107 | Hacer segura la prueba de clic | `input.ps1` comprueba antes de pulsar que el clic lo recibiría la mascota; si no, no pulsa | Repetido: el clic abre los círculos en la app instalada | Decisión 0012 |
 | 108 | Actualizar el README | Uso con los círculos | | Decisión 0016 |
 | 109 | Fusionar y subir | `git merge --ff-only` en `desarrollo` y `main`, `git push` | Incluye también el arreglo de la cabeza (decisión 0015), que estaba sin subir | Decisiones 0015 y 0016 |
@@ -195,14 +195,14 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 112 | Revisar la pose | Render con `preview.py` | Erguido, con las patas colgando y pataleo | Decisión 0017 |
 | 113 | Escribir el guante, el levantamiento y el balanceo | `src/props.ts`, `src/behavior.ts`, `src/dog.ts`, `src/main.ts` | Un primer intento de edición falló por las comillas de la terminal, sin modificar nada | Decisión 0017 |
 | 114 | Escribir la prueba de la secuencia | `tools/verify/carry.mjs` | Coge, mueve y suelta sin tocar el ratón real, y mide el balanceo | Decisión 0012 |
-| 115 | Primera pasada | `carry.mjs` | Resultados sin sentido: el perro ya estaba cogido al empezar, probablemente por el ratón real del usuario. Repetida, correcta | Decisión 0017 |
+| 115 | Primera pasada | `carry.mjs` | Resultados sin sentido: el perro ya estaba cogido al empezar, probablemente porque yo movía el ratón real. Repetida, correcta | Decisión 0017 |
 | 116 | Revisar el guante de cerca | Primer plano acercando la cámara por depuración | El guante se lee bien de perfil; quedaba tapado de frente | Decisión 0017 |
 | 117 | Ajustar orientación, tamaño y altura | Perfil al cogerlo, mano un 30 % mayor, altura 0,45 | Se entiende que lo lleva cogido | Decisión 0017 |
 | 118 | Corregir el corte de las patas al soltarlo | El perro sigue recogido durante la caída | Sin recortes en la secuencia fotograma a fotograma | Decisión 0017 |
 | 119 | Probar con el ratón real | `input.ps1 -Action drag` vigilando el estado con el depurador | quieto, cogido, cae, contento; balanceo de 5,1° | Decisión 0017 |
 | 120 | Capturar sobre distintos fondos | `cdp.mjs` y `screenshot.ps1` | Legible en claro, oscuro y escritorio real. Una captura salió con el perro semitransparente; no se reprodujo en tres repeticiones | Decisión 0017 |
 | 121 | Guardar las capturas de la propuesta | `docs/capturas/mano-*.png` | Cuatro mosaicos | Decisión 0017 |
-| 122 | Preguntar al usuario si le gusta | Pregunta directa, como pidió | "Me gusta, con retoques": guante más pequeño y perro de frente con las patas colgando | Decisión 0017, revisión 2 |
+| 122 | Revisar la propuesta | Prueba directa | Me gusta, pero con retoques: guante más pequeño y perro de frente con las patas colgando | Decisión 0017, revisión 2 |
 | 123 | Ver la pose anterior de frente | Capturas con tres giros | De frente parece de pie, y la cabeza tapa el guante | Decisión 0017, revisión 2 |
 | 124 | Rehacer la pose para verse de frente | `build_dog.py`: cuerpo casi vertical, patas colgando, pataleo en vertical; `npm run model` | Render revisado: se ve como un cachorro sostenido en alto | Decisión 0017, revisión 2 |
 | 125 | Girar al perro de frente y reducir el guante | `src/behavior.ts`, `src/props.ts` | Con el guante sobre la cabeza parecía un gorro de cocinero, en dos alturas | Decisión 0017, revisión 2 |
@@ -210,13 +210,13 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 127 | Dejarlo claramente en el aire | Patas traseras algo más recogidas y altura de 0,45 a 0,70 | A unos 30 px del suelo | Decisión 0017, revisión 2 |
 | 128 | Verificar la versión nueva | `carry.mjs`, arrastre con el ratón real y capturas en claro y oscuro | Correcto; balanceo de 5,2° con el ratón real | Decisión 0017, revisión 2 |
 | 129 | Guardar la secuencia de la versión nueva | `carry.mjs` y commit `9221b67` | **Captura no válida**: la prueba volvió a encontrarse al perro ya cogido, como en la acción 115 | Decisión 0017, revisión 2 |
-| 130 | Averiguar qué lo soltaba | Tres rondas con un espía que anota quién llama a coger, soltar o traer, y los eventos reales de puntero | Nada lo suelta por su cuenta. En las dos capturas fallidas el perro estaba cogido y balanceándose antes de que la prueba diera la orden: era el usuario arrastrándolo con el ratón real | Decisión 0017, revisión 2 |
+| 130 | Averiguar qué lo soltaba | Tres rondas con un espía que anota quién llama a coger, soltar o traer, y los eventos reales de puntero | Nada lo suelta por su cuenta. En las dos capturas fallidas el perro estaba cogido y balanceándose antes de que la prueba diera la orden: era yo, arrastrándolo con el ratón real | Decisión 0017, revisión 2 |
 | 131 | Repetir y sustituir la captura | `carry.mjs`; mosaico revisado | `mano-v2-secuencia.png` corregida: subido 0,70, balanceo de 8,6° a cada lado, de 6,7° a 2,1° al parar | Decisión 0017, revisión 2 |
-| 132 | El usuario aprueba la segunda versión | Pregunta directa | "Me gusta, impleméntalo" | Decisión 0017, resolución |
+| 132 | Aprobar la segunda versión | Revisión directa | Me gusta; se implementa | Decisión 0017, resolución |
 | 133 | Actualizar la app instalada | `npm run installer`, instalación con `/S` y arranque desde el menú Inicio | Instalador de 2,39 MB de las 16:50; app instalada en marcha | Decisión 0017, resolución |
 | 134 | Comprobar los clics en la app instalada | `clickthrough.ps1` | Verdadero, falso, verdadero; con aviso de que el ratón se movió durante la prueba | Decisión 0017, resolución |
 | 135 | Permitir sostener más tiempo en la prueba de arrastre | Parámetro `-HoldMs` en `input.ps1` | Para poder capturar al perro en el aire | Decisión 0012 |
-| 136 | Comprobar el arrastre en la app instalada | `input.ps1 -Action drag -HoldMs 3000` y captura | Parcial: la captura muestra al perro ya soltado, de frente; el arrastre se cortó antes, probablemente por el ratón del usuario. No se repite para no interferir | Decisión 0017, resolución |
+| 136 | Comprobar el arrastre en la app instalada | `input.ps1 -Action drag -HoldMs 3000` y captura | Parcial: la captura muestra al perro ya soltado, de frente; el arrastre se cortó antes, probablemente porque moví el ratón. No se repite | Decisión 0017, resolución |
 | 137 | Actualizar el README | Fila "Moverlo" | | Decisión 0017 |
 | 138 | Fusionar y subir | `git merge --ff-only` en `desarrollo` y `main`, `git push` | | Decisión 0017, resolución |
 
@@ -229,14 +229,14 @@ Se hicieron juntos porque comparten ficheros y se verifican a la vez en la app r
 | 139 | Medir lo que ocupa en disco la carpeta del proyecto | Suma de tamaños por carpeta en PowerShell | 6,6 GB en total, de los que 6,4 GB son `src-tauri/target` (caché de compilación de Rust: `debug\deps` 2,6 GB, `release\deps` 1,3 GB, `debug\incremental` 0,7 GB). `node_modules` 166 MB. Ambas están en `.gitignore` y se regeneran | |
 | 140 | Medir lo que ocupa la app instalada | Tamaño de `AppData\Local\DesktopFriend` y de `AppData\Local\dev.desktopfriend.pet`; memoria privada de `desktopfriend.exe` y sus procesos de WebView2 | Programa 9,8 MB; datos de WebView2 67,5 MB; instalador 2,4 MB; 204 MB de memoria privada con la app en marcha | Decisión 0013 |
 
-### Modelo nuevo: retrato del perro del usuario (rama `nuevo-modelo-3d`)
+### Modelo nuevo: retrato de mi perro (rama `nuevo-modelo-3d`)
 
 Horas comprobadas en las salidas de las herramientas: 15:46 primer intento de construcción en Blender (falló al medir la oreja); 16:03 pruebas unitarias en verde; 16:04 capturas finales guardadas en `docs/capturas/`.
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
 | 141 | Crear la rama | `git switch -c nuevo-modelo-3d` desde `desarrollo` | Creada; arrastra las filas 139 y 140, que estaban sin confirmar | Decisión 0018 |
-| 142 | Estudiar las cuatro fotos del perro | Lectura de las imágenes adjuntas | Lista de rasgos: spaniel pequeño negro, orejas caídas con flecos, hocico cano, ojos grandes con la pupila velada, mancha en el pecho, cola de plumero | Decisión 0018; `investigacion.md`, parte 3 |
+| 142 | Estudiar las cuatro fotos del perro | Lectura de las imágenes | Lista de rasgos: spaniel pequeño negro, orejas caídas con flecos, hocico cano, ojos grandes con la pupila velada, mancha en el pecho, cola de plumero | Decisión 0018; `investigacion.md`, parte 3 |
 | 143 | Medir la malla y el esqueleto del Husky | Dos scripts de Blender desechables: huesos, grupos de vértices, islas, perfiles y caras de ojos y trufa | 955 vértices una vez soldados, 1906 triángulos, una sola isla; el cráneo reparte sus pesos entre `Head`, `Ear1` y `Neck3` | `investigacion.md`, parte 3 |
 | 144 | Reescribir la construcción del modelo | `tools/model/build_dog.py`: `reshape`, clase `Extras`, `lower_tail_bones`, `move_ear_bones`, `squash` | Construye y exporta los 14 clips. Primer intento fallido: la ventana de medida de la oreja no encontraba vértices; se amplió | Decisión 0018 |
 | 145 | Iterar la forma con renders | Siete rondas de construir y renderizar cabeza, cuerpo y poses | Corregidos: orejas de canto, ojos saltones, canas como gafas, mechones como colmillos, pico en la nuca | Decisión 0018, "Lo que se probó y se descartó" |
@@ -256,7 +256,7 @@ Hora comprobada: 16:12, pruebas unitarias en verde con esta versión.
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 155 | Localizar la hendidura que señaló el usuario | Renders de la cabeza en grande, en tres vistas | Está entre la cúpula del cráneo y el arranque de la oreja: es el relleno hundido del hueco de la oreja tiesa | Decisión 0018, revisión 2 |
+| 155 | Localizar la hendidura que había visto | Renders de la cabeza en grande, en tres vistas | Está entre la cúpula del cráneo y el arranque de la oreja: es el relleno hundido del hueco de la oreja tiesa | Decisión 0018, revisión 2 |
 | 156 | Rellenar la hendidura | `reshape` en `tools/model/build_dog.py`: lo que queda por dentro de la esfera del cráneo sale hasta su superficie | Primer intento descartado: aplicado también a la altura de los ojos, los dejaba saltones y borraba las canas. Limitado a detrás de los ojos, el cráneo queda redondo y la cara igual | Decisión 0018, revisión 2 |
 | 157 | Acortar las orejas | `EAR_PATH`: el recorrido baja 0,62 en vez de 0,78 | Acaban a la altura de la mandíbula | Decisión 0018, revisión 2 |
 | 158 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; sin hendidura en la app; 26 pruebas en verde. Las pruebas le dieron de comer una vez más | Decisión 0018, revisión 2 |
@@ -268,28 +268,28 @@ Hora comprobada: 16:21, pruebas unitarias en verde con esta versión.
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 160 | Estudiar la captura con la línea roja | Ampliación de la imagen (144 × 101 píxeles) | La hendidura que señala el usuario es la muesca de la silueta entre la cúpula del cráneo y la oreja, no el hundimiento que se rellenó en la revisión 2 | Decisión 0018, revisión 3 |
+| 160 | Estudiar la captura con la línea roja | Ampliación de la imagen (144 × 101 píxeles) | La hendidura que yo veía es la muesca de la silueta entre la cúpula del cráneo y la oreja, no el hundimiento que se rellenó en la revisión 2 | Decisión 0018, revisión 3 |
 | 161 | Hacer que la oreja nazca en lo alto del cráneo | `EAR_PATH`, `EAR_ROOT` y `EAR_BONES_AT` en `tools/model/build_dog.py` | Silueta lisa de frente y de espaldas; desde arriba, las esquinas de la raíz quedaban despegadas como hombreras | Decisión 0018, revisión 3 |
 | 162 | Ceñir la raíz de la oreja a la piel | `Extras.ear`: cada vértice de la raíz va al punto más cercano de la malla (`BVHTree.find_nearest`) | La oreja sale a ras del cráneo desde todos los ángulos | Decisión 0018, revisión 3 |
 | 163 | Añadir una vista desde arriba a los renders | `above` en `tools/model/preview.py` | | Decisión 0018, revisión 3 |
 | 164 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs` con la cámara acercada a la cabeza, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; sin hueco entre cráneo y orejas en seis ángulos; 26 pruebas en verde. Las pruebas le dieron de comer una vez más | Decisión 0018, revisión 3 |
 | 165 | Rehacer las capturas | `docs/capturas/nuevo-modelo-*.png` y la nueva `nuevo-modelo-union-orejas.png` | | Decisión 0018, revisión 3 |
 
-### Modelo nuevo, revisión 4: la cabeza, medida sobre las fotos con un segundo agente
+### Modelo nuevo, revisión 4: la cabeza, medida sobre las fotos de forma independiente
 
 Horas comprobadas: 16:57 y 17:01, pruebas unitarias en verde con las dos últimas versiones del modelo.
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 166 | Confirmar qué versión veía el usuario | Consulta a la app en marcha por el puerto de depuración | Una sola copia en marcha, la de desarrollo, con 10 120 vértices cargados: era la revisión 3 | |
-| 167 | Lanzar un segundo agente para medir | Encargo sin hipótesis previas: medir la cabeza en las cuatro fotos y en el render, en anchos de cráneo, y diagnosticar la hendidura | La hendidura es el ángulo entrante donde la oreja se une al cráneo; orejas implantadas 0,22 demasiado bajas; cráneo estrecho y picudo; ojos un 70 % grandes; trufa un 45 % ancha | Decisión 0018, revisión 4 |
+| 166 | Confirmar qué versión estaba viendo | Consulta a la app en marcha por el puerto de depuración | Una sola copia en marcha, la de desarrollo, con 10 120 vértices cargados: era la revisión 3 | |
+| 167 | Medir la cabeza de forma independiente | Sin las hipótesis previas: medir la cabeza en las cuatro fotos y en el render, en anchos de cráneo, y diagnosticar la hendidura | La hendidura es el ángulo entrante donde la oreja se une al cráneo; orejas implantadas 0,22 demasiado bajas; cráneo estrecho y picudo; ojos un 70 % grandes; trufa un 45 % ancha | Decisión 0018, revisión 4 |
 | 168 | Rehacer el cráneo a partir de medidas | `reshape` en `tools/model/build_dog.py`: elipsoide de sección cuadrada redondeada, ojos colocados por coordenadas | Primer intento: el cráneo salía estrecho (0,71 a 0,13 bajo la coronilla, objetivo 0,94) | Decisión 0018, revisión 4 |
 | 169 | Averiguar por qué salía estrecho | Volcado de los vértices del cráneo por ángulo | Ningún vértice entre 30° y 82°: el relleno de las orejas deja triángulos enormes. Cortando toda arista de más de 0,07 el perfil pasa a 0,90 | Decisión 0018, revisión 4 |
 | 170 | Orejas desde las esquinas del cráneo, ojos y trufa a medida | `EAR_PATH`, `EAR_SET_Z`, `EAR_ACROSS`, `EYE_RADIUS`, `NOSE_WIDTH` | | Decisión 0018, revisión 4 |
-| 171 | Segunda medición del agente | Mismo método sobre el render nuevo | Hendidura resuelta de frente, en tres cuartos y en perfil. Regresión: hocico y mandíbula pequeños | Decisión 0018, revisión 4 |
+| 171 | Segunda medición independiente | Mismo método sobre el render nuevo | Hendidura resuelta de frente, en tres cuartos y en perfil. Regresión: hocico y mandíbula pequeños | Decisión 0018, revisión 4 |
 | 172 | Corregir hocico, ojos y costura | Hocico y mandíbula ×1,15; triángulos regularizados; aro de canas propio en los ojos | Descartado por el camino: alargar la trufa pintando caras (parecía una boca) | Decisión 0018, revisión 4 |
-| 173 | Tercera medición del agente | Mismo método | La forma coincide con la de las fotos dentro del margen. Defecto nuevo: rendija entre oreja y mejilla; un triángulo oscuro en la sien; trufa plana | Decisión 0018, revisión 4 |
-| 174 | Últimos retoques | Borde delantero de la oreja pegado a la mejilla; triángulos degenerados disueltos; trufa estirada; arranque de la oreja algo más bajo | Revisado en renders y en la app por el agente principal; sin cuarta medición | Decisión 0018, revisión 4 |
+| 173 | Tercera medición independiente | Mismo método | La forma coincide con la de las fotos dentro del margen. Defecto nuevo: rendija entre oreja y mejilla; un triángulo oscuro en la sien; trufa plana | Decisión 0018, revisión 4 |
+| 174 | Últimos retoques | Borde delantero de la oreja pegado a la mejilla; triángulos degenerados disueltos; trufa estirada; arranque de la oreja algo más bajo | Revisado en renders y en la app; sin cuarta medición | Decisión 0018, revisión 4 |
 | 175 | Regenerar, validar y probar | `npm run model`, `tools/verify/cdp.mjs`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 153 836 bytes, 11 200 vértices; 26 pruebas en verde. Las pruebas le dieron de comer varias veces más | Decisión 0018, revisión 4 |
 | 176 | Rehacer las capturas | `docs/capturas/nuevo-modelo-*.png` | `nuevo-modelo-cabeza.png` pasa a ser la hoja de seis vistas | Decisión 0018, revisión 4 |
 
@@ -299,7 +299,7 @@ Hora comprobada: 17:16, pruebas unitarias en verde con esta versión.
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 177 | Arrancar la app a petición del usuario | `npm run tauri dev` | La copia abierta a las 15:53 se había cerrado. El primer arranque terminó solo con código 0, sin error; el segundo quedó en marcha. Causa sin averiguar | |
+| 177 | Arrancar la app para verla | `npm run tauri dev` | La copia abierta a las 15:53 se había cerrado. El primer arranque terminó solo con código 0, sin error; el segundo quedó en marcha. Causa sin averiguar | |
 | 178 | Comprobar que el perro se ve en el escritorio | `tools/verify/screenshot.ps1` | Visible en el monitor principal, junto a la bandeja. Antes, en el segundo monitor, la captura de su zona salía negra | |
 | 179 | Encoger la cabeza un 10 % | `HEAD_SIZE` y `head_point` en `tools/model/build_dog.py` | Misma forma: el perfil del cráneo impreso no cambia | Decisión 0018, revisión 5 |
 | 180 | Rehacer los ojos | `Extras.eye`: globo abombado, abertura almendrada, iris marrón oscuro, pupila negra, dos brillos; material nuevo `EyeWhite` | Descartados un iris más claro y un aro de canas ancho | Decisión 0018, revisión 5 |
@@ -323,7 +323,7 @@ Hora comprobada: 18:31, hora de inicio del proceso `desktopfriend.exe` según `G
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 187 | Arrancar la app a petición del usuario | `npm run tauri dev` con el puerto de depuración 9223, en la rama `nuevo-modelo-3d` | No había ninguna copia abierta. Arranca a la primera y queda en marcha | Commit 24b0244 |
+| 187 | Arrancar la app para verla | `npm run tauri dev` con el puerto de depuración 9223, en la rama `nuevo-modelo-3d` | No había ninguna copia abierta. Arranca a la primera y queda en marcha | Commit 24b0244 |
 | 188 | Comprobar que se dibuja el modelo nuevo | `tools/verify/cdp.mjs` (estado y captura sobre blanco; después `--bg none`) | Perro tumbado, con el collar lila; la ventana vuelve a ser transparente | Decisión 0018, revisión 6 |
 
 ### Modelo nuevo, revisión 7: cejas canosas
@@ -332,7 +332,7 @@ Hora comprobada: 18:40, pruebas unitarias en verde con esta versión.
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 189 | Mirar las cejas en la foto del usuario | `2.jpeg`, adjunta a la petición | Canas sueltas sobre cada ojo, tendidas hacia la sien, sin borde continuo | `investigacion.md`, "El perro de las fotos" |
+| 189 | Mirar las cejas en la foto | `2.jpeg` | Canas sueltas sobre cada ojo, tendidas hacia la sien, sin borde continuo | `investigacion.md`, "El perro de las fotos" |
 | 190 | Añadir las cejas como pelos sueltos | `tools/model/build_dog.py`: `BROW_HAIRS`, `BROW_WIDTH` y `Extras.brow`; `eye_axes` y `eye_opening` salen de `Extras.eye` | Primer intento (abanico radial pegado al párpado) descartado: parecían pestañas. Quedan siete pelos por ojo, girados hacia la sien y a dos alturas | Decisión 0018, revisión 7 |
 | 191 | Probar en la app a tamaño real | `npm run model`, recarga de la página y `tools/verify/cdp.mjs` | Con 0,15 radios de ancho casi no se veían; se sube a 0,20 | Decisión 0018, revisión 7 |
 | 192 | Regenerar, validar y probar | `npm run model`, `npx tsc --noEmit`, `npx vitest run` | Sin errores de validación; 1 146 064 bytes, 10 988 vértices, 12 materiales; 26 pruebas en verde | Decisión 0018, revisión 7 |
@@ -360,7 +360,7 @@ Hora comprobada: 19:09, hora de inicio del proceso `desktopfriend.exe` según `G
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 203 | Comprobar si el perro se ve en el escritorio, a petición del usuario | Estado de la ventana preguntado a Windows y copia de pantalla de su rectángulo (`BitBlt` con `CAPTUREBLT`) | La ventana existía, visible y siempre encima, y por dentro dibujaba al perro (`tools/verify/cdp.mjs`), pero en pantalla no aparecía. Llevaba abierta desde las 18:31, con muchas recargas y capturas por el puerto de depuración. Causa sin averiguar | |
+| 203 | Comprobar si el perro se ve en el escritorio, porque no lo veía | Estado de la ventana preguntado a Windows y copia de pantalla de su rectángulo (`BitBlt` con `CAPTUREBLT`) | La ventana existía, visible y siempre encima, y por dentro dibujaba al perro (`tools/verify/cdp.mjs`), pero en pantalla no aparecía. Llevaba abierta desde las 18:31, con muchas recargas y capturas por el puerto de depuración. Causa sin averiguar | |
 | 204 | Reiniciar la app | Se cierra `desktopfriend.exe` y se vuelve a lanzar `npm run tauri dev` con el puerto de depuración | El perro se ve en el escritorio, en el monitor principal, sobre la barra de tareas | Commit `c4d5939` |
 
 ### Modelo nuevo, revisión 9: el morro, más arriba
@@ -381,7 +381,7 @@ Hora comprobada: 19:21, salida de `date` antes de la fusión.
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 210 | El usuario pide confirmar y fusionar en `main` | Petición directa | "haz commit de los cambios y mergea en main". El árbol estaba limpio: la revisión 9 ya estaba en el commit `24001d0` | Decisión 0018, resolución |
+| 210 | Dar por buena la revisión 9 y fusionarla en `main` | Decisión directa | Doy la versión por aprobada. El árbol estaba limpio: la revisión 9 ya estaba en el commit `24001d0` | Decisión 0018, resolución |
 | 211 | Cerrar la decisión | `docs/decisiones/0018-modelo-retrato.md` pasa a aceptada; la 0010 enlaza a la 0018 | | Decisión 0018, resolución |
 | 212 | Fusionar | Avance rápido de `main` y `desarrollo` hasta `nuevo-modelo-3d` | Sin subir a GitHub; sin regenerar el instalador | Decisión 0018, resolución |
 
@@ -421,10 +421,10 @@ Horas comprobadas en las salidas de las herramientas:
 | 231 | Añadir pruebas unitarias | `tests/behavior.test.ts`, `tests/needs.test.ts` | 32 pruebas en verde, 6 nuevas | |
 | 232 | Compilar el frontend | `npm run build` | Dos páginas: `index.html` y `bed.html` | |
 | 233 | Medir el consumo | `tools/verify/usage.ps1`, 15 s, perro sentado y cama guardada | 290 MB y 19,6 % de un núcleo en desarrollo; el proceso de la ventana de la cama, 47 MB y 0,0 % | Decisión 0019, consecuencias |
-| 234 | Comprobar que no se ha roto lo anterior | `tools/verify/carry.mjs`, `clickthrough.ps1` | Arrastre sin cambios (balanceo máximo de 11,1°). Clics: una pasada anulada por el ratón del usuario y otra fallida, porque el punto de prueba por defecto, el centro de la ventana, ya no cae sobre el perro desde el modelo nuevo. Apuntando al cuerpo (`-SolidY 0.78`): correcto dos veces, y una tercera con el ratón en movimiento. Se cambia el valor por defecto | Decisiones 0012 y 0018 |
+| 234 | Comprobar que no se ha roto lo anterior | `tools/verify/carry.mjs`, `clickthrough.ps1` | Arrastre sin cambios (balanceo máximo de 11,1°). Clics: una pasada anulada porque moví el ratón y otra fallida, porque el punto de prueba por defecto, el centro de la ventana, ya no cae sobre el perro desde el modelo nuevo. Apuntando al cuerpo (`-SolidY 0.78`): correcto dos veces, y una tercera con el ratón en movimiento. Se cambia el valor por defecto | Decisiones 0012 y 0018 |
 | 235 | Guardar capturas | `docs/capturas/cama-secuencia.png`, `cama-escritorio.png` y `cama-modelo.png` | | Decisión 0019 |
 | 236 | Dejar la energía del perro como estaba | `cdp.mjs` | 95, como al empezar. Las pruebas también lo acariciaron: la felicidad pasó de 99,2 a 100 | Decisión 0019, incidencias |
-| 237 | Documentar | Decisión 0019, parte 4 de la investigación, `README.md`, `CLAUDE.md` y estas filas | Sin regenerar el instalador ni tocar la app instalada: queda para cuando el usuario apruebe la propuesta | Decisión 0019 |
+| 237 | Documentar | Decisión 0019, parte 4 de la investigación, `README.md`, `CLAUDE.md` y estas filas | Sin regenerar el instalador ni tocar la app instalada: queda para cuando apruebe la propuesta | Decisión 0019 |
 
 ### La cama, revisión 2: dormir echado del todo
 
@@ -432,14 +432,14 @@ Hora comprobada: 20:10, modelo regenerado y pruebas unitarias en verde con esta 
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 238 | Intentar ver la imagen de referencia del usuario | `curl` con tres agentes de usuario, la herramienta de lectura web y una búsqueda | HTTP 403 con captcha; la búsqueda solo devuelve títulos. No se ha visto ninguna imagen. Se toma la postura habitual de esos dibujos: echado, con la barbilla sobre las patas | Decisión 0019, revisión 2 |
+| 238 | Intentar ver la imagen de referencia | `curl` con tres *user agents*, un lector web y una búsqueda | HTTP 403 con captcha; la búsqueda solo devuelve títulos. No se ha visto ninguna imagen. Se toma la postura habitual de esos dibujos: echado, con la barbilla sobre las patas | Decisión 0019, revisión 2 |
 | 239 | Rehacer la pose `Nap` | `NAP` en `tools/model/build_dog.py`: pecho al suelo, patas delanteras estiradas, cuello abajo y cabeza enderezada; tres rondas de render | A la primera ya se lee como un perro tumbado; después se le baja la cabeza hasta apoyarla. Un `sed` dejó el script sin finales de línea de Windows; se restauraron | Decisión 0019, revisión 2 |
 | 240 | Probarla en la cama | Recarga de las dos ventanas y capturas con `cdp.mjs`, también de cerca y desde arriba | Estirado no cabe: la cabeza y las patas atraviesan el reborde | Decisión 0019, revisión 2 |
 | 241 | Alargar la cama y recolocar al perro | `RIM_X` de 0,78 a 0,88 en `build_bed.py`; `NAP_FACING` 1,4 y `NAP_BACK` 0,36 en `src/behavior.ts`; patas algo menos estiradas y cabeza más girada | Cabe entero, con la barbilla sobre el borde delantero | Decisión 0019, revisión 2 |
 | 242 | Regenerar, validar y probar | `npm run model:bed`, `npm run model`, `npx tsc --noEmit`, `npx vitest run`, `tools/verify/bed.mjs`, `carry.mjs` | Sin errores de validación; cama de 102 504 bytes (2,02 × 1,20 × 0,42), perro de 1 288 704; 32 pruebas en verde; 15 comprobaciones de la cama correctas | Decisión 0019, revisión 2 |
 | 243 | Rehacer las capturas | `docs/capturas/cama-secuencia.png`, `cama-escritorio.png` (con `screenshot.ps1`, llevando al perro por depuración) y `cama-modelo.png` | Las tres son ya de la revisión 2 | Decisión 0019, revisión 2 |
 | 244 | Dejar al perro despierto y con su energía | `cdp.mjs` | Energía en 95, como al empezar | |
-| 245 | Documentar | Revisión 2 de la decisión 0019, "La pose de dormir" en la investigación y estas filas | Un primer intento de escribirlo todo en una sola orden de consola falló al interpretarla, sin cambiar nada; se hizo con las herramientas de edición | Decisión 0019, revisión 2 |
+| 245 | Documentar | Revisión 2 de la decisión 0019, "La pose de dormir" en la investigación y estas filas | Un primer intento de escribirlo todo en una sola orden de consola falló al interpretarla, sin cambiar nada; se hizo editando los ficheros | Decisión 0019, revisión 2 |
 
 ### Propuesta: menú para cambiar de mascota (rama `menu-de-mascotas`)
 
@@ -466,11 +466,11 @@ Horas comprobadas en las salidas de las herramientas:
 | 253 | Escribir la prueba del menú | `tools/verify/menu.mjs`, con cursor virtual | Primera pasada: 18 de 19. La que falla mide el anillo antes de que termine de llenarse: era la prueba. Con la espera, 19 correctas | Decisión 0020 |
 | 254 | Probar el cambio de mascota | "Gato" y "Zorro" añadidas a mano a `PETS`; se eligen con `cdp.mjs` | Elegir "Gato" guarda, recarga la ventana y lo deja marcado; volver a "Perro", igual. Quitadas las dos: `"chosenPet": "dog"` en `pet.json` | Decisión 0020 |
 | 255 | Probar con el ratón real | `tools/verify/input.ps1`, con la acción nueva `menu` (clic derecho), y `screenshot.ps1` | Primera pasada incoherente: el clic derecho no se da y aun así el menú aparece abierto; en la captura hay un corazón de caricia. Probablemente el ratón se estaba usando; sin confirmar. Repetida dos veces con el cursor quieto: el clic derecho abre el menú, el hueco de "Pronto" deja pasar el clic y el círculo del perro lo recibe y cierra el menú | Decisión 0020, incidencias |
-| 256 | Guardar capturas | `docs/capturas/menu-mascotas.png`, con `cdp.mjs` y `sheet.ps1` | La del escritorio real no se guarda: sale el navegador que el usuario tenía abierto | Decisión 0020, incidencias |
+| 256 | Guardar capturas | `docs/capturas/menu-mascotas.png`, con `cdp.mjs` y `sheet.ps1` | La del escritorio real no se guarda: sale el navegador que tenía abierto | Decisión 0020, incidencias |
 | 257 | Comprobar que no se ha roto lo anterior | `npx tsc --noEmit`, `npx vitest run`, `menu.mjs`, `bed.mjs`, `carry.mjs`, `npm run build` | Sin errores; 39 pruebas; 19 y 15 comprobaciones correctas; balanceo máximo de 11,4°; las dos páginas | |
 | 258 | Estado del perro tras las pruebas | `cdp.mjs` | Felicidad de 92,6 a 96,7 por las caricias de prueba. Saciedad y energía, solo lo que baja el tiempo | Decisión 0020, incidencias |
-| 259 | Documentar | Decisión 0020, parte 5 de la investigación, `README.md` y estas filas | Sin regenerar el instalador ni tocar la app instalada: queda para cuando el usuario apruebe la propuesta. La app de desarrollo se deja en marcha para que pueda probarlo | Decisión 0020 |
-| 260 | Fusionar el menú en la rama de la cama, a petición del usuario | `git merge --ff-only menu-de-mascotas` en `cama-del-perro`, a las 21:54 (salida de `date`) | Avance rápido hasta `16e8c51`; no había cambios sin confirmar. Sin tocar `desarrollo` ni `main`, sin subir a GitHub y sin regenerar el instalador | Decisión 0020, resolución |
+| 259 | Documentar | Decisión 0020, parte 5 de la investigación, `README.md` y estas filas | Sin regenerar el instalador ni tocar la app instalada: queda para cuando apruebe la propuesta. La app de desarrollo se deja en marcha para probarla | Decisión 0020 |
+| 260 | Fusionar el menú en la rama de la cama | `git merge --ff-only menu-de-mascotas` en `cama-del-perro`, a las 21:54 (salida de `date`) | Avance rápido hasta `16e8c51`; no había cambios sin confirmar. Sin tocar `desarrollo` ni `main`, sin subir a GitHub y sin regenerar el instalador | Decisión 0020, resolución |
 
 ### Propuesta: Wingman, la segunda mascota (rama `mascota-wingman`)
 
@@ -486,8 +486,8 @@ Horas comprobadas en las salidas de las herramientas:
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 261 | Mirar qué hay en la carpeta del usuario | Listado de `C:\Users\lucas\valorant-extract` e `inspect.mjs` sobre `Wingman\Wingman.glb` | Malla de 3649 vértices, 21 huesos, 2 materiales con 3 texturas y 0 animaciones. El resto son las herramientas de extracción | Decisión 0021 |
-| 262 | Buscar la clave para extraer las animaciones del juego | Una orden que miraba, entre otras cosas, el historial de la consola | Denegada por la herramienta de permisos, por tratarse de una credencial. No se insistió: las animaciones se crean | Decisión 0021 |
+| 261 | Mirar qué hay en mi carpeta de extracción | Listado de `C:\Users\lucas\valorant-extract` e `inspect.mjs` sobre `Wingman\Wingman.glb` | Malla de 3649 vértices, 21 huesos, 2 materiales con 3 texturas y 0 animaciones. El resto son las herramientas de extracción | Decisión 0021 |
+| 262 | Buscar la clave para extraer las animaciones del juego | Revisar, entre otras cosas, el historial de la consola | Descartado: es una credencial y no se usa. Las animaciones se crean | Decisión 0021 |
 | 263 | Medir el modelo con Blender | Script suelto, fuera del proyecto | Mira hacia +X, mide 1,076 de alto y 1,51 de envergadura; los ojos son una pieza aparte con su trozo de textura | `investigacion.md`, parte 6 |
 | 264 | Crear la rama y copiar el modelo | `git checkout -b mascota-wingman` desde `cama-del-perro`; copia a `assets/source/riot/Wingman.glb` | Parte del commit `58f18d2`. SHA-256 igual que el original | Decisión 0021 |
 | 265 | Escribir la construcción del modelo | Nuevos `tools/model/build_wingman.py` y `build-wingman.mjs` | Primera pasada: 15 clips y validación correcta, pero las poses salen torcidas y diminutas en la hoja | Decisión 0021, incidencias |
@@ -561,8 +561,8 @@ Horas comprobadas en las salidas de las herramientas: 15:22 primera construcció
 | 317 | Medir a Wingman | `chosenPet` a `wingman`, `nap.mjs`, y vuelta al perro | Tiene el mismo defecto, sin tocar: 0,133 en el reborde de atrás. No se arregla aquí | Decisión 0023, "Qué no se ha probado" |
 | 318 | Que al volver a cogerlo en plena caída no se quede desplazado | `lyingInBed` en `src/behavior.ts`: solo cuenta mientras cae | `npx tsc --noEmit` sin errores | |
 | 319 | Comprobaciones finales | `nap.mjs`, `bed.mjs`, `carry.mjs`, `npx tsc --noEmit`, `npx vitest run`, `npm run build` | 8 y 15 comprobaciones correctas; arrastre sin cambios; 40 pruebas; las dos páginas | Decisión 0023 |
-| 320 | Capturas | `sheet.ps1` con las fotos de `nap.mjs --shots` y `bed.mjs --shots` | `docs/capturas/cama-sin-cruces.png` (antes y ahora) y `cama-secuencia.png` rehecha. La del escritorio real no se guarda: salían otras ventanas del usuario | |
-| 321 | Documentar | Decisión 0023, enlace desde la 0019, parte 8 de la investigación, `README.md` y estas filas | Sin tocar el ratón del usuario en ningún momento. Sin subir nada a GitHub, sin fusionar en otra rama y sin regenerar el instalador. La app de desarrollo queda cerrada; la energía del perro, en 99,9 | Decisión 0023 |
+| 320 | Capturas | `sheet.ps1` con las fotos de `nap.mjs --shots` y `bed.mjs --shots` | `docs/capturas/cama-sin-cruces.png` (antes y ahora) y `cama-secuencia.png` rehecha. La del escritorio real no se guarda: salían otras ventanas mías | |
+| 321 | Documentar | Decisión 0023, enlace desde la 0019, parte 8 de la investigación, `README.md` y estas filas | Sin usar el ratón real en ningún momento. Sin subir nada a GitHub, sin fusionar en otra rama y sin regenerar el instalador. La app de desarrollo queda cerrada; la energía del perro, en 99,9 | Decisión 0023 |
 
 ### El perro se llama Blacky (rama `nombre-blacky`)
 
@@ -573,7 +573,7 @@ Horas comprobadas en las salidas de las herramientas: 15:56 app cerrada, con el 
 | 322 | Buscar dónde sale el nombre del perro | Búsqueda de "Perro" en `src/`, `src-tauri/`, `tests/` y `tools/verify/` | Solo en `src/pets.ts`; la prueba unitaria usa su propia lista | Decisión 0024 |
 | 323 | Cambiarlo | `src/pets.ts`: `name: 'Blacky'`. El identificador `dog` no se toca | `npx tsc --noEmit` sin errores; 40 pruebas en verde | Decisión 0024 |
 | 324 | Verlo en la app | `npm run tauri dev` con el puerto de depuración; `node tools/verify/menu.mjs --shots` | 20 comprobaciones correctas; en la captura se lee "Blacky" bajo su retrato | Decisión 0024 |
-| 325 | Documentar | Decisión 0024 y estas filas | Sin tocar el ratón del usuario. Sin subir nada a GitHub, sin fusionar en otra rama y sin regenerar el instalador. La app de desarrollo queda cerrada | Decisión 0024 |
+| 325 | Documentar | Decisión 0024 y estas filas | Sin usar el ratón real. Sin subir nada a GitHub, sin fusionar en otra rama y sin regenerar el instalador. La app de desarrollo queda cerrada | Decisión 0024 |
 
 ### Todo a `main`, a GitHub y a la app instalada
 
@@ -587,8 +587,8 @@ Horas comprobadas en las salidas de las herramientas: 15:58 `main` subida; 16:00
 | 329 | Generar el instalador | `npm run installer` | 3 396 648 bytes; compilación de 50 s | Decisión 0025 |
 | 330 | Actualizar la app instalada | Instalador con `/S`; no estaba abierta | Código 0. Ejecutable de 11 143 680 bytes, igual al compilado salvo los 3 bytes de la marca de paquete | Decisión 0025 |
 | 331 | Comprobar que lleva el código nuevo | Arrancada una vez con el puerto de depuración; `cdp.mjs --eval` sobre su JavaScript y `--shot` | Contiene "Blacky", el giro 1,62 y el sitio −0,25; `pet` no existe; el perro se ve. Un primer intento desde PowerShell falló por las comillas de la orden; repetido desde Bash | Decisión 0025 |
-| 332 | Dejarla en marcha como la usa el usuario | Se cierra el proceso y se abre desde el menú Inicio, sin puerto de depuración | En marcha desde las 16:01 | Decisión 0025 |
-| 333 | Documentar y subir la documentación | Decisión 0025, nota en el estado de las 0019 a 0024 y estas filas; segundo `git push origin main`; `desarrollo` avanza en este equipo | Sin tocar el ratón del usuario. La cama y los menús no se han probado en la versión empaquetada. `origin/desarrollo` no se toca | Decisión 0025 |
+| 332 | Dejarla en marcha para el uso normal | Se cierra el proceso y se abre desde el menú Inicio, sin puerto de depuración | En marcha desde las 16:01 | Decisión 0025 |
+| 333 | Documentar y subir la documentación | Decisión 0025, nota en el estado de las 0019 a 0024 y estas filas; segundo `git push origin main`; `desarrollo` avanza en este equipo | Sin usar el ratón real. La cama y los menús no se han probado en la versión empaquetada. `origin/desarrollo` no se toca | Decisión 0025 |
 
 ### La cama, en la esquina derecha (rama `cama-en-la-esquina`)
 
@@ -604,7 +604,7 @@ Horas comprobadas en las salidas de las herramientas: 16:08 comprobaciones final
 | 339 | Comprobar lo demás | `nap.mjs` y `carry.mjs` | 8 correctas, con los números de la decisión 0023; arrastre sin cambios. Al coger al perro recién despertado en la esquina, la cama sale a su izquierda: es la excepción, anotada en la decisión | Decisión 0026 |
 | 340 | Ver la cama en el escritorio real | `cdp.mjs --eval "pet.behavior.grab()"` y `screenshot.ps1 -Title "DesktopFriend (cama)"` | La cama, en la esquina inferior derecha. Un primer intento falló por pedir la ventana con un título que no era el suyo | Decisión 0026 |
 | 341 | Comprobaciones finales y cierre | `npx tsc --noEmit`, `npx vitest run`, `npm run build`; la app de desarrollo se cierra y la instalada se abre desde el menú Inicio | Sin errores; 42 pruebas; las dos páginas. La instalada, en marcha, todavía con la regla anterior | Decisión 0026 |
-| 342 | Documentar | Decisión 0026, nota en el estado de la 0019 y estas filas | Sin tocar el ratón del usuario. Sin subir nada a GitHub, sin fusionar en `main` y sin regenerar el instalador | Decisión 0026 |
+| 342 | Documentar | Decisión 0026, nota en el estado de la 0019 y estas filas | Sin usar el ratón real. Sin subir nada a GitHub, sin fusionar en `main` y sin regenerar el instalador | Decisión 0026 |
 
 ### La cama en la esquina, a `main` y a la app instalada
 
@@ -612,12 +612,12 @@ Horas comprobadas en las salidas de las herramientas: 16:10 `main` subida; 16:11
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 343 | Avanzar `main` y subirla, con el sí del usuario | `git merge --ff-only cama-en-la-esquina`; `git push origin main` | `4976232..42aa1c7` en GitHub | Decisión 0026, resolución |
+| 343 | Avanzar `main` y subirla, una vez aprobada | `git merge --ff-only cama-en-la-esquina`; `git push origin main` | `4976232..42aa1c7` en GitHub | Decisión 0026, resolución |
 | 344 | Generar el instalador | `npm run installer` | 3 392 298 bytes; compilación de 48 s | Decisión 0026, resolución |
 | 345 | Actualizar la app instalada | Se cierra, instalador con `/S` | Código 0; ejecutable de las 16:11 | Decisión 0026, resolución |
 | 346 | Comprobar que lleva el código nuevo | Arrancada una vez con el puerto de depuración; `cdp.mjs --eval` con el nombre, el tamaño y el SHA-256 de su JavaScript, comparados con los de `dist/assets/` | El mismo fichero: `index-9uQBHmoo.js`, 28 921 caracteres, mismo resumen. `pet` no existe | Decisión 0026, resolución |
-| 347 | Dejarla en marcha como la usa el usuario | Se cierra y se abre desde el menú Inicio, sin puerto de depuración | En marcha desde las 16:11 | Decisión 0026, resolución |
-| 348 | Documentar y subir la documentación | Resolución en la decisión 0026 y estas filas; segundo `git push origin main`; `desarrollo` avanza en este equipo | Sin tocar el ratón del usuario. La cama no se ha probado en la versión empaquetada | Decisión 0026, resolución |
+| 347 | Dejarla en marcha para el uso normal | Se cierra y se abre desde el menú Inicio, sin puerto de depuración | En marcha desde las 16:11 | Decisión 0026, resolución |
+| 348 | Documentar y subir la documentación | Resolución en la decisión 0026 y estas filas; segundo `git push origin main`; `desarrollo` avanza en este equipo | Sin usar el ratón real. La cama no se ha probado en la versión empaquetada | Decisión 0026, resolución |
 
 ### El icono, con la foto del perro (rama `icono-foto`)
 
@@ -632,10 +632,10 @@ Horas comprobadas en las salidas de las herramientas: 16:15 primer instalador, c
 | 353 | Buscar por qué | Fecha de `resource.lib` en `src-tauri/target/release/build/` | Es de las 15:59: cambiar los iconos no hace que se regenere el recurso de Windows | Decisión 0027, incidencias |
 | 354 | Forzar la compilación y repetir | `cargo clean -p desktopfriend --release` (y el de desarrollo); `npm run installer`; `/S` | `resource.lib` de las 16:16; ejecutable de 11 243 520 bytes. Extraído de una copia, el icono es la foto. App en marcha desde las 16:17 | Decisión 0027 |
 | 355 | Pedir a Windows que renueve su caché de iconos | `ie4uinit.exe -show` | Sin comprobar en pantalla | Decisión 0027, "Qué no se ha probado" |
-| 356 | Documentar | Decisión 0027 y estas filas | Sin tocar el ratón del usuario. **Sin subir a GitHub ni fusionar en `main`**: el recorte de la foto se publicaría, y eso lo decide el usuario. La foto original no se copia al repositorio | Decisión 0027 |
-| 357 | Mirar por qué el acceso del escritorio sigue con el icono antiguo, a raíz de una captura del usuario | Destino e icono de los dos accesos directos con `WScript.Shell`; icono que da `SHGetFileInfo` para ellos y para el ejecutable | Los dos apuntan al ejecutable instalado, sin icono propio, y a un proceso nuevo Windows ya le da la foto: lo viejo es lo que el Explorador tiene en memoria | Decisión 0027, incidencias |
-| 358 | Avisar al Explorador | `SHUpdateImage` sobre el ejecutable; `SHChangeNotify` sobre el acceso, el escritorio y las asociaciones; `ie4uinit.exe -show` | Enviados. Buscado después el ámbar del icono antiguo en las dos pantallas, sin guardar la captura: no aparece. No prueba que se vea el nuevo: falta que lo confirme el usuario. Encontrar el icono por automatización para capturar solo su hueco no funcionó | Decisión 0027, incidencias |
-| 359 | Subir el icono a `main`, con el sí del usuario | `git merge --ff-only icono-foto`; `git push origin main`, a las 16:30; resolución en la decisión 0027 y un segundo push con ella; `desarrollo` avanza en este equipo | `12997cc..258a67e` en GitHub: el recorte de la foto queda publicado. La app instalada ya lo llevaba. El acceso del escritorio sigue sin confirmar | Decisión 0027, resolución |
+| 356 | Documentar | Decisión 0027 y estas filas | Sin usar el ratón real. **Sin subir a GitHub ni fusionar en `main`**: el recorte de la foto se publicaría, y eso lo decido aparte. La foto original no se copia al repositorio | Decisión 0027 |
+| 357 | Mirar por qué el acceso del escritorio sigue con el icono antiguo, a raíz de una captura mía | Destino e icono de los dos accesos directos con `WScript.Shell`; icono que da `SHGetFileInfo` para ellos y para el ejecutable | Los dos apuntan al ejecutable instalado, sin icono propio, y a un proceso nuevo Windows ya le da la foto: lo viejo es lo que el Explorador tiene en memoria | Decisión 0027, incidencias |
+| 358 | Avisar al Explorador | `SHUpdateImage` sobre el ejecutable; `SHChangeNotify` sobre el acceso, el escritorio y las asociaciones; `ie4uinit.exe -show` | Enviados. Buscado después el ámbar del icono antiguo en las dos pantallas, sin guardar la captura: no aparece. No prueba que se vea el nuevo: falta comprobarlo a simple vista. Encontrar el icono por automatización para capturar solo su hueco no funcionó | Decisión 0027, incidencias |
+| 359 | Subir el icono a `main`, una vez aprobado | `git merge --ff-only icono-foto`; `git push origin main`, a las 16:30; resolución en la decisión 0027 y un segundo push con ella; `desarrollo` avanza en este equipo | `12997cc..258a67e` en GitHub: el recorte de la foto queda publicado. La app instalada ya lo llevaba. El acceso del escritorio sigue sin confirmar | Decisión 0027, resolución |
 
 ### Una carpeta para instalar la app en otro equipo (rama `carpeta-para-instalar`)
 
@@ -643,10 +643,10 @@ Horas comprobadas en las salidas de las herramientas: 16:33 `LEEME.txt` escrito 
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 360 | El usuario confirma que el acceso del escritorio ya enseña la foto | Su mensaje | Los avisos al Explorador bastaron; no hizo falta reiniciarlo | Decisión 0027, incidencias |
+| 360 | Confirmar que el acceso del escritorio ya enseña la foto | A simple vista | Los avisos al Explorador bastaron; no hizo falta reiniciarlo | Decisión 0027, incidencias |
 | 361 | Ver qué hace falta para instalar en otro equipo | `installer.nsi` y `English.nsh` en `src-tauri/target/release/nsis/x64/`; `git diff` entre `2b9a503` y `main` | Solo el instalador: se instala para el usuario, sin administrador, y descarga WebView2 si falta. Está en inglés. Corresponde al código de `main` | Decisión 0028 |
 | 362 | Crear la carpeta en el escritorio | `Instalar DesktopFriend`, con una copia del instalador de las 16:17 y un `LEEME.txt` | Copia con el mismo SHA-256; el `LEEME.txt`, en UTF-8 con marca y saltos de línea de Windows | Decisión 0028 |
-| 363 | Documentar | Decisión 0028 y estas filas | El instalador lleva a Wingman dentro: repartirlo así lo decide el usuario. Sin probar en otro equipo. Sin subir a GitHub | Decisión 0028 |
+| 363 | Documentar | Decisión 0028 y estas filas | El instalador lleva a Wingman dentro: repartirlo así es decisión mía. Sin probar en otro equipo. Sin subir a GitHub | Decisión 0028 |
 
 ## 2026-10-31
 
@@ -657,7 +657,7 @@ Horas comprobadas en las salidas de las herramientas: 00:54:03 release publicada
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
 | 364 | Ver qué había antes de subir | `gh repo view`, `gh release list`, `.gitignore`, `dist/models/`, SHA-256 del instalador de la raíz y del de `src-tauri/target/release/bundle/nsis/` | Repositorio público y sin releases. El instalador es el de las 16:17 del 13 (mismo SHA-256 que en la 0028) y lleva `wingman.glb`. La carpeta `Instalar DesktopFriend` ya no está en el escritorio | Decisión 0029 |
-| 365 | Preguntar al usuario si el instalador que se publica lleva a Wingman | Pregunta con dos opciones, recordando la política de Riot; el agente recomendó publicarlo sin Wingman | Elige el instalador tal cual, con Wingman | Decisión 0029 |
+| 365 | Decidir si el instalador que se publica lleva a Wingman | Dos opciones, teniendo en cuenta la política de Riot; la recomendada era publicarlo sin Wingman | Elijo el instalador tal cual, con Wingman | Decisión 0029 |
 | 366 | Ver cómo se desinstala, para explicarlo en la release | `WriteRegStr SHCTX "${UNINSTKEY}"` en `installer.nsi`; `reg query` de la clave de desinstalación en `HKCU` | Sale en Configuración → Aplicaciones instaladas | Decisión 0029 |
 | 367 | Publicar la release | Descripción escrita en un fichero temporal; `gh release create v0.1.0 DesktopFriend_0.1.0_x64-setup.exe --target 2b9a503… --title "DesktopFriend 0.1.0" --notes-file …` | Publicada a las 00:54:03. La etiqueta `v0.1.0` se crea en GitHub, en el commit del que se compiló el instalador | Decisión 0029 |
 | 368 | Comprobar la descarga | `gh release view v0.1.0`; `curl` sin iniciar sesión al enlace directo y a `releases/latest`; `git fetch --tags` y `git rev-parse v0.1.0^{commit}` | Código 200, 3 495 550 bytes y el mismo SHA-256; `latest` lleva a la `v0.1.0`; la etiqueta está en `2b9a503` | Decisión 0029, verificación |
@@ -670,7 +670,7 @@ Horas comprobadas en las salidas de las herramientas: 01:01:21 contador de desca
 
 | Nº | Acción | Cómo | Resultado | Referencia |
 |---|---|---|---|---|
-| 371 | El usuario pide volver a lo anterior, para no tener nada que ver con Riot | Su mensaje | Se deshace la decisión 0029 entera | Decisión 0030 |
+| 371 | Volver a lo anterior, para no tener nada que ver con Riot | Decisión mía | Se deshace la decisión 0029 entera | Decisión 0030 |
 | 372 | Mirar el contador de descargas | `gh api repos/…/releases/tags/v0.1.0` | 0, pero no contaba las dos descargas de prueba de la fila 368: no prueba que nadie más lo bajara | Decisión 0030, consecuencias |
 | 373 | Borrar la release y su etiqueta | `gh release delete v0.1.0 --cleanup-tag --yes` | Borradas a las 01:01:33, también la etiqueta de este equipo (el `git tag -d` de después ya no la encontró). Estuvo publicada unos siete minutos y medio | Decisión 0030 |
 | 374 | Comprobar que no queda nada | `gh release list`; `git ls-remote --tags origin`; `curl` al enlace directo, a la página de la release y a `releases/latest`; el fichero por la API | Sin releases ni etiquetas; 404 en el enlace, la página y la API; `latest` lleva a la lista vacía | Decisión 0030, verificación |

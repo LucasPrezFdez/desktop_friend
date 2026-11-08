@@ -1,13 +1,13 @@
 # 0029. El instalador se publica en GitHub, como release, con Wingman dentro
 
 - **Fecha:** 2026-10-31
-- **Estado:** hecha y deshecha el mismo día, por orden del usuario: la release se borró a las 01:01:33 ([0030](0030-instalador-retirado-de-github.md))
+- **Estado:** hecha y deshecha el mismo día, por decisión mía: la release se borró a las 01:01:33 ([0030](0030-instalador-retirado-de-github.md))
 - **Decide:** Lucas Pérez Fernández
 - **Resuelve:** lo que dejaron pendiente la [0021](0021-mascota-wingman.md) y la [0028](0028-carpeta-para-instalar-en-otro-equipo.md): si el instalador que se reparte lleva a Wingman
 - **Matiza:** la [0014](0014-publicacion-en-github.md), que decía que el instalador no se sube. Sigue fuera de git, pero ya se descarga desde GitHub
 
-## Lo que pidió el usuario
-> quiero que subas el .exe para que se descargue rápidamente desde github y no sea necesario bajarse el proyecto para instalarlo
+## Qué quería
+Que el `.exe` se pudiera descargar rápidamente desde GitHub, sin tener que bajarse el proyecto para instalarlo.
 
 ## Dónde se sube
 
@@ -18,15 +18,15 @@
 | Otro alojamiento (una web propia, una nube) | | Más piezas y otra cuenta, para lo mismo |
 
 ## Con Wingman o sin él
-El repositorio es público, así que la release la puede descargar cualquiera. Antes de subir se le preguntó al usuario, recordándole lo que recoge la 0021 sobre la política de Riot (no usar su propiedad intelectual en aplicaciones sin permiso):
+El repositorio es público, así que la release la puede descargar cualquiera. Antes de subir lo decidí teniendo en cuenta lo que recoge la 0021 sobre la política de Riot (no usar su propiedad intelectual en aplicaciones sin permiso):
 
 | Opción | Resultado |
 |---|---|
-| Un instalador aparte, sin Wingman | Recomendada por el agente. No se eligió |
-| **El instalador que ya había, con Wingman** | **Elegida por el usuario** |
+| Un instalador aparte, sin Wingman | Opción más prudente. No se eligió |
+| **El instalador que ya había, con Wingman** | **Elegida** |
 
 ### Consecuencias
-- **El modelo de Riot queda publicado** dentro del instalador, en un repositorio con el nombre del usuario. Riot puede pedir que se retire. Si lo pide, se borra el fichero de la release (`gh release delete-asset v0.1.0 DesktopFriend_0.1.0_x64-setup.exe`) y se sube uno sin Wingman, compilado apartando `public/models/wingman.glb`. Lo que ya se haya descargado no se puede recuperar.
+- **El modelo de Riot queda publicado** dentro del instalador, en un repositorio con mi nombre. Riot puede pedir que se retire. Si lo pide, se borra el fichero de la release (`gh release delete-asset v0.1.0 DesktopFriend_0.1.0_x64-setup.exe`) y se sube uno sin Wingman, compilado apartando `public/models/wingman.glb`. Lo que ya se haya descargado no se puede recuperar.
 - **El código fuente sigue sin el modelo.** `.gitignore` no cambia: quien clone el repositorio sigue sin Wingman. Solo lo lleva el instalador.
 - **El aviso de Riot va en la release**, en inglés, como pide su política, además del que ya estaba en el README.
 

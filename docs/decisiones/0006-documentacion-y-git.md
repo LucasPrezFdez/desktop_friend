@@ -5,7 +5,7 @@
 - **Decide:** Lucas Pérez Fernández
 
 ## Contexto
-El usuario exige que cada decisión y cada acción queden documentadas.
+Quiero que cada decisión y cada acción queden documentadas.
 
 ## Opciones consideradas
 1. Documentos en `docs/` más git con un commit por hito.
@@ -16,7 +16,7 @@ Opción 1. En español:
 - `docs/investigacion.md`: hechos y fuentes, con su fiabilidad marcada.
 - `docs/decisiones/NNNN-titulo.md`: una decisión por fichero. No se reescriben: si una cambia, se añade otra que la sustituye.
 - `docs/bitacora.md`: registro cronológico de acciones.
-- `CLAUDE.md`: fija esta regla para sesiones futuras.
+- `CLAUDE.md`: recoge esta regla para que se siga aplicando.
 
 Git: commit inicial en `main`, trabajo en la rama `desarrollo`, un commit por hito verificado.
 

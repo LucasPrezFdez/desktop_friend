@@ -1,11 +1,11 @@
 # 0022. Elegir en qué pantalla está la mascota, desde el menú de la bandeja
 
 - **Fecha:** 2026-10-13
-- **Estado:** propuesta en la rama `elegir-pantalla`. Pendiente de la opinión del usuario. En `main` y en GitHub desde el 2026-10-13 por orden del usuario ([0025](0025-todo-a-main-y-app-instalada.md))
+- **Estado:** propuesta en la rama `elegir-pantalla`. Pendiente de revisión. En `main` y en GitHub desde el 2026-10-13 por decisión mía ([0025](0025-todo-a-main-y-app-instalada.md))
 - **Decide:** Lucas Pérez Fernández
 - **Depende de:** la rama `mascota-wingman` (decisión 0021), de la que sale esta y que tampoco está aprobada todavía
 
-## Lo que pidió el usuario
+## Qué quería
 - Que se pueda elegir en qué pantalla se ve la mascota, si hay varias.
 
 ## Lo que había
@@ -40,8 +40,8 @@ La lista de pantallas y la marca no se mantienen al día todo el rato: se rehace
 ### Cómo se reconoce una pantalla
 Por el nombre que le da Windows (`\\.\DISPLAY1`, `\\.\DISPLAY2`). Es lo que se guarda y lo que la bandeja le envía a la ventana. El número de la entrada del menú sale de ese nombre.
 
-## Decisiones que el usuario no especificó
-Quedan a su criterio.
+## Decisiones de detalle
+No estaban en la idea inicial y se pueden cambiar.
 
 1. **Se elige en la bandeja, no en los círculos que salen de la mascota.** Es un ajuste del escritorio, como "Arrancar con Windows", y se toca pocas veces. Los círculos son para lo que se hace con la mascota. Además, el arco de círculos ya está casi lleno (decisión 0020).
 2. **El nombre de las entradas.** "Pantalla 1", "Pantalla 2", con la resolución y cuál es la principal. El número suele coincidir con el que enseña la configuración de Windows, pero Windows no lo garantiza: la resolución y "(principal)" están para distinguirlas si no coincide.
@@ -62,7 +62,7 @@ Con la app de desarrollo en un equipo con dos pantallas (2560 × 1440 la princip
 | Arrastrarla con el ratón de la pantalla 2 a la 1 (`input.ps1 -Action drag -DX -1900`) | Cae al suelo de la 1; queda guardada la 1; el menú marca la 1 |
 | Cerrar con **Salir** (pulsado con el ratón) y volver a abrir, con la mascota en la pantalla 2 | Arranca en la pantalla 2, en el mismo sitio (3480, 866) |
 | Arrancar con una pantalla guardada que no existe (`pet.json` editado con la app cerrada) | Arranca en la principal, pegada a su borde derecho |
-| Captura del escritorio en la pantalla 2 | La mascota, apoyada sobre la barra de tareas de esa pantalla (revisada, no guardada: se veía una ventana del usuario) |
+| Captura del escritorio en la pantalla 2 | La mascota, apoyada sobre la barra de tareas de esa pantalla (revisada, no guardada: se veía una ventana personal) |
 | Lo anterior sigue igual, con la mascota en la pantalla 2 | `bed.mjs`: 15 correctas, con la cama en esa pantalla. `menu.mjs`: todo correcto. `carry.mjs`: balanceo máximo de 9,6° |
 | `npx tsc --noEmit`, `npx vitest run`, `npm run build`, `cargo check` | Sin errores ni avisos; 40 pruebas en verde; las dos páginas |
 

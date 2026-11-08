@@ -1,12 +1,12 @@
 # 0026. La cama aparece en la esquina derecha de la pantalla
 
 - **Fecha:** 2026-10-13
-- **Estado:** en `main`, en GitHub y en la app instalada desde el 2026-10-13, con el sí del usuario (ver "Resolución" al final). El sitio lo decidió él; la excepción de más abajo la propuso el agente y no la ha comentado
+- **Estado:** en `main`, en GitHub y en la app instalada desde el 2026-10-13 (ver "Resolución" al final). El sitio lo tenía claro desde el principio; la excepción de más abajo salió al implementarlo y la dejé como estaba propuesta
 - **Decide:** Lucas Pérez Fernández
-- **Sustituye a:** de la [0019](0019-cama-del-perro.md), dónde sale la cama (la primera fila de "Cómo funciona" y el punto 1 de "Decisiones que el usuario no especificó"): a 300 px del perro, hacia el lado con más sitio
+- **Sustituye a:** de la [0019](0019-cama-del-perro.md), dónde sale la cama (la primera fila de "Cómo funciona" y el punto 1 de "Decisiones de detalle"): a 300 px del perro, hacia el lado con más sitio
 
-## Lo que pidió el usuario
-> ahora quiero que la cama aparezca enla esquina derecha de la pantalla por defecto.
+## Qué quería
+Que la cama apareciera por defecto en la esquina derecha de la pantalla.
 
 ## Decisión
 Al coger al perro, la cama aparece **en la esquina inferior derecha de la pantalla en la que está**, apoyada en el suelo del escritorio (el borde de la barra de tareas), esté donde esté el perro.
@@ -31,7 +31,7 @@ Una consecuencia que se nota: cuando el perro se despierta en la cama de la esqu
 | La cama siempre en la esquina, sin excepción | Descartada: con el perro en su sitio de siempre, levantarlo y soltarlo lo mandaría a dormir cada vez |
 | Siempre en la esquina, pero sin acostarlo si no se le ha movido | Descartada sin probar: la cama taparía al perro al aparecer, y habría que explicar por qué a veces soltarlo encima no lo acuesta |
 
-Si el usuario la prefiere siempre en la esquina, es dejar `bedSpotX` en una línea.
+Para tenerla siempre en la esquina, basta con dejar `bedSpotX` en una línea.
 
 ## "Por defecto"
 Hoy es el único sitio: no hay ningún ajuste para elegir otro. Si se quiere uno (la esquina izquierda, o donde estaba antes), iría en el menú de la bandeja, como el de la pantalla (decisión 0022).
@@ -66,7 +66,7 @@ Con la app de desarrollo, en una pantalla de 2560 × 1392 útiles a escala 1, a 
 - Las pruebas han movido la energía guardada del perro de 99,6 a 99,5.
 
 ## Resolución
-Al preguntarle si se subía a `main` y se actualizaba la app instalada, el usuario contestó "si". Hecho el mismo día:
+Decidí subirlo a `main` y actualizar la app instalada. Hecho el mismo día:
 
 | Paso | Resultado |
 |---|---|
@@ -75,6 +75,6 @@ Al preguntarle si se subía a `main` y se actualizaba la app instalada, el usuar
 | La app instalada lleva el código nuevo | Arrancada una vez con el puerto de depuración: su JavaScript es el mismo fichero que el recién compilado (mismo nombre, tamaño y SHA-256) |
 | Queda en marcha | Abierta desde el menú Inicio a las 16:11, sin puerto de depuración |
 
-Sobre la excepción (la cama a la izquierda cuando el perro está junto a la esquina) no dijo nada: queda como está propuesta.
+La excepción (la cama a la izquierda cuando el perro está junto a la esquina) queda como está propuesta.
 
-Sigue sin probarse la cama en la versión empaquetada: no tiene el acceso de depuración con el que se dan las órdenes, y habría que mover el ratón del usuario.
+Sigue sin probarse la cama en la versión empaquetada: no tiene el acceso de depuración con el que se dan las órdenes, y habría que mover el ratón real.

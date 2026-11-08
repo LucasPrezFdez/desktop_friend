@@ -5,7 +5,7 @@
 - **Decide:** Lucas Pérez Fernández, sobre la recomendación de la investigación
 
 ## Contexto
-El modelo lo tiene que producir un agente que trabaja con texto y línea de comandos, sin manejar un editor gráfico. Hace falta un perro negro en GLB con animaciones de reposo, parpadeo, cola, feliz, comer, triste, sentarse, dormir y caminar. Comparativa completa en `docs/investigacion.md`, parte 2.
+El modelo se tiene que producir con texto y línea de comandos, sin manejar un editor gráfico. Hace falta un perro negro en GLB con animaciones de reposo, parpadeo, cola, feliz, comer, triste, sentarse, dormir y caminar. Comparativa completa en `docs/investigacion.md`, parte 2.
 
 ## Opciones consideradas
 | Opción | A favor | En contra |

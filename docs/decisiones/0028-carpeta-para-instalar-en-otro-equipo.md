@@ -1,10 +1,10 @@
 # 0028. Una carpeta con lo necesario para instalar la app en otro equipo
 
 - **Fecha:** 2026-10-13
-- **Estado:** hecha. Si el instalador que se reparte lleva a Wingman lo decide el usuario (ver más abajo). Lo decidió el 2026-10-31: con Wingman, y publicado en GitHub ([0029](0029-instalador-en-github.md)). Ese mismo día lo retiró de GitHub ([0030](0030-instalador-retirado-de-github.md))
+- **Estado:** hecha. Si el instalador que se reparte lleva a Wingman es una decisión aparte (ver más abajo). La tomé el 2026-10-31: con Wingman, y publicado en GitHub ([0029](0029-instalador-en-github.md)). Ese mismo día lo retiré de GitHub ([0030](0030-instalador-retirado-de-github.md))
 - **Decide:** Lucas Pérez Fernández
 
-## Lo que pidió el usuario
+## Qué quería
 Una carpeta en el escritorio con todo lo necesario para instalar la app en el ordenador de otra persona.
 
 ## Qué hace falta de verdad
@@ -18,7 +18,7 @@ Solo el instalador. Se comprobó en el script que Tauri le pasa a NSIS (`src-tau
 | ¿En qué idioma sale? | En inglés: solo lleva `English.nsh` |
 
 ## Decisión
-La carpeta `Instalar DesktopFriend`, en el escritorio del usuario, con dos ficheros:
+La carpeta `Instalar DesktopFriend`, en mi escritorio, con dos ficheros:
 
 | Fichero | Qué es |
 |---|---|
@@ -33,9 +33,9 @@ La carpeta **no está en el repositorio**: el instalador no se versiona, y el `L
 - Está hecho y probado en Windows 11. En Windows 10 debería funcionar, pero no se ha probado.
 
 ## Wingman va dentro del instalador
-El instalador se compila en este equipo, donde está el modelo de Wingman, que es de Riot Games. La decisión 0021 dejó dicho que para uso propio no cambia nada, pero que repartir el instalador con Wingman dentro lo decide el usuario, y la 0025 se lo recordó.
+El instalador se compila en este equipo, donde está el modelo de Wingman, que es de Riot Games. La decisión 0021 dejó dicho que para uso propio no cambia nada, pero que repartir el instalador con Wingman dentro es una decisión aparte, y la 0025 lo recordó.
 
-Se ha copiado el instalador tal cual, con Wingman, porque es la app que el usuario tiene y pide. Dárselo a una persona no es publicarlo, pero la decisión es suya.
+Se ha copiado el instalador tal cual, con Wingman, porque es la app que tengo instalada y la que quería repartir. Dárselo a una persona no es publicarlo, pero es una decisión que hay que tomar a conciencia.
 
 | Opción | Resultado |
 |---|---|

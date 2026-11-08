@@ -1,14 +1,14 @@
 # 0017. Una mano coge al perro del collar para llevarlo
 
 - **Fecha:** 2026-10-11
-- **Estado:** aceptada por el usuario el 2026-10-11 en su segunda versión (ver "Revisión 2" y "Resolución" al final). La revisión 2 sustituye a lo descrito antes sobre la pose, la orientación y el guante
+- **Estado:** aceptada el 2026-10-11 en su segunda versión (ver "Revisión 2" y "Resolución" al final). La revisión 2 sustituye a lo descrito antes sobre la pose, la orientación y el guante
 - **Decide:** Lucas Pérez Fernández
 
-## Lo que pidió el usuario
+## Qué quería
 - Al agarrar al perro aparece una mano que lo coge del collar y lo levanta.
 - Mientras se le mueve, se balancea levemente de lado a lado.
 - **No debe parecer maltrato animal**, sino una manera divertida de moverlo.
-- Rama nueva; preguntar si le gusta antes de incorporarlo.
+- Rama nueva; revisar el resultado antes de incorporarlo.
 
 ## El problema de diseño
 Un perro colgado del cuello se lee enseguida como un perro ahorcado. Todo el diseño parte de evitar esa lectura.
@@ -58,19 +58,19 @@ Con `tools/verify/carry.mjs`, que da las órdenes sin tocar el ratón real y cap
 | Al soltarlo, las patas traseras se cortaban por abajo un instante | El perro sigue recogido durante la caída |
 
 ## Incidencias
-- La primera pasada de la prueba dio resultados sin sentido: el perro ya estaba cogido antes de empezar. Lo más probable es que el usuario lo estuviera arrastrando con el ratón real en ese momento; no se ha confirmado. Repetida, salió bien.
-  - **Actualización:** volvió a ocurrir en la revisión 2 y se investigó. Con un espía puesto, en tres rondas nada soltó al perro por su cuenta; y en las dos capturas fallidas el perro aparecía cogido y balanceándose antes de que la prueba diera la orden de agarrar, cosa que solo produce un arrastre real. Era el usuario probándolo. No es un fallo de la app.
+- La primera pasada de la prueba dio resultados sin sentido: el perro ya estaba cogido antes de empezar. Lo más probable es que yo lo estuviera arrastrando con el ratón real en ese momento; no se ha confirmado. Repetida, salió bien.
+  - **Actualización:** volvió a ocurrir en la revisión 2 y se investigó. Con un espía puesto, en tres rondas nada soltó al perro por su cuenta; y en las dos capturas fallidas el perro aparecía cogido y balanceándose antes de que la prueba diera la orden de agarrar, cosa que solo produce un arrastre real. Era yo probándolo a mano. No es un fallo de la app.
 - Una captura del escritorio real mostró al perro semitransparente. Repetida tres veces salió opaco siempre; se considera un artefacto de aquella captura.
 
 ## Qué no se ha probado
 - Arrastres muy rápidos o bruscos con el ratón real.
 - Cogerlo mientras come, duerme o está tumbado, más allá de que el código lo trata igual.
 
-## Pendiente de la opinión del usuario
-Si resulta simpático o no es un juicio suyo. Cosas fáciles de retocar: tamaño y color del guante, altura, cuánto se balancea, la pose en el aire y si debe añadirse algún gesto más de alegría.
+## Pendiente de revisar
+Si resulta simpático o no es algo que tengo que juzgar al verlo en el escritorio. Cosas fáciles de retocar: tamaño y color del guante, altura, cuánto se balancea, la pose en el aire y si debe añadirse algún gesto más de alegría.
 
-## Revisión 2: retoques pedidos por el usuario
-Al ver la primera versión, el usuario dijo que le gustaba con retoques:
+## Revisión 2: retoques
+Al ver la primera versión, me gustó, pero con retoques:
 
 1. El guante tiene que ser **más pequeño**.
 2. El perro tiene que estar **de frente, con las patas colgando**, mientras se le mueve.
@@ -94,7 +94,7 @@ La primera versión estaba pensada para verse de perfil. Girar al perro de frent
 |---|---|
 | Guante en la nuca, con el perro de frente | La cabeza lo tapa casi entero |
 | Guante encima de la cabeza, con los dedos bajando por detrás (dos alturas) | **Parecía un gorro de cocinero**, y tocaba el borde superior de la ventana |
-| Guante en diagonal junto al cuello (elegido) | Se lee como una mano que coge el collar por detrás, que es lo que se pidió |
+| Guante en diagonal junto al cuello (elegido) | Se lee como una mano que coge el collar por detrás, que es lo que se buscaba |
 
 ### Verificación de esta versión
 | Comprobación | Resultado |
@@ -112,12 +112,12 @@ La primera versión estaba pensada para verse de perfil. Girar al perro de frent
 La ventana mide 340 px de alto y el perro colgando en vertical ocupa unos 270. Con la altura actual queda a unos 30 px del suelo y sus orejas a unos 28 px del borde superior: no se le puede levantar mucho más sin agrandar la ventana.
 
 ## Resolución
-El usuario probó la segunda versión y la aprobó ("Me gusta, impleméntalo").
+Probé la segunda versión y la aprobé para incorporarla.
 
 - La rama `mano-al-arrastrar` se fusiona en `desarrollo` y `main` y se sube a GitHub.
 - Se regenera el instalador y se actualiza la app instalada.
 
 ### Verificación en la app instalada
 - Clics que atraviesan: correctos (verdadero, falso, verdadero), aunque la prueba avisó de que el ratón se movió durante la medición.
-- Arrastre con el ratón real: **verificación parcial**. La captura, hecha con retraso, muestra al perro ya en el suelo, de frente y con la lengua fuera, que es el estado posterior a soltarlo y solo se alcanza tras cogerlo. El arrastre simulado se cortó antes de tiempo, probablemente porque el usuario estaba usando el ratón, y no se capturó la mano en el aire. No se insistió para no interferir con su cursor.
+- Arrastre con el ratón real: **verificación parcial**. La captura, hecha con retraso, muestra al perro ya en el suelo, de frente y con la lengua fuera, que es el estado posterior a soltarlo y solo se alcanza tras cogerlo. El arrastre simulado se cortó antes de tiempo, probablemente porque yo estaba usando el ratón, y no se capturó la mano en el aire. No se repitió para no interferir con el ratón mientras lo usaba.
 - El mismo código quedó verificado dos veces con ratón real en la versión de desarrollo (acciones 119 y 128 de la bitácora).

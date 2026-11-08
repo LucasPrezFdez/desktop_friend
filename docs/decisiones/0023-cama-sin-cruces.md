@@ -1,13 +1,13 @@
 # 0023. El perro duerme en la cama sin cruzarse con ella
 
 - **Fecha:** 2026-10-13
-- **Estado:** propuesta en la rama `cama-sin-cruces`. Pendiente de la opinión del usuario. En `main` y en GitHub desde el 2026-10-13 por orden del usuario ([0025](0025-todo-a-main-y-app-instalada.md))
+- **Estado:** propuesta en la rama `cama-sin-cruces`. Pendiente de revisión. En `main` y en GitHub desde el 2026-10-13 por decisión mía ([0025](0025-todo-a-main-y-app-instalada.md))
 - **Decide:** Lucas Pérez Fernández
 - **Depende de:** la rama `elegir-pantalla` (decisión 0022), de la que sale esta y que tampoco está aprobada todavía
 - **Sustituye a:** de la [0019](0019-cama-del-perro.md), los números de la pose de dormir y la colocación en la cama de su "Revisión 2" (`NAP_FACING`, `NAP_BACK`). El resto de la 0019 sigue en vigor: la cama, su ventana y su tamaño no cambian
 
-## Lo que pidió el usuario
-> quiero que mejores la animacion de el perro en la cama ya que la cama atraviesa al perro por la esquina iferior izquierda. Si lo necesitas crea un cursor y teclado virtual para ti
+## Qué quería
+Mejorar la animación del perro en la cama, porque la cama lo atravesaba por la esquina inferior izquierda. Si hacía falta para probarlo, se podía crear un cursor y un teclado virtuales.
 
 ## Qué pasaba
 Hasta ahora la pose se había ajustado mirando capturas. Para este arreglo se escribió antes una herramienta que mide el cruce (`tools/verify/nap.mjs`, ver más abajo). Con el perro dormido, tal como estaba:
@@ -27,8 +27,8 @@ La causa es de tamaño. El hueco de la cama, a la altura del colchón, es una el
 | Opción | Resultado |
 |---|---|
 | **Retocar la pose y recolocar al perro, midiendo** | **Elegida.** Cabe en la cama que hay |
-| Agrandar la cama otro 15 % | Descartada: ya se agrandó en la revisión 2 de la 0019 por lo mismo, y el usuario pide arreglar la animación, no la cama. Hecha la medida, no hace falta |
-| Dejarlo donde estaba y apoyar las patas delanteras encima del reborde | Descartada sin probar: resolvía la parte de delante, no la esquina de la que se queja el usuario |
+| Agrandar la cama otro 15 % | Descartada: ya se agrandó en la revisión 2 de la 0019 por lo mismo, y lo que había que arreglar era la animación, no la cama. Hecha la medida, no hace falta |
+| Dejarlo donde estaba y apoyar las patas delanteras encima del reborde | Descartada sin probar: resolvía la parte de delante, no la esquina que fallaba |
 | Un clip nuevo que vaya de estar de pie a dormido, en vez de tumbarse y fundir | Descartada: todas las mascotas traen los mismos clips (decisión 0021) y habría que añadírselo también a Wingman. Lo que arreglaba se ha resuelto en la app |
 
 ## Lo que cambia
@@ -71,7 +71,7 @@ Límites, en unidades de la escena (una son unos 125 píxeles): 0,02 dentro del 
 Para que la herramienta distinga las piezas de la cama, sus materiales llevan ahora nombre (`src/props.ts`).
 
 ## El cursor y el teclado virtuales
-No han hecho falta. Las herramientas de `tools/verify/` ya dan órdenes a la app por el puerto de depuración de WebView2 (`grab`, `drag`, `drop`), sin pasar por el ratón: es lo que usa `nap.mjs`. **En todo el trabajo no se ha movido el ratón ni se ha pulsado ninguna tecla del usuario.** Lo que eso deja sin probar está en "Qué no se ha probado".
+No han hecho falta. Las herramientas de `tools/verify/` ya dan órdenes a la app por el puerto de depuración de WebView2 (`grab`, `drag`, `drop`), sin pasar por el ratón: es lo que usa `nap.mjs`. **En todo el trabajo no se ha movido el ratón real ni se ha pulsado ninguna tecla.** Lo que eso deja sin probar está en "Qué no se ha probado".
 
 ## Verificación
 Con la app de desarrollo, a las 15:49 del 13 de octubre (salida de las herramientas):
@@ -99,13 +99,13 @@ Capturas: `docs/capturas/cama-sin-cruces.png` (arriba antes, abajo ahora: desde 
 ## Qué no se ha probado
 - **Con el ratón real.** El código que traduce el ratón en coger, llevar y soltar no ha cambiado.
 - **La versión empaquetada.** No se ha regenerado el instalador.
-- **Wingman.** Su colocación y su pose son las de antes, y la herramienta dice que tiene el mismo defecto: dormido, el brazo, el codo y la rodilla izquierdos entran hasta 0,133 en el reborde de atrás, y la cabeza 0,077. Desde la cámara de la app queda detrás de su cuerpo y no se ve cortado. No se ha tocado porque el usuario pidió el perro; se arregla igual, con `tools/model/build_wingman.py` y `src/wingman.ts`.
+- **Wingman.** Su colocación y su pose son las de antes, y la herramienta dice que tiene el mismo defecto: dormido, el brazo, el codo y la rodilla izquierdos entran hasta 0,133 en el reborde de atrás, y la cabeza 0,077. Desde la cámara de la app queda detrás de su cuerpo y no se ve cortado. No se ha tocado porque el arreglo era para el perro; se arregla igual, con `tools/model/build_wingman.py` y `src/wingman.ts`.
 - Otros tamaños de cama: la pose está ajustada a esta. Si cambia `tools/model/build_bed.py`, hay que volver a medir.
 
 ## Consecuencias
 - El perro cabe justo. Los números de `NAP`, `napFacing` y `napSpot` no se pueden tocar a ojo: hay que pasar `nap.mjs` después.
-- El pecho queda a unos 0,52 unidades del modelo sobre el colchón, no a 0,37 como en la revisión 2 de la 0019, que era la altura a la que el usuario dejó de verlo "medio de pie". Está más alto porque antes atravesaba el colchón entero. Si vuelve a parecerlo, hay que bajarlo y aceptar que se hunda más.
-- `docs/capturas/cama-escritorio.png` y `cama-modelo.png` siguen siendo de la pose anterior. La captura del escritorio hecha hoy no se guarda: salían otras ventanas del usuario.
+- El pecho queda a unos 0,52 unidades del modelo sobre el colchón, no a 0,37 como en la revisión 2 de la 0019, que era la altura a la que dejé de verlo "medio de pie". Está más alto porque antes atravesaba el colchón entero. Si vuelve a parecerlo, hay que bajarlo y aceptar que se hunda más.
+- `docs/capturas/cama-escritorio.png` y `cama-modelo.png` siguen siendo de la pose anterior. La captura del escritorio hecha hoy no se guarda: salían otras ventanas abiertas.
 
 ## Incidencias
 - **La primera medida de profundidad estaba mal.** Daba la distancia al vértice más cercano del reborde, no a su superficie: un punto apenas hundido salía con 0,03. Se cambió por la distancia al triángulo más cercano antes de fijar ningún número de esta decisión.

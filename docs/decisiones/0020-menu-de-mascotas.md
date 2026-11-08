@@ -1,17 +1,17 @@
 # 0020. Un menú para cambiar de mascota, hecho con círculos que salen del perro
 
 - **Fecha:** 2026-10-12
-- **Estado:** propuesta en la rama `menu-de-mascotas`. Pendiente de la opinión del usuario. En `main` y en GitHub desde el 2026-10-13 por orden del usuario ([0025](0025-todo-a-main-y-app-instalada.md))
+- **Estado:** propuesta en la rama `menu-de-mascotas`. Pendiente de revisión. En `main` y en GitHub desde el 2026-10-13 por decisión mía ([0025](0025-todo-a-main-y-app-instalada.md))
 - **Decide:** Lucas Pérez Fernández
 - **Depende de:** la rama `cama-del-perro` (decisión 0019), de la que sale esta y que tampoco está aprobada todavía
 
-## Lo que pidió el usuario
+## Qué quería
 - Un menú para cambiar entre mascotas.
 - Minimalista y bonito.
 - De momento solo estará la mascota del perro.
 
 ## Cómo se ha resuelto
-El menú usa el mismo lenguaje que los círculos de estado (decisión 0016), que el usuario aprobó sin retoques: nada por detrás, solo círculos que salen del perro.
+El menú usa el mismo lenguaje que los círculos de estado (decisión 0016), que di por buenos sin retoques: nada por detrás, solo círculos que salen del perro.
 
 | Aspecto | Solución |
 |---|---|
@@ -42,11 +42,11 @@ Elegir otra mascota **guarda la elección y recarga la ventana**: la app arranca
 
 Con una sola mascota ese camino no se puede recorrer, así que se probó añadiendo dos ficticias, "Gato" y "Zorro", que después se quitaron (ver "Verificación").
 
-## Decisiones que el usuario no especificó
-Quedan a su criterio.
+## Decisiones de detalle
+No estaban en la idea inicial y se pueden cambiar.
 
 1. **Cómo se abre: botón derecho sobre el perro.** Hasta ahora el botón derecho hacía lo mismo que el clic normal (abrir los círculos de estado). Ahora el clic normal enseña cómo está y el derecho abre el menú, como en cualquier programa de escritorio. También está en la bandeja.
-   - Alternativa: un cuarto círculo, pequeño, junto a los de estado. Se descartó para no tocar una interfaz que el usuario aprobó tal cual.
+   - Alternativa: un cuarto círculo, pequeño, junto a los de estado. Se descartó para no tocar una interfaz que ya había dado por buena tal cual.
 2. **El hueco de "Pronto".** Con una sola mascota, un único círculo no se lee como un menú. Si no gusta, se quita con unas pocas líneas de `src/petMenu.ts`.
 3. **El nombre "Perro".** La mascota no tiene nombre propio; se usa el de la especie. Está en `src/pets.ts`.
 4. **Cambiar recarga la ventana**, en vez de sustituir un modelo por otro sobre la marcha. Es lo más simple y no deja nada del anterior en memoria.
@@ -73,13 +73,13 @@ Con la app de desarrollo y las herramientas de `tools/verify/`:
 
 ## Qué no se ha probado
 - **El menú de la bandeja con el ratón.** Se ha probado que la orden que envía ("pets") abre el menú, y que el lado nativo compila con la entrada nueva; no se ha pulsado la entrada.
-- **La versión empaquetada.** No se ha regenerado el instalador ni tocado la app instalada: se hará si el usuario aprueba la propuesta.
+- **La versión empaquetada.** No se ha regenerado el instalador ni tocado la app instalada: se hará cuando dé por buena la propuesta.
 - El frontend en el navegador (`npm run dev`), donde el menú se abre con la tecla `m`.
 - Pantallas con escala distinta del 100 %.
 
 ## Incidencias
-- **Primera pasada con el ratón real, incoherente.** El clic derecho no llegó a darse (la herramienta avisó de que bajo el cursor no estaba el perro) y aun así el menú apareció abierto un segundo después; en la captura de esa pasada hay un corazón de caricia, que solo sale frotando el cursor sobre el perro. Lo más probable es que el ratón se estuviera usando en ese momento. Causa sin confirmar. Repetida dos veces con el cursor quieto: correcta.
-- La captura del escritorio real mostraba la ventana del navegador que el usuario tenía abierta. Se revisó y **no se ha guardado** en `docs/capturas/`, que se publica.
+- **Primera pasada con el ratón real, incoherente.** El clic derecho no llegó a darse (la herramienta avisó de que bajo el cursor no estaba el perro) y aun así el menú apareció abierto un segundo después; en la captura de esa pasada hay un corazón de caricia, que solo sale frotando el cursor sobre el perro. Lo más probable es que estuviera usando el ratón en ese momento. Causa sin confirmar. Repetida dos veces con el cursor quieto: correcta.
+- La captura del escritorio real mostraba la ventana del navegador que tenía abierta. Se revisó y **no se ha guardado** en `docs/capturas/`, que se publica.
 - Las pruebas acariciaron al perro: la felicidad pasó de 92,6 a 96,7. La saciedad y la energía solo cambiaron por el paso del tiempo.
 - Al editar dos veces seguidas un mismo fichero, la app de desarrollo se recargó con el fichero a medias y siguió sirviendo esa versión hasta volver a tocarlo. Es del servidor de desarrollo, no de la app.
 
@@ -92,8 +92,8 @@ Con la app de desarrollo y las herramientas de `tools/verify/`:
 - No cambia nada del comportamiento del perro, del modelo ni de la cama.
 
 ## Resolución
-Al ver la propuesta, el usuario contestó "vale" y pidió confirmarla y fusionarla en la rama de la cama, sin pedir retoques.
+Al ver la propuesta la di por buena sin retoques, y decidí confirmarla y fusionarla en la rama de la cama.
 
 - `menu-de-mascotas` se fusiona en `cama-del-perro` con un avance rápido (commit `16e8c51`). Desde aquí el menú y la cama van juntos en esa rama.
-- No se ha fusionado en `desarrollo` ni en `main`, ni se ha subido a GitHub, ni se ha regenerado el instalador: el usuario no lo ha pedido. La cama (decisión 0019) sigue pendiente de su opinión.
-- Las decisiones que no había especificado (botón derecho, hueco de "Pronto", nombre "Perro", recarga al cambiar, cierre a los 10 segundos) quedan como están; no las ha comentado una a una.
+- No se ha fusionado en `desarrollo` ni en `main`, ni se ha subido a GitHub, ni se ha regenerado el instalador: todavía no tocaba. La cama (decisión 0019) sigue pendiente de revisión.
+- Las decisiones de detalle (botón derecho, hueco de "Pronto", nombre "Perro", recarga al cambiar, cierre a los 10 segundos) quedan como están; no las he revisado una a una.
