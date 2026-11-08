@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-13
 - **Estado:** en `main`, en GitHub y en la app instalada desde el 2026-10-13, con el sí del usuario (ver "Resolución" al final). El sitio lo decidió él; la excepción de más abajo la propuso el agente y no la ha comentado
-- **Decide:** el usuario
+- **Decide:** Lucas Pérez Fernández
 - **Sustituye a:** de la [0019](0019-cama-del-perro.md), dónde sale la cama (la primera fila de "Cómo funciona" y el punto 1 de "Decisiones que el usuario no especificó"): a 300 px del perro, hacia el lado con más sitio
 
 ## Lo que pidió el usuario

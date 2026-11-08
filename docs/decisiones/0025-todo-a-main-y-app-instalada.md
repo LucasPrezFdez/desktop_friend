@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-13
 - **Estado:** hecha
-- **Decide:** el usuario
+- **Decide:** Lucas Pérez Fernández
 
 ## Lo que pidió el usuario
 > ahora pushea todo a main y actualiza la pp que tengo instalada

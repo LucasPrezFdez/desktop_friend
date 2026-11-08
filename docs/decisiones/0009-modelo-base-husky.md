@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el agente, tras la inspección prevista en la decisión 0005
+- **Decide:** Lucas Pérez Fernández, tras la inspección prevista en la decisión 0005
 
 ## Contexto
 La decisión 0005 dejaba pendiente inspeccionar el asset antes de comprometerse. Se descargaron los dos candidatos desde Poly Pizza (licencia mostrada: CC0 1.0) y se inspeccionaron con `tools/model/inspect.mjs` y con renders de `tools/model/preview.py`.

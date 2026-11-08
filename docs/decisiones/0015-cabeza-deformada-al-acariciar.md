@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el agente, a petición del usuario
+- **Decide:** Lucas Pérez Fernández
 
 ## Síntoma
 El usuario observó que, al acariciar la cara del perro, a veces la animación fallaba y la cabeza empezaba a deformarse.

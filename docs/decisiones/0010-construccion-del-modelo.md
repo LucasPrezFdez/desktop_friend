@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada. La tabla de colores y la lista de piezas añadidas quedan sustituidas por la [0018](0018-modelo-retrato.md); el resto sigue en vigor
-- **Decide:** el agente
+- **Decide:** Lucas Pérez Fernández
 
 ## Contexto
 `tools/model/build_dog.py` convierte `Husky.glb` en `public/models/dog.glb`. Al escribirlo hubo que resolver varios puntos que la investigación y el plan dejaban abiertos o planteaban de otra forma.

@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-12
 - **Estado:** propuesta en la rama `mascota-wingman`. Pendiente de la opinión del usuario. En `main` y en GitHub desde el 2026-10-13 por orden del usuario ([0025](0025-todo-a-main-y-app-instalada.md)). El modelo sigue sin versionarse, pero desde el 2026-10-31 va dentro del instalador publicado en GitHub, por decisión del usuario ([0029](0029-instalador-en-github.md)). Retirado unos minutos después, también por decisión suya: el instalador con Wingman no se publica ([0030](0030-instalador-retirado-de-github.md))
-- **Decide:** el usuario pide la mascota; el diseño y los detalles no especificados los propone el agente
+- **Decide:** Lucas Pérez Fernández
 - **Depende de:** la rama `cama-del-perro` (decisiones 0019 y 0020), de la que sale esta
 - **Resuelve:** "Qué falta para una segunda mascota", de la decisión 0020
 

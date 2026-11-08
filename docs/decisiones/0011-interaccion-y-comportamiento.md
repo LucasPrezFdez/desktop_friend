@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el agente
+- **Decide:** Lucas Pérez Fernández
 
 ## Contexto
 La petición fija dos interacciones (acariciar y dar de comer) y que haya una mascota a la que cuidar. El resto del diseño quedaba abierto.

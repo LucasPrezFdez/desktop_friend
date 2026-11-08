@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-31
 - **Estado:** hecha
-- **Decide:** el usuario
+- **Decide:** Lucas Pérez Fernández
 - **Sustituye a:** la [0029](0029-instalador-en-github.md), que lo había publicado unos minutos antes
 
 ## Lo que pidió el usuario

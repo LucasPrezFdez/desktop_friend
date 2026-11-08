@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada por el usuario el 2026-10-11 en su segunda versión (ver "Revisión 2" y "Resolución" al final). La revisión 2 sustituye a lo descrito antes sobre la pose, la orientación y el guante
-- **Decide:** el usuario pide el efecto; el diseño lo propone el agente
+- **Decide:** Lucas Pérez Fernández
 
 ## Lo que pidió el usuario
 - Al agarrar al perro aparece una mano que lo coge del collar y lo levanta.

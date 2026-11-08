@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el usuario
+- **Decide:** Lucas Pérez Fernández
 
 ## Contexto
 La parte más delicada de una mascota de escritorio (clics que atraviesan la ventana) se comporta distinto en cada sistema operativo. El equipo de desarrollo es Windows 11 y es el único donde se puede verificar.

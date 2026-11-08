@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el usuario, sobre la recomendación de la investigación
+- **Decide:** Lucas Pérez Fernández, sobre la recomendación de la investigación
 
 ## Contexto
 La app necesita una ventana transparente siempre encima, clics que atraviesen donde no hay mascota, render 3D con fondo transparente y bajo consumo. Comparativa completa en `docs/investigacion.md`, parte 1.

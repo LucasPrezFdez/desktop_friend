@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-12
 - **Estado:** propuesta en la rama `menu-de-mascotas`. Pendiente de la opinión del usuario. En `main` y en GitHub desde el 2026-10-13 por orden del usuario ([0025](0025-todo-a-main-y-app-instalada.md))
-- **Decide:** el usuario pide la función; el diseño y los detalles no especificados los propone el agente
+- **Decide:** Lucas Pérez Fernández
 - **Depende de:** la rama `cama-del-perro` (decisión 0019), de la que sale esta y que tampoco está aprobada todavía
 
 ## Lo que pidió el usuario

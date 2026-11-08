@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el usuario
+- **Decide:** Lucas Pérez Fernández
 
 ## Contexto
 La petición inicial pedía una búsqueda de la mejor manera de hacer una mascota de escritorio y de cómo crear su modelo 3D. No quedaba claro si después había que construirla.

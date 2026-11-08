@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada por el usuario el 2026-10-11 (ver "Resolución" al final). Nació como propuesta en la rama `interfaz-circulos`
-- **Decide:** el usuario pide el diseño; los detalles no especificados los propone el agente
+- **Decide:** Lucas Pérez Fernández
 - **Sustituye a:** el panel de estado descrito en la decisión 0011
 
 ## Lo que pidió el usuario

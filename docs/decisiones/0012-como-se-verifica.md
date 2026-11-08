@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el agente
+- **Decide:** Lucas Pérez Fernández
 
 ## Contexto
 La app no tiene una página que abrir en un navegador ni una salida de texto: es una ventana transparente sobre el escritorio que reacciona al ratón. Hacía falta una forma de comprobarla que no dependiera de "parece que funciona".

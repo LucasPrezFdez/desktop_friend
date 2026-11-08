@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-31
 - **Estado:** hecha y deshecha el mismo día, por orden del usuario: la release se borró a las 01:01:33 ([0030](0030-instalador-retirado-de-github.md))
-- **Decide:** el usuario pide subir el instalador y elige que lleve a Wingman; cómo se publica lo propone el agente
+- **Decide:** Lucas Pérez Fernández
 - **Resuelve:** lo que dejaron pendiente la [0021](0021-mascota-wingman.md) y la [0028](0028-carpeta-para-instalar-en-otro-equipo.md): si el instalador que se reparte lleva a Wingman
 - **Matiza:** la [0014](0014-publicacion-en-github.md), que decía que el instalador no se sube. Sigue fuera de git, pero ya se descarga desde GitHub
 

@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el usuario
+- **Decide:** Lucas Pérez Fernández
 
 ## Contexto
 El tipo de criatura condiciona la dificultad del modelo 3D y de las animaciones.

@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el usuario
+- **Decide:** Lucas Pérez Fernández
 
 ## Contexto
 El usuario exige que cada decisión y cada acción queden documentadas.

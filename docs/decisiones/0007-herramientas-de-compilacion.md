@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el agente
+- **Decide:** Lucas Pérez Fernández
 
 ## Contexto
 Tauri compila con Rust, que en Windows necesita el enlazador de MSVC. winget ofrece las Build Tools de Visual Studio 2017, 2019, 2022 (17.14.41) y 2026 (18.10.2). Para Blender ofrece 5.2.2 y las LTS 4.2 y 4.5.

@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada, pendiente de la inspección del asset (hito 3)
-- **Decide:** el usuario, sobre la recomendación de la investigación
+- **Decide:** Lucas Pérez Fernández, sobre la recomendación de la investigación
 
 ## Contexto
 El modelo lo tiene que producir un agente que trabaja con texto y línea de comandos, sin manejar un editor gráfico. Hace falta un perro negro en GLB con animaciones de reposo, parpadeo, cola, feliz, comer, triste, sentarse, dormir y caminar. Comparativa completa en `docs/investigacion.md`, parte 2.

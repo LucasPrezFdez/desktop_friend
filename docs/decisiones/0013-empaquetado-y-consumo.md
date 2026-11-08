@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el agente
+- **Decide:** Lucas Pérez Fernández
 
 ## Empaquetado
 - Instalador NSIS generado con `npm run tauri build`: `src-tauri/target/release/bundle/nsis/DesktopFriend_0.1.0_x64-setup.exe`, **2,38 MB**. El ejecutable ocupa 9,8 MB.

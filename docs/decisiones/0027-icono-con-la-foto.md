@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-13
 - **Estado:** en la app instalada, en `main` y en GitHub desde el 2026-10-13, con el sí del usuario a publicar el recorte (ver "Resolución" al final)
-- **Decide:** el usuario pide el icono y da la foto; el recorte lo propone el agente
+- **Decide:** Lucas Pérez Fernández
 
 ## Lo que pidió el usuario
 > pon esta imagen como icono de la app

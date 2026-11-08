@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-12
 - **Estado:** aceptada por el usuario el 2026-10-12 en su novena versión (ver las revisiones 2 a 9 y la "Resolución" al final; la 9 sube el hocico de la 8; la 8 rehace la forma de toda la cabeza y sustituye a lo dicho en la 4 sobre hocico y trufa y en la 6 sobre el alto del cráneo; la 7 añade las cejas canosas y queda guardada con la etiqueta `modelo-revision-7`; la 6 cambia el alto y la inclinación del cráneo de la 4; la 4 sustituye a lo dicho antes sobre el cráneo, las orejas y la trufa, y la 5 a lo dicho sobre los ojos). Fusionada en `desarrollo` y `main`
-- **Decide:** el usuario pide el cambio; el diseño lo propone el agente
+- **Decide:** Lucas Pérez Fernández
 - **Relación con otras decisiones:** mantiene la 0005 y la 0009 (se sigue partiendo del Husky de Quaternius y de Blender en modo script) y sustituye, de la 0010, la tabla de colores y la lista de piezas añadidas. El resto de la 0010 (cinemática propia, poses en coordenadas de mundo, clips) sigue en vigor
 
 ## Lo que pidió el usuario

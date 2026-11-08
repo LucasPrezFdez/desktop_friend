@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el agente, con las mediciones del hito 2
+- **Decide:** Lucas Pérez Fernández, con las mediciones del hito 2
 
 ## Contexto
 La decisión 0004 condicionaba Tauri a que un prototipo demostrase el punto más arriesgado: una ventana transparente siempre encima cuyos clics atraviesen donde no hay mascota. Si fallaba, había que pasar a Electron.

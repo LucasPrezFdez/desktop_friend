@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-11
 - **Estado:** aceptada
-- **Decide:** el usuario
+- **Decide:** Lucas Pérez Fernández
 - **Sustituye en parte a:** las decisiones 0005 y 0009, que preveían no publicar los modelos originales sueltos
 
 ## Contexto

@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-10-13
 - **Estado:** hecha. Si el instalador que se reparte lleva a Wingman lo decide el usuario (ver más abajo). Lo decidió el 2026-10-31: con Wingman, y publicado en GitHub ([0029](0029-instalador-en-github.md)). Ese mismo día lo retiró de GitHub ([0030](0030-instalador-retirado-de-github.md))
-- **Decide:** el usuario pide la carpeta; qué lleva dentro lo propone el agente
+- **Decide:** Lucas Pérez Fernández
 
 ## Lo que pidió el usuario
 Una carpeta en el escritorio con todo lo necesario para instalar la app en el ordenador de otra persona.
